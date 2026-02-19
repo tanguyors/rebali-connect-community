@@ -39,7 +39,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="border-t mt-8 pt-6 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Re-Bali. All rights reserved.
+          © {new Date().getFullYear()} Re-Bali. {t('footer.copyright')}
         </div>
       </div>
     </footer>

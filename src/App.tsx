@@ -46,8 +46,8 @@ const App = () => (
                 <Route path="/safety" element={<Safety />} />
                 <Route path="/rules" element={<Rules />} />
                 <Route path="/vip" element={<VIP />} />
-              <Route path="*" element={<NotFound />} />
-            </Route>
+                <Route path="*" element={<NotFound />} />
+              </Route>
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

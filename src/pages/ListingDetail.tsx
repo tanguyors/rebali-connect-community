@@ -105,7 +105,7 @@ export default function ListingDetail() {
             <h1 className="text-2xl md:text-3xl font-bold mb-2">{title}</h1>
             <p className="text-3xl font-bold text-primary mb-4">{formatPrice(listing.price, listing.currency)}</p>
             <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
-              <span className="flex items-center gap-1"><MapPin className="h-4 w-4" />{listing.location_area}</span>
+              <span className="flex items-center gap-1"><MapPin className="h-4 w-4" />{t(`locations.${listing.location_area}`)}</span>
               <span className="flex items-center gap-1"><Eye className="h-4 w-4" />{listing.views_count} {t('listing.views')}</span>
               <span className="flex items-center gap-1"><Calendar className="h-4 w-4" />{new Date(listing.created_at).toLocaleDateString()}</span>
             </div>
