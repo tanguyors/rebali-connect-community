@@ -37,10 +37,16 @@ export default function MyListings() {
   const soldListings = listings?.filter((l: any) => l.status === 'sold') || [];
   const archivedListings = listings?.filter((l: any) => l.status === 'archived') || [];
 
+  const statusToastMap: Record<string, string> = {
+    active: 'notifications.listingActive',
+    sold: 'notifications.listingSold',
+    archived: 'notifications.listingArchived',
+  };
+
   const updateStatus = async (id: string, status: string) => {
     await supabase.from('listings').update({ status: status as any }).eq('id', id);
     qc.invalidateQueries({ queryKey: ['my-listings'] });
-    toast({ title: `Listing ${status}` });
+    toast({ title: t(statusToastMap[status] || status) });
   };
 
   const ListingRow = ({ listing }: { listing: any }) => {

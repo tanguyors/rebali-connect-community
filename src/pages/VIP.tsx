@@ -19,7 +19,7 @@ export default function VIP() {
 
   const handleNotify = (e: React.FormEvent) => {
     e.preventDefault();
-    toast({ title: '✓ You\'ll be notified!' });
+    toast({ title: t('notifications.vipNotify') });
     setEmail('');
   };
 

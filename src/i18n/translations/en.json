@@ -282,6 +282,24 @@
     "legal": "Legal",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
-    "copyright": "© 2025 Re-Bali. All rights reserved."
+    "copyright": "All rights reserved."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "Oops! The page you're looking for doesn't exist.",
+    "backHome": "Return to Home"
+  },
+  "notifications": {
+    "listingActive": "Listing reactivated",
+    "listingSold": "Listing marked as sold",
+    "listingArchived": "Listing archived",
+    "vipNotify": "You'll be notified when VIP launches!"
+  },
+  "adminLabels": {
+    "accessDenied": "Access denied",
+    "listing": "Listing",
+    "reporter": "Reporter",
+    "deleted": "Deleted",
+    "unknown": "Unknown"
   }
 }

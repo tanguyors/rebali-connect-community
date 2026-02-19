@@ -32,7 +32,7 @@ export default function Admin() {
   if (!isAdmin) return (
     <div className="container mx-auto px-4 py-20 text-center">
       <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-      <p className="text-lg text-muted-foreground">Access denied</p>
+      <p className="text-lg text-muted-foreground">{t('adminLabels.accessDenied')}</p>
     </div>
   );
 
@@ -106,10 +106,10 @@ export default function Admin() {
                         {report.resolved && <Badge variant="secondary">{t('admin.resolved')}</Badge>}
                       </div>
                       <p className="text-sm font-medium mb-1">
-                        Listing: {report.listings?.title_original || 'Deleted'}
+                        {t('adminLabels.listing')}: {report.listings?.title_original || t('adminLabels.deleted')}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        Reporter: {(report.profiles as any)?.display_name || 'Unknown'}
+                        {t('adminLabels.reporter')}: {(report.profiles as any)?.display_name || t('adminLabels.unknown')}
                       </p>
                       {report.details && <p className="text-sm mt-2 text-muted-foreground">{report.details}</p>}
                       <p className="text-xs text-muted-foreground mt-1">{new Date(report.created_at).toLocaleDateString()}</p>
