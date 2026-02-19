@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
+// Card no longer needed on homepage
 import ListingCard from '@/components/ListingCard';
 import AnimatedHeroText from '@/components/AnimatedHeroText';
 import { Search, Camera, MessageCircle, Handshake, Sparkles } from 'lucide-react';
@@ -40,15 +40,28 @@ export default function Home() {
     { icon: Handshake, title: t('home.step3Title'), desc: t('home.step3Desc') },
   ];
 
+  const CATEGORY_COLORS: Record<string, string> = {
+    real_estate: 'bg-[hsl(var(--category-real-estate))] hover:bg-[hsl(174_50%_86%)]',
+    furniture_home: 'bg-[hsl(var(--category-furniture))] hover:bg-[hsl(35_60%_86%)]',
+    vehicles: 'bg-[hsl(var(--category-vehicles))] hover:bg-[hsl(12_60%_87%)]',
+    horeca_equipment: 'bg-[hsl(var(--category-horeca))] hover:bg-[hsl(280_40%_87%)]',
+    business_assets: 'bg-[hsl(var(--category-business))] hover:bg-[hsl(220_40%_87%)]',
+    relocation_services: 'bg-[hsl(var(--category-relocation))] hover:bg-[hsl(150_40%_86%)]',
+    misc: 'bg-[hsl(var(--category-misc))] hover:bg-[hsl(45_50%_86%)]',
+  };
+
   return (
     <div>
       {/* Hero */}
-      <section className="relative bg-gradient-to-br from-primary/10 via-background to-accent/5 py-16 md:py-24">
-        <div className="container mx-auto px-4 text-center">
-          <div className="mb-4">
+      <section className="relative overflow-hidden py-20 md:py-28">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-primary/5 to-accent/10" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,hsl(var(--accent)/0.08),transparent_60%)]" />
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent" />
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <div className="mb-5">
             <AnimatedHeroText />
           </div>
-          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
             {t('home.heroSub')}
           </p>
           <form onSubmit={handleSearch} className="max-w-xl mx-auto flex gap-2">
@@ -58,26 +71,24 @@ export default function Home() {
                 placeholder={t('home.searchPlaceholder')}
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="pl-10 h-12 text-base"
+                className="pl-10 h-12 text-base shadow-sm border-border/60 bg-card"
               />
             </div>
-            <Button type="submit" size="lg">{t('common.search')}</Button>
+            <Button type="submit" size="lg" className="shadow-md">{t('common.search')}</Button>
           </form>
         </div>
       </section>
 
-      {/* Categories - horizontal scroll on mobile */}
-      <section className="container mx-auto px-4 py-12">
+      {/* Categories */}
+      <section className="container mx-auto px-4 -mt-6 relative z-20 pb-8">
         <h2 className="text-2xl md:text-3xl font-bold mb-6">{t('home.categories')}</h2>
         <div className="flex gap-3 overflow-x-auto pb-3 md:grid md:grid-cols-7 md:overflow-visible scrollbar-hide">
           {CATEGORIES.map(cat => (
             <Link key={cat} to={`/browse?category=${cat}`} className="flex-shrink-0 w-28 md:w-auto">
-              <Card className="hover:shadow-md hover:border-primary/30 transition-all cursor-pointer h-full">
-                <CardContent className="p-4 text-center">
-                  <span className="text-3xl mb-2 block">{CATEGORY_ICONS[cat]}</span>
-                  <span className="text-xs md:text-sm font-medium">{t(`categories.${cat}`)}</span>
-                </CardContent>
-              </Card>
+              <div className={`rounded-xl p-4 text-center transition-all duration-200 cursor-pointer border border-transparent hover:border-primary/20 hover:shadow-md ${CATEGORY_COLORS[cat]}`}>
+                <span className="text-3xl mb-2 block">{CATEGORY_ICONS[cat]}</span>
+                <span className="text-xs md:text-sm font-medium text-foreground">{t(`categories.${cat}`)}</span>
+              </div>
             </Link>
           ))}
         </div>
@@ -85,10 +96,10 @@ export default function Home() {
 
       {/* Latest Listings */}
       {listings && listings.length > 0 && (
-        <section className="container mx-auto px-4 py-12">
+        <section className="container mx-auto px-4 py-10">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl md:text-3xl font-bold">{t('home.latest')}</h2>
-            <Button variant="ghost" asChild>
+            <Button variant="outline" size="sm" asChild className="gap-1">
               <Link to="/browse">{t('common.viewAll')} →</Link>
             </Button>
           </div>
@@ -101,14 +112,14 @@ export default function Home() {
       )}
 
       {/* How it works */}
-      <section className="bg-secondary/50 py-16">
+      <section className="bg-gradient-to-b from-secondary/80 to-secondary/30 py-16 mt-4">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-10">{t('home.howItWorks')}</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">{t('home.howItWorks')}</h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             {steps.map((step, i) => (
-              <div key={i} className="text-center">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <step.icon className="h-7 w-7 text-primary" />
+              <div key={i} className="text-center bg-card rounded-2xl p-6 shadow-sm border border-border/50">
+                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <step.icon className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'DM Sans, sans-serif' }}>{step.title}</h3>
                 <p className="text-sm text-muted-foreground">{step.desc}</p>
@@ -120,11 +131,11 @@ export default function Home() {
 
       {/* CTA */}
       <section className="container mx-auto px-4 py-16 text-center">
-        <div className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-2xl p-8 md:p-12">
-          <Sparkles className="h-10 w-10 text-primary mx-auto mb-4" />
+        <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 rounded-2xl p-8 md:p-12 border border-primary/10 shadow-sm">
+          <Sparkles className="h-10 w-10 text-accent mx-auto mb-4" />
           <h2 className="text-2xl md:text-3xl font-bold mb-3">{t('home.freePlatform')}</h2>
           <p className="text-muted-foreground max-w-lg mx-auto mb-6">{t('home.freeDesc')}</p>
-          <Button size="lg" asChild>
+          <Button size="lg" className="shadow-md" asChild>
             <Link to="/create">{t('nav.sell')} →</Link>
           </Button>
         </div>
