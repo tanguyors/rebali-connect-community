@@ -35,7 +35,25 @@ export default function Home() {
 
   return (
     <div>
-      {/* Hero – clean & minimal like LeBonCoin */}
+      {/* Categories – horizontal nav bar under header */}
+      <section className="border-b border-border/50 bg-card">
+        <div className="container mx-auto px-4">
+          <div className="flex gap-0 overflow-x-auto scrollbar-hide">
+            {CATEGORIES.map(cat => (
+              <Link
+                key={cat}
+                to={`/browse?category=${cat}`}
+                className="flex items-center gap-1.5 px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/10 transition-colors whitespace-nowrap border-b-2 border-transparent hover:border-primary"
+              >
+                <span className="text-lg">{CATEGORY_ICONS[cat]}</span>
+                <span>{t(`categories.${cat}`)}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Hero */}
       <section className="bg-card border-b border-border/50">
         <div className="container mx-auto px-4 py-12 md:py-16 text-center">
           <div className="mb-4">
@@ -59,23 +77,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Categories – horizontal row */}
-      <section className="border-b border-border/50 bg-card">
-        <div className="container mx-auto px-4">
-          <div className="flex gap-0 overflow-x-auto scrollbar-hide">
-            {CATEGORIES.map(cat => (
-              <Link
-                key={cat}
-                to={`/browse?category=${cat}`}
-                className="flex items-center gap-1.5 px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/10 transition-colors whitespace-nowrap border-b-2 border-transparent hover:border-primary"
-              >
-                <span className="text-lg">{CATEGORY_ICONS[cat]}</span>
-                <span>{t(`categories.${cat}`)}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* CTA Banner – warm peach/coral like LeBonCoin */}
       <section className="container mx-auto px-4 mt-10">
