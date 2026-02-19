@@ -1,31 +1,22 @@
 
-# Next Steps - Polish and Bug Fixes
+# Final Polish -- CreateListing Preview Fix and Minor Improvements
 
-## Issues to Fix
+## What needs to be done
 
-### 1. Location translations missing in CreateListing
-The location dropdown in the create listing form (step 1, line 208) shows raw values like "nusa_dua" instead of translated names. Will use `t('locations.xxx')` like Browse already does.
+### 1. Fix location display in CreateListing preview (Step 4)
+In `src/pages/CreateListing.tsx` line 257, the listing preview step still shows the raw `form.location` value (e.g., "nusa_dua") instead of the translated name. This is the last untranslated location in the app.
 
-### 2. Location translation missing in ListingDetail
-The listing detail page (line 108) shows the raw `location_area` value instead of using `t('locations.xxx')`.
+**Change:** Replace `{form.location}` with `{t('locations.' + form.location)}` on line 257.
 
-### 3. Location translation missing in MyListings
-The MyListings page (line 59) shows raw `listing.location_area`.
+### 2. (Optional) Category icons -- emoji rendering
+The category icons use emoji characters which render differently across platforms. This is fine for now but could be improved later with proper SVG icons.
 
-### 4. NotFound route nesting fix
-In App.tsx line 49, the `NotFound` route closing tag is improperly indented -- need to verify it's correctly nested inside the Layout route.
-
-### 5. Footer copyright uses hardcoded English text
-Line 42 of Footer.tsx has `All rights reserved.` hardcoded instead of using the translation key `t('footer.copyright')`.
+---
 
 ## Technical Details
 
-| File | Change |
-|---|---|
-| `src/pages/CreateListing.tsx` line 208 | Replace raw location display with `t('locations.${l}')` |
-| `src/pages/ListingDetail.tsx` line 108 | Replace `listing.location_area` with `t('locations.${listing.location_area}')` |
-| `src/pages/MyListings.tsx` line 59 | Replace `listing.location_area` with `t('locations.${listing.location_area}')` |
-| `src/App.tsx` line 49 | Fix NotFound route indentation to ensure proper nesting |
-| `src/components/Footer.tsx` line 42 | Use `t('footer.copyright')` or build dynamic string with translation |
+| File | Line | Change |
+|---|---|---|
+| `src/pages/CreateListing.tsx` | 257 | `{form.location}` becomes `{t(\`locations.\${form.location}\`)}` |
 
-These are all small targeted fixes -- no new files needed.
+This is a single-line fix. Everything else (location translations, footer, routing, animated hero, seed data, relative dates, share button, price filters) is already working correctly.
