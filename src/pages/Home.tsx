@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import ListingCard from '@/components/ListingCard';
 import AnimatedHeroText from '@/components/AnimatedHeroText';
 import { Search, Plus, Sparkles } from 'lucide-react';
-import { CATEGORIES, CATEGORY_ICONS, CATEGORY_TREE } from '@/lib/constants';
+import CategoryMarquee from '@/components/CategoryMarquee';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -35,23 +35,7 @@ export default function Home() {
 
   return (
     <div>
-      {/* Categories – horizontal nav bar under header */}
-      <section className="border-b border-border/50 bg-card">
-        <div className="container mx-auto px-4">
-          <div className="flex gap-0 overflow-x-auto scrollbar-hide">
-            {CATEGORIES.map(cat => (
-              <Link
-                key={cat}
-                to={`/browse?category=${cat}`}
-                className="flex items-center gap-1.5 px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/10 transition-colors whitespace-nowrap border-b-2 border-transparent hover:border-primary"
-              >
-                <span className="text-lg">{CATEGORY_ICONS[cat]}</span>
-                <span>{t(`categories.${cat}`)}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      <CategoryMarquee />
 
       {/* Hero */}
       <section className="bg-card border-b border-border/50">
