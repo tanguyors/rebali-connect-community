@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { Shield, AlertTriangle, Users, FileText, CheckCircle, BarChart3, Search, Ban, Eye, Phone, MessageSquare, Globe, Calendar, User } from 'lucide-react';
+import { Shield, AlertTriangle, Users, FileText, CheckCircle, BarChart3, Search, Ban, Eye, Phone, MessageSquare, Globe, Calendar, User, MapPin, Tag, Package, DollarSign, BarChart2, Trash2, Archive } from 'lucide-react';
 
 export default function Admin() {
   const { t } = useLanguage();
@@ -25,6 +25,7 @@ export default function Admin() {
   const [listingSearch, setListingSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedListing, setSelectedListing] = useState<any>(null);
 
   // Reports query
   const { data: reports } = useQuery({
@@ -300,6 +301,202 @@ export default function Admin() {
     );
   };
 
+  // Listing detail dialog
+  const ListingDetailDialog = () => {
+    if (!selectedListing) return null;
+    const seller = profiles?.find((p: any) => p.id === selectedListing.seller_id);
+    const listingReports = reports?.filter((r: any) => r.listing_id === selectedListing.id) || [];
+
+    return (
+      <Dialog open={!!selectedListing} onOpenChange={(open) => !open && setSelectedListing(null)}>
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Package className="h-5 w-5 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="truncate">{selectedListing.title_original}</p>
+                <p className="text-sm font-normal text-muted-foreground">ID: {selectedListing.id.slice(0, 8)}...</p>
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+
+          {/* Status & Category */}
+          <div className="flex flex-wrap gap-2">
+            <Badge variant={selectedListing.status === 'active' ? 'default' : 'secondary'}>
+              {t(`myListings.${selectedListing.status}`)}
+            </Badge>
+            <Badge variant="outline">{t(`categories.${selectedListing.category}`)}</Badge>
+            <Badge variant="outline">{t(`condition.${selectedListing.condition}`)}</Badge>
+          </div>
+
+          <Separator />
+
+          {/* Listing details */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t('admin.listingDetails')}</h4>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex items-center gap-2 text-sm">
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-muted-foreground">{t('admin.colPrice')}</p>
+                  <p className="font-medium">{selectedListing.price > 0 ? `${selectedListing.currency} ${selectedListing.price.toLocaleString()}` : t('common.free')}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-muted-foreground">{t('createListing.locationArea')}</p>
+                  <p className="font-medium">{selectedListing.location_area}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <BarChart2 className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-muted-foreground">{t('admin.views')}</p>
+                  <p className="font-medium">{selectedListing.views_count}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-muted-foreground">{t('admin.colDate')}</p>
+                  <p className="font-medium">{new Date(selectedListing.created_at).toLocaleDateString()}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Globe className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-muted-foreground">{t('admin.language')}</p>
+                  <p className="font-medium">{selectedListing.lang_original?.toUpperCase()}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-muted-foreground">{t('admin.lastUpdated')}</p>
+                  <p className="font-medium">{new Date(selectedListing.updated_at).toLocaleDateString()}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Description */}
+          <div className="space-y-2">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t('admin.description')}</h4>
+            <p className="text-sm whitespace-pre-wrap max-h-[150px] overflow-y-auto border rounded-md p-3 bg-muted/30">
+              {selectedListing.description_original}
+            </p>
+          </div>
+
+          <Separator />
+
+          {/* Seller info */}
+          <div className="space-y-2">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t('admin.colSeller')}</h4>
+            {seller ? (
+              <div
+                className="flex items-center gap-3 p-3 rounded-md border cursor-pointer hover:bg-muted/50 transition-colors"
+                onClick={() => { setSelectedListing(null); setSelectedUser(seller); }}
+              >
+                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <User className="h-4 w-4 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">{seller.display_name || t('adminLabels.unknown')}</p>
+                  <p className="text-xs text-muted-foreground">{t(`profile.${seller.user_type}`)}</p>
+                </div>
+                {seller.is_banned && <Badge variant="destructive" className="text-[10px]">{t('admin.banned')}</Badge>}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">{t('adminLabels.unknown')}</p>
+            )}
+          </div>
+
+          {/* Reports on this listing */}
+          {listingReports.length > 0 && (
+            <>
+              <Separator />
+              <div className="space-y-2">
+                <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                  {t('admin.reports')} ({listingReports.length})
+                </h4>
+                <div className="space-y-1">
+                  {listingReports.map((r: any) => (
+                    <div key={r.id} className="flex items-center gap-2 text-sm p-2 rounded-md border">
+                      <Badge variant="destructive" className="text-[10px]">{t(`report.${r.reason}`)}</Badge>
+                      <span className="truncate flex-1 text-muted-foreground">{r.details || '—'}</span>
+                      {r.resolved ? (
+                        <Badge variant="secondary" className="text-[10px]">{t('admin.resolved')}</Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-[10px]">{t('admin.pending')}</Badge>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          <Separator />
+
+          {/* Admin actions */}
+          <div className="flex gap-2 flex-wrap">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => { setSelectedListing(null); navigate(`/listing/${selectedListing.id}`); }}
+            >
+              <Eye className="h-4 w-4 mr-1" /> {t('admin.viewListing')}
+            </Button>
+            {selectedListing.status !== 'archived' && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => { archiveListing(selectedListing.id); setSelectedListing((prev: any) => prev ? { ...prev, status: 'archived' } : null); }}
+              >
+                <Archive className="h-4 w-4 mr-1" /> {t('admin.archiveListing')}
+              </Button>
+            )}
+            {selectedListing.status !== 'active' && selectedListing.status !== 'sold' && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  await supabase.from('listings').update({ status: 'active' as any }).eq('id', selectedListing.id);
+                  qc.invalidateQueries({ queryKey: ['admin-listings'] });
+                  setSelectedListing((prev: any) => prev ? { ...prev, status: 'active' } : null);
+                  toast({ title: t('admin.listingReactivated') });
+                }}
+              >
+                <CheckCircle className="h-4 w-4 mr-1" /> {t('admin.reactivate')}
+              </Button>
+            )}
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => { deleteListing(selectedListing.id); setSelectedListing(null); }}
+            >
+              <Trash2 className="h-4 w-4 mr-1" /> {t('common.delete')}
+            </Button>
+            {seller && !seller.is_banned && (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => banUser(selectedListing.seller_id, true)}
+              >
+                <Ban className="h-4 w-4 mr-1" /> {t('admin.banUser')}
+              </Button>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
   return (
     <div className="container mx-auto px-4 py-6 max-w-5xl">
       <h1 className="text-3xl font-bold mb-6 flex items-center gap-2">
@@ -307,6 +504,7 @@ export default function Admin() {
       </h1>
 
       <UserDetailDialog />
+      <ListingDetailDialog />
 
       <Tabs defaultValue="stats">
         <TabsList className="grid w-full grid-cols-4">
@@ -466,19 +664,16 @@ export default function Admin() {
                 {filteredListings.length === 0 ? (
                   <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">{t('common.noResults')}</TableCell></TableRow>
                 ) : filteredListings.map((l: any) => (
-                  <TableRow key={l.id}>
+                  <TableRow key={l.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setSelectedListing(l)}>
                     <TableCell className="font-medium max-w-[200px] truncate">{l.title_original}</TableCell>
                     <TableCell className="text-sm">{(l.profiles as any)?.display_name || t('adminLabels.unknown')}</TableCell>
                     <TableCell><Badge variant="outline">{t(`categories.${l.category}`)}</Badge></TableCell>
                     <TableCell className="text-sm">{l.price > 0 ? `${l.currency} ${l.price.toLocaleString()}` : t('common.free')}</TableCell>
                     <TableCell><Badge variant={l.status === 'active' ? 'default' : 'secondary'}>{t(`myListings.${l.status}`)}</Badge></TableCell>
                     <TableCell>
-                      <div className="flex gap-1">
-                        {l.status !== 'archived' && (
-                          <Button size="sm" variant="outline" onClick={() => archiveListing(l.id)}>{t('admin.archiveListing')}</Button>
-                        )}
-                        <Button size="sm" variant="destructive" onClick={() => deleteListing(l.id)}>{t('common.delete')}</Button>
-                      </div>
+                      <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); setSelectedListing(l); }}>
+                        <Eye className="h-3 w-3" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}

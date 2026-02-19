@@ -222,7 +222,15 @@
     "userReports": "Signalements contre l'utilisateur",
     "noUserReports": "Aucun signalement",
     "moreListings": "annonces supplémentaires",
-    "viewListings": "Voir les annonces"
+    "viewListings": "Voir les annonces",
+    "listingDetails": "Détails de l'annonce",
+    "viewListing": "Voir l'annonce",
+    "reactivate": "Réactiver",
+    "listingReactivated": "Annonce réactivée",
+    "views": "Vues",
+    "language": "Langue",
+    "lastUpdated": "Dernière mise à jour",
+    "description": "Description"
   },
   "about": {
     "title": "À propos de Re-Bali",

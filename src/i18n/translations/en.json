@@ -222,7 +222,15 @@
     "userReports": "Reports against user",
     "noUserReports": "No reports",
     "moreListings": "more listings",
-    "viewListings": "View Listings"
+    "viewListings": "View Listings",
+    "listingDetails": "Listing Details",
+    "viewListing": "View Listing",
+    "reactivate": "Reactivate",
+    "listingReactivated": "Listing reactivated",
+    "views": "Views",
+    "language": "Language",
+    "lastUpdated": "Last Updated",
+    "description": "Description"
   },
   "about": {
     "title": "About Re-Bali",

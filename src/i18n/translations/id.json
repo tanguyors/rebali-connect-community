@@ -222,7 +222,15 @@
     "userReports": "Laporan terhadap pengguna",
     "noUserReports": "Tidak ada laporan",
     "moreListings": "iklan lainnya",
-    "viewListings": "Lihat Iklan"
+    "viewListings": "Lihat Iklan",
+    "listingDetails": "Detail Iklan",
+    "viewListing": "Lihat Iklan",
+    "reactivate": "Aktifkan Kembali",
+    "listingReactivated": "Iklan diaktifkan kembali",
+    "views": "Dilihat",
+    "language": "Bahasa",
+    "lastUpdated": "Terakhir Diperbarui",
+    "description": "Deskripsi"
   },
   "about": {
     "title": "Tentang Re-Bali",
