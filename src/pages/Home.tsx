@@ -45,10 +45,7 @@ export default function Home() {
       {/* Hero */}
       <section className="relative bg-gradient-to-br from-primary/10 via-background to-accent/5 py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-2 tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Re-Bali
-          </h1>
-          <div className="text-2xl md:text-4xl font-bold mb-4 h-12 md:h-14 flex items-center justify-center">
+          <div className="mb-4">
             <AnimatedHeroText />
           </div>
           <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">

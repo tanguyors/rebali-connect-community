@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const HERO_WORDS: Record<string, string[]> = {
-  en: ['Re-Use', 'Re-Sell', 'Re-Home', 'Re-Discover'],
-  fr: ['Re-Utilise', 'Re-Vends', 'Re-Trouve', 'Re-Découvre'],
-  id: ['Re-Pakai', 'Re-Jual', 'Re-Temukan', 'Re-Gunakan'],
-  es: ['Re-Usa', 'Re-Vende', 'Re-Encuentra', 'Re-Descubre'],
-  zh: ['Re-用', 'Re-卖', 'Re-找', 'Re-发现'],
-  de: ['Re-Nutze', 'Re-Verkaufe', 'Re-Finde', 'Re-Entdecke'],
-  nl: ['Re-Gebruik', 'Re-Verkoop', 'Re-Vind', 'Re-Ontdek'],
-  ru: ['Re-Используй', 'Re-Продай', 'Re-Найди', 'Re-Открой'],
+  en: ['-Bali', '-Use', '-Sell', '-Home', '-Discover'],
+  fr: ['-Bali', '-Utilise', '-Vends', '-Trouve', '-Découvre'],
+  id: ['-Bali', '-Pakai', '-Jual', '-Temukan', '-Gunakan'],
+  es: ['-Bali', '-Usa', '-Vende', '-Encuentra', '-Descubre'],
+  zh: ['-Bali', '-用', '-卖', '-找', '-发现'],
+  de: ['-Bali', '-Nutze', '-Verkaufe', '-Finde', '-Entdecke'],
+  nl: ['-Bali', '-Gebruik', '-Verkoop', '-Vind', '-Ontdek'],
+  ru: ['-Bali', '-Используй', '-Продай', '-Найди', '-Открой'],
 };
 
 export default function AnimatedHeroText() {
@@ -30,12 +30,15 @@ export default function AnimatedHeroText() {
   }, [words.length]);
 
   return (
-    <span
-      className={`inline-block text-primary transition-all duration-300 ${
-        fade ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-      }`}
-    >
-      {words[index]}
-    </span>
+    <h1 className="text-4xl md:text-6xl font-bold tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+      <span>Re</span>
+      <span
+        className={`inline-block text-primary transition-all duration-300 ${
+          fade ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+        }`}
+      >
+        {words[index]}
+      </span>
+    </h1>
   );
 }
