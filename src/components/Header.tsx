@@ -35,13 +35,10 @@ export default function Header() {
               Re-Bali
             </span>
           </Link>
-          <nav className="hidden md:flex items-center gap-1">
-            {navLinks.map(link => (
-              <Button key={link.href} variant="ghost" size="sm" asChild>
-                <Link to={link.href}>{link.label}</Link>
-              </Button>
-            ))}
-          </nav>
+          <Button className="hidden md:inline-flex gap-1.5 rounded-full px-6" onClick={() => navigate('/create')}>
+            <Plus className="h-4 w-4" />
+            {t('nav.sell')}
+          </Button>
         </div>
 
         <div className="flex items-center gap-2">
@@ -49,10 +46,6 @@ export default function Header() {
           
           {user ? (
             <>
-              <Button size="sm" className="gap-1.5" onClick={() => navigate('/create')}>
-                <Plus className="h-4 w-4" />
-                <span className="hidden sm:inline">{t('nav.sell')}</span>
-              </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-full">
@@ -99,12 +92,10 @@ export default function Header() {
             </SheetTrigger>
             <SheetContent side="right" className="w-72">
               <nav className="flex flex-col gap-2 mt-8">
-                {navLinks.map(link => (
-                  <Button key={link.href} variant="ghost" className="justify-start" asChild
-                    onClick={() => setMobileOpen(false)}>
-                    <Link to={link.href}>{link.label}</Link>
-                  </Button>
-                ))}
+              <Button className="justify-start gap-1.5" onClick={() => { navigate('/create'); setMobileOpen(false); }}>
+                  <Plus className="h-4 w-4" />
+                  {t('nav.sell')}
+                </Button>
                 {!user && (
                   <>
                     <Button variant="ghost" className="justify-start" onClick={() => { navigate('/auth'); setMobileOpen(false); }}>
