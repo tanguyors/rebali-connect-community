@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { formatPrice, CATEGORY_ICONS } from '@/lib/constants';
+import { formatPrice, CATEGORY_ICONS, CATEGORY_PLACEHOLDERS } from '@/lib/constants';
 import { MapPin, Eye, Phone, MessageCircle, Flag, User, Calendar, Share2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from '@/hooks/use-toast';
@@ -74,15 +74,13 @@ export default function ListingDetail() {
         {/* Images */}
         <div>
           <div className="aspect-[4/3] rounded-xl overflow-hidden bg-muted mb-2">
-            {images.length > 0 ? (
-              <img
-                src={supabase.storage.from('listings').getPublicUrl(images[currentImage]?.storage_path).data.publicUrl}
-                alt={title}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-muted-foreground">No image</div>
-            )}
+            <img
+              src={images.length > 0
+                ? supabase.storage.from('listings').getPublicUrl(images[currentImage]?.storage_path).data.publicUrl
+                : CATEGORY_PLACEHOLDERS[listing.category] || '/placeholder.svg'}
+              alt={title}
+              className="w-full h-full object-cover"
+            />
           </div>
           {images.length > 1 && (
             <div className="flex gap-2 overflow-x-auto pb-2">
