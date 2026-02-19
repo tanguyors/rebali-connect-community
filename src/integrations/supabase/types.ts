@@ -14,16 +14,268 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      listing_images: {
+        Row: {
+          created_at: string
+          id: string
+          listing_id: string
+          sort_order: number
+          storage_path: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          listing_id: string
+          sort_order?: number
+          storage_path: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          listing_id?: string
+          sort_order?: number
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_images_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_translations: {
+        Row: {
+          description: string
+          id: string
+          is_machine: boolean
+          lang: string
+          listing_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          description?: string
+          id?: string
+          is_machine?: boolean
+          lang: string
+          listing_id: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          description?: string
+          id?: string
+          is_machine?: boolean
+          lang?: string
+          listing_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_translations_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listings: {
+        Row: {
+          category: Database["public"]["Enums"]["listing_category"]
+          condition: Database["public"]["Enums"]["item_condition"]
+          created_at: string
+          currency: string
+          description_original: string
+          id: string
+          lang_original: string
+          location_area: string
+          price: number
+          seller_id: string
+          status: Database["public"]["Enums"]["listing_status"]
+          title_original: string
+          updated_at: string
+          views_count: number
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["listing_category"]
+          condition?: Database["public"]["Enums"]["item_condition"]
+          created_at?: string
+          currency?: string
+          description_original: string
+          id?: string
+          lang_original?: string
+          location_area: string
+          price?: number
+          seller_id: string
+          status?: Database["public"]["Enums"]["listing_status"]
+          title_original: string
+          updated_at?: string
+          views_count?: number
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["listing_category"]
+          condition?: Database["public"]["Enums"]["item_condition"]
+          created_at?: string
+          currency?: string
+          description_original?: string
+          id?: string
+          lang_original?: string
+          location_area?: string
+          price?: number
+          seller_id?: string
+          status?: Database["public"]["Enums"]["listing_status"]
+          title_original?: string
+          updated_at?: string
+          views_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listings_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          is_banned: boolean
+          phone: string | null
+          preferred_lang: string
+          updated_at: string
+          user_type: Database["public"]["Enums"]["user_type"]
+          whatsapp: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          is_banned?: boolean
+          phone?: string | null
+          preferred_lang?: string
+          updated_at?: string
+          user_type?: Database["public"]["Enums"]["user_type"]
+          whatsapp?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          is_banned?: boolean
+          phone?: string | null
+          preferred_lang?: string
+          updated_at?: string
+          user_type?: Database["public"]["Enums"]["user_type"]
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          created_at: string
+          details: string | null
+          id: string
+          listing_id: string
+          reason: Database["public"]["Enums"]["report_reason"]
+          reporter_id: string
+          resolved: boolean
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          listing_id: string
+          reason: Database["public"]["Enums"]["report_reason"]
+          reporter_id: string
+          resolved?: boolean
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          listing_id?: string
+          reason?: Database["public"]["Enums"]["report_reason"]
+          reporter_id?: string
+          resolved?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_active_listing_count: { Args: { _user_id: string }; Returns: number }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      increment_views: { Args: { _listing_id: string }; Returns: undefined }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
+      item_condition: "new" | "like_new" | "good" | "fair" | "for_parts"
+      listing_category:
+        | "real_estate"
+        | "furniture_home"
+        | "vehicles"
+        | "horeca_equipment"
+        | "business_assets"
+        | "relocation_services"
+        | "misc"
+      listing_status: "draft" | "active" | "sold" | "archived"
+      report_reason:
+        | "scam"
+        | "prohibited"
+        | "duplicate"
+        | "spam"
+        | "wrong_category"
+        | "other"
+      user_type: "private" | "business"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +402,28 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+      item_condition: ["new", "like_new", "good", "fair", "for_parts"],
+      listing_category: [
+        "real_estate",
+        "furniture_home",
+        "vehicles",
+        "horeca_equipment",
+        "business_assets",
+        "relocation_services",
+        "misc",
+      ],
+      listing_status: ["draft", "active", "sold", "archived"],
+      report_reason: [
+        "scam",
+        "prohibited",
+        "duplicate",
+        "spam",
+        "wrong_category",
+        "other",
+      ],
+      user_type: ["private", "business"],
+    },
   },
 } as const
