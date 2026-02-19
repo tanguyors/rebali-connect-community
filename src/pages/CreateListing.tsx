@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { CATEGORIES, LOCATIONS, CONDITIONS, CURRENCIES, CATEGORY_ICONS, MAX_ACTIVE_LISTINGS, formatPrice } from '@/lib/constants';
+import { CATEGORIES, CATEGORY_TREE, LOCATIONS, CONDITIONS, CURRENCIES, CATEGORY_ICONS, MAX_ACTIVE_LISTINGS, formatPrice } from '@/lib/constants';
 import { SUPPORTED_LANGUAGES } from '@/i18n';
 import { toast } from '@/hooks/use-toast';
 import { Upload, X, ChevronLeft, ChevronRight, Check } from 'lucide-react';
@@ -27,6 +27,7 @@ export default function CreateListing() {
 
   const [form, setForm] = useState({
     category: '',
+    subcategory: '',
     title: '',
     description: '',
     price: '',
@@ -67,7 +68,7 @@ export default function CreateListing() {
   };
 
   const canProceed = () => {
-    if (step === 0) return !!form.category;
+    if (step === 0) return !!form.category && !!form.subcategory;
     if (step === 1) return form.title && form.description && form.price !== '' && form.location;
     if (step === 2) return photos.length > 0;
     return true;
@@ -81,6 +82,7 @@ export default function CreateListing() {
       const { data: listing, error } = await supabase.from('listings').insert({
         seller_id: user.id,
         category: form.category as any,
+        subcategory: form.subcategory,
         title_original: form.title,
         description_original: form.description,
         price: parseFloat(form.price) || 0,
@@ -159,17 +161,37 @@ export default function CreateListing() {
 
       {/* Step 0: Category */}
       {step === 0 && (
-        <div className="grid grid-cols-2 gap-3">
-          {CATEGORIES.map(cat => (
-            <Card key={cat}
-              className={`cursor-pointer transition-all hover:shadow-md ${form.category === cat ? 'ring-2 ring-primary' : ''}`}
-              onClick={() => setForm(f => ({ ...f, category: cat }))}>
-              <CardContent className="p-4 text-center">
-                <span className="text-3xl block mb-2">{CATEGORY_ICONS[cat]}</span>
-                <span className="font-medium text-sm">{t(`categories.${cat}`)}</span>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="space-y-6">
+          {/* Main categories */}
+          <div className="grid grid-cols-2 gap-3">
+            {CATEGORIES.map(cat => (
+              <Card key={cat}
+                className={`cursor-pointer transition-all hover:shadow-md ${form.category === cat ? 'ring-2 ring-primary' : ''}`}
+                onClick={() => setForm(f => ({ ...f, category: cat, subcategory: '' }))}>
+                <CardContent className="p-4 text-center">
+                  <span className="text-3xl block mb-2">{CATEGORY_ICONS[cat]}</span>
+                  <span className="font-medium text-sm">{t(`categories.${cat}`)}</span>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          {/* Subcategories */}
+          {form.category && CATEGORY_TREE[form.category] && (
+            <div>
+              <Label className="mb-2 block">{t('createListing.selectSubcategory')}</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {CATEGORY_TREE[form.category].map(sub => (
+                  <Card key={sub}
+                    className={`cursor-pointer transition-all hover:shadow-md ${form.subcategory === sub ? 'ring-2 ring-primary' : ''}`}
+                    onClick={() => setForm(f => ({ ...f, subcategory: sub }))}>
+                    <CardContent className="p-3 text-center">
+                      <span className="font-medium text-sm">{t(`subcategories.${sub}`)}</span>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -251,7 +273,7 @@ export default function CreateListing() {
         <Card>
           <CardContent className="p-4 space-y-3">
             {previews[0] && <img src={previews[0]} alt="" className="w-full aspect-[4/3] object-cover rounded-lg" />}
-            <Badge>{CATEGORY_ICONS[form.category]} {t(`categories.${form.category}`)}</Badge>
+            <Badge>{CATEGORY_ICONS[form.category]} {t(`categories.${form.category}`)} — {t(`subcategories.${form.subcategory}`)}</Badge>
             <h2 className="text-xl font-bold">{form.title}</h2>
             <p className="text-2xl font-bold text-primary">{formatPrice(parseFloat(form.price) || 0, form.currency)}</p>
             <p className="text-sm text-muted-foreground">{t(`locations.${form.location}`)} · {t(`conditions.${form.condition}`)}</p>

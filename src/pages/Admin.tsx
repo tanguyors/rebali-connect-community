@@ -15,6 +15,7 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { Shield, AlertTriangle, Users, FileText, CheckCircle, BarChart3, Search, Ban, Eye, Phone, MessageSquare, Globe, Calendar, User, MapPin, Tag, Package, DollarSign, BarChart2, Trash2, Archive, Pencil, Save, X } from 'lucide-react';
+import { CATEGORY_TREE } from '@/lib/constants';
 
 export default function Admin() {
   const { t } = useLanguage();
@@ -342,7 +343,7 @@ export default function Admin() {
     toast({ title: t('admin.listingSaved') });
   };
 
-  const categories: string[] = ['real_estate', 'furniture_home', 'vehicles', 'horeca_equipment', 'business_assets', 'relocation_services', 'misc'];
+  const categories: string[] = Object.keys(CATEGORY_TREE);
 
   const ListingDetailDialog = () => {
     if (!selectedListing) return null;
