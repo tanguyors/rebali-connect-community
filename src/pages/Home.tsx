@@ -85,9 +85,9 @@ export default function Home() {
         <div className="flex gap-3 overflow-x-auto pb-3 md:grid md:grid-cols-7 md:overflow-visible scrollbar-hide">
           {CATEGORIES.map(cat => (
             <Link key={cat} to={`/browse?category=${cat}`} className="flex-shrink-0 w-28 md:w-auto">
-              <div className={`rounded-xl p-4 text-center transition-all duration-200 cursor-pointer border border-transparent hover:border-primary/20 hover:shadow-md ${CATEGORY_COLORS[cat]}`}>
+              <div className={`rounded-xl p-4 text-center transition-all duration-200 cursor-pointer border border-transparent hover:border-primary/20 hover:shadow-md h-full flex flex-col items-center justify-center ${CATEGORY_COLORS[cat]}`}>
                 <span className="text-3xl mb-2 block">{CATEGORY_ICONS[cat]}</span>
-                <span className="text-xs md:text-sm font-medium text-foreground">{t(`categories.${cat}`)}</span>
+                <span className="text-xs md:text-sm font-medium text-foreground line-clamp-1">{t(`categories.${cat}`)}</span>
               </div>
             </Link>
           ))}
