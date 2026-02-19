@@ -6,7 +6,7 @@ import ListingCard from '@/components/ListingCard';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CATEGORIES, LOCATIONS, CONDITIONS } from '@/lib/constants';
+import { CATEGORIES, LOCATIONS, CONDITIONS, CATEGORY_TREE } from '@/lib/constants';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { useState } from 'react';
 
@@ -16,6 +16,7 @@ export default function Browse() {
   const [search, setSearch] = useState(searchParams.get('q') || '');
   const [category, setCategory] = useState(searchParams.get('category') || 'all');
   const [location, setLocation] = useState(searchParams.get('location') || 'all');
+  const [subcategory, setSubcategory] = useState('all');
   const [condition, setCondition] = useState('all');
   const [sort, setSort] = useState('newest');
   const [minPrice, setMinPrice] = useState('');
@@ -23,7 +24,7 @@ export default function Browse() {
   const [showFilters, setShowFilters] = useState(false);
 
   const { data: listings, isLoading } = useQuery({
-    queryKey: ['listings', search, category, location, condition, sort, minPrice, maxPrice],
+    queryKey: ['listings', search, category, subcategory, location, condition, sort, minPrice, maxPrice],
     queryFn: async () => {
       let query = supabase
         .from('listings')
@@ -32,6 +33,7 @@ export default function Browse() {
 
       if (search) query = query.or(`title_original.ilike.%${search}%,description_original.ilike.%${search}%`);
       if (category !== 'all') query = query.eq('category', category as any);
+      if (subcategory !== 'all') query = query.eq('subcategory', subcategory);
       if (location !== 'all') query = query.eq('location_area', location);
       if (condition !== 'all') query = query.eq('condition', condition as any);
       if (minPrice) query = query.gte('price', Number(minPrice));
@@ -49,6 +51,7 @@ export default function Browse() {
   const clearFilters = () => {
     setSearch('');
     setCategory('all');
+    setSubcategory('all');
     setLocation('all');
     setCondition('all');
     setSort('newest');
@@ -57,7 +60,7 @@ export default function Browse() {
     setSearchParams({});
   };
 
-  const hasFilters = search || category !== 'all' || location !== 'all' || condition !== 'all' || minPrice || maxPrice;
+  const hasFilters = search || category !== 'all' || subcategory !== 'all' || location !== 'all' || condition !== 'all' || minPrice || maxPrice;
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -80,8 +83,8 @@ export default function Browse() {
       </div>
 
       {/* Filters */}
-      <div className={`grid grid-cols-1 md:grid-cols-4 gap-3 mb-4 ${showFilters ? '' : 'hidden md:grid'}`}>
-        <Select value={category} onValueChange={setCategory}>
+      <div className={`grid grid-cols-1 md:grid-cols-5 gap-3 mb-4 ${showFilters ? '' : 'hidden md:grid'}`}>
+        <Select value={category} onValueChange={(v) => { setCategory(v); setSubcategory('all'); }}>
           <SelectTrigger><SelectValue placeholder={t('filters.allCategories')} /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t('filters.allCategories')}</SelectItem>
@@ -90,6 +93,17 @@ export default function Browse() {
             ))}
           </SelectContent>
         </Select>
+        {category !== 'all' && CATEGORY_TREE[category] && (
+          <Select value={subcategory} onValueChange={setSubcategory}>
+            <SelectTrigger><SelectValue placeholder={t('filters.allSubcategories')} /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('filters.allSubcategories')}</SelectItem>
+              {CATEGORY_TREE[category].map(sc => (
+                <SelectItem key={sc} value={sc}>{t(`subcategories.${sc}`)}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         <Select value={location} onValueChange={setLocation}>
           <SelectTrigger><SelectValue placeholder={t('filters.allLocations')} /></SelectTrigger>
           <SelectContent>

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import ListingCard from '@/components/ListingCard';
 import AnimatedHeroText from '@/components/AnimatedHeroText';
 import { Search, Plus, Sparkles } from 'lucide-react';
-import { CATEGORIES, CATEGORY_ICONS } from '@/lib/constants';
+import { CATEGORIES, CATEGORY_ICONS, CATEGORY_TREE } from '@/lib/constants';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';

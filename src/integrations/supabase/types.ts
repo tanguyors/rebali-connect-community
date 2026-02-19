@@ -86,7 +86,7 @@ export type Database = {
       }
       listings: {
         Row: {
-          category: Database["public"]["Enums"]["listing_category"]
+          category: string
           condition: Database["public"]["Enums"]["item_condition"]
           created_at: string
           currency: string
@@ -97,12 +97,13 @@ export type Database = {
           price: number
           seller_id: string
           status: Database["public"]["Enums"]["listing_status"]
+          subcategory: string | null
           title_original: string
           updated_at: string
           views_count: number
         }
         Insert: {
-          category: Database["public"]["Enums"]["listing_category"]
+          category: string
           condition?: Database["public"]["Enums"]["item_condition"]
           created_at?: string
           currency?: string
@@ -113,12 +114,13 @@ export type Database = {
           price?: number
           seller_id: string
           status?: Database["public"]["Enums"]["listing_status"]
+          subcategory?: string | null
           title_original: string
           updated_at?: string
           views_count?: number
         }
         Update: {
-          category?: Database["public"]["Enums"]["listing_category"]
+          category?: string
           condition?: Database["public"]["Enums"]["item_condition"]
           created_at?: string
           currency?: string
@@ -129,6 +131,7 @@ export type Database = {
           price?: number
           seller_id?: string
           status?: Database["public"]["Enums"]["listing_status"]
+          subcategory?: string | null
           title_original?: string
           updated_at?: string
           views_count?: number
@@ -259,14 +262,6 @@ export type Database = {
     Enums: {
       app_role: "admin" | "moderator" | "user"
       item_condition: "new" | "like_new" | "good" | "fair" | "for_parts"
-      listing_category:
-        | "real_estate"
-        | "furniture_home"
-        | "vehicles"
-        | "horeca_equipment"
-        | "business_assets"
-        | "relocation_services"
-        | "misc"
       listing_status: "draft" | "active" | "sold" | "archived"
       report_reason:
         | "scam"
@@ -405,15 +400,6 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "moderator", "user"],
       item_condition: ["new", "like_new", "good", "fair", "for_parts"],
-      listing_category: [
-        "real_estate",
-        "furniture_home",
-        "vehicles",
-        "horeca_equipment",
-        "business_assets",
-        "relocation_services",
-        "misc",
-      ],
       listing_status: ["draft", "active", "sold", "archived"],
       report_reason: [
         "scam",
