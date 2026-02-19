@@ -205,7 +205,7 @@ export default function CreateListing() {
               <SelectTrigger><SelectValue placeholder={t('createListing.selectLocation')} /></SelectTrigger>
               <SelectContent>
                 {LOCATIONS.map(l => (
-                  <SelectItem key={l} value={l}>{l.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</SelectItem>
+                  <SelectItem key={l} value={l}>{t(`locations.${l}`)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>

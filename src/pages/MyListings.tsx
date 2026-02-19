@@ -56,7 +56,7 @@ export default function MyListings() {
             <p className="text-primary font-bold text-sm">{formatPrice(listing.price, listing.currency)}</p>
             <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
               <span>{CATEGORY_ICONS[listing.category]}</span>
-              <span>{listing.location_area}</span>
+              <span>{t(`locations.${listing.location_area}`)}</span>
               <span className="flex items-center gap-0.5"><Eye className="h-3 w-3" />{listing.views_count}</span>
             </div>
           </div>
