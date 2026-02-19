@@ -254,7 +254,7 @@ export default function CreateListing() {
             <Badge>{CATEGORY_ICONS[form.category]} {t(`categories.${form.category}`)}</Badge>
             <h2 className="text-xl font-bold">{form.title}</h2>
             <p className="text-2xl font-bold text-primary">{formatPrice(parseFloat(form.price) || 0, form.currency)}</p>
-            <p className="text-sm text-muted-foreground">{form.location} · {t(`conditions.${form.condition}`)}</p>
+            <p className="text-sm text-muted-foreground">{t(`locations.${form.location}`)} · {t(`conditions.${form.condition}`)}</p>
             <p className="text-muted-foreground">{form.description}</p>
           </CardContent>
         </Card>
