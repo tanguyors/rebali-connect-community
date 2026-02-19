@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Eye, Clock } from 'lucide-react';
-import { formatPrice, CATEGORY_ICONS } from '@/lib/constants';
+import { formatPrice, CATEGORY_ICONS, CATEGORY_PLACEHOLDERS } from '@/lib/constants';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { fr, id as idLocale, es, zhCN, de, nl, ru } from 'date-fns/locale';
@@ -39,7 +39,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
 
   const imageUrl = listing.listing_images?.[0]?.storage_path
     ? supabase.storage.from('listings').getPublicUrl(listing.listing_images[0].storage_path).data.publicUrl
-    : '/placeholder.svg';
+    : CATEGORY_PLACEHOLDERS[listing.category] || '/placeholder.svg';
 
   const timeAgo = formatDistanceToNow(new Date(listing.created_at), {
     addSuffix: true,
