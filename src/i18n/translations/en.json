@@ -93,6 +93,8 @@
     "loginTitle": "Welcome back", "loginSubtitle": "Sign in to your Re-Bali account",
     "signupTitle": "Create an account", "signupSubtitle": "Join the Bali marketplace community",
     "email": "Email", "password": "Password", "confirmPassword": "Confirm password", "displayName": "Display name",
+    "accountType": "Account type", "privateAccount": "Private", "proAccount": "Professional",
+    "privateDesc": "Buy & sell as an individual", "proDesc": "Sell as a business",
     "forgotPassword": "Forgot password?", "noAccount": "Don't have an account?", "hasAccount": "Already have an account?",
     "magicLink": "Send magic link", "magicLinkSent": "Check your email for the login link!",
     "resetPassword": "Reset Password", "newPassword": "New password", "updatePassword": "Update Password",

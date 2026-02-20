@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
+import { User, Briefcase } from 'lucide-react';
 
 export default function Auth() {
   const { t } = useLanguage();
@@ -19,6 +20,7 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [userType, setUserType] = useState<'private' | 'business'>('private');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -41,7 +43,7 @@ export default function Auth() {
       email,
       password,
       options: {
-        data: { display_name: displayName },
+        data: { display_name: displayName, user_type: userType },
         emailRedirectTo: window.location.origin,
       },
     });
@@ -110,6 +112,38 @@ export default function Auth() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSignup} className="space-y-4">
+                {/* User type selector */}
+                <div>
+                  <Label>{t('auth.accountType')}</Label>
+                  <div className="grid grid-cols-2 gap-3 mt-2">
+                    <button
+                      type="button"
+                      onClick={() => setUserType('private')}
+                      className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
+                        userType === 'private'
+                          ? 'border-primary bg-primary/5'
+                          : 'border-muted hover:border-muted-foreground/30'
+                      }`}
+                    >
+                      <User className="h-6 w-6" />
+                      <span className="text-sm font-medium">{t('auth.privateAccount')}</span>
+                      <span className="text-xs text-muted-foreground text-center">{t('auth.privateDesc')}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setUserType('business')}
+                      className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
+                        userType === 'business'
+                          ? 'border-primary bg-primary/5'
+                          : 'border-muted hover:border-muted-foreground/30'
+                      }`}
+                    >
+                      <Briefcase className="h-6 w-6" />
+                      <span className="text-sm font-medium">{t('auth.proAccount')}</span>
+                      <span className="text-xs text-muted-foreground text-center">{t('auth.proDesc')}</span>
+                    </button>
+                  </div>
+                </div>
                 <div>
                   <Label>{t('auth.displayName')}</Label>
                   <Input value={displayName} onChange={e => setDisplayName(e.target.value)} required />

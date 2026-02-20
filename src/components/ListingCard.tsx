@@ -2,11 +2,12 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Eye, Clock } from 'lucide-react';
+import { MapPin, Eye, Clock, Briefcase } from 'lucide-react';
 import { formatPrice, CATEGORY_ICONS, CATEGORY_PLACEHOLDERS } from '@/lib/constants';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { fr, id as idLocale, es, zhCN, de, nl, ru } from 'date-fns/locale';
+import { useQuery } from '@tanstack/react-query';
 
 const DATE_LOCALES: Record<string, any> = { fr, id: idLocale, es, zh: zhCN, de, nl, ru };
 
@@ -21,6 +22,7 @@ interface ListingCardProps {
     condition: string;
     views_count: number;
     created_at: string;
+    seller_id: string;
     listing_images?: { storage_path: string }[];
     listing_translations?: { lang: string; title: string }[];
   };
@@ -28,6 +30,21 @@ interface ListingCardProps {
 
 export default function ListingCard({ listing }: ListingCardProps) {
   const { t, language } = useLanguage();
+
+  const { data: sellerProfile } = useQuery({
+    queryKey: ['seller-profile', listing.seller_id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('user_type')
+        .eq('id', listing.seller_id)
+        .single();
+      return data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const isPro = sellerProfile?.user_type === 'business';
 
   const translation = listing.listing_translations?.find(tr => tr.lang === language);
   const enTranslation = listing.listing_translations?.find(tr => tr.lang === 'en');
@@ -59,6 +76,12 @@ export default function ListingCard({ listing }: ListingCardProps) {
           <Badge className="absolute top-2 left-2 bg-card/90 text-foreground text-xs">
             {CATEGORY_ICONS[listing.category]} {t(`categories.${listing.category}`)}
           </Badge>
+          {isPro && (
+            <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground text-xs gap-1">
+              <Briefcase className="h-3 w-3" />
+              Pro
+            </Badge>
+          )}
         </div>
         <CardContent className="p-3">
           <h3 className="font-semibold text-sm line-clamp-2 mb-1 group-hover:text-primary transition-colors">
