@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { formatPrice, CATEGORY_ICONS, CATEGORY_PLACEHOLDERS } from '@/lib/constants';
-import { MapPin, Eye, Phone, MessageCircle, Flag, User, Calendar, Share2 } from 'lucide-react';
+import { MapPin, Eye, Phone, MessageCircle, Flag, User, Calendar, Share2, Heart } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 
@@ -36,6 +36,33 @@ export default function ListingDetail() {
     enabled: !!id,
   });
 
+  const { data: favCount } = useQuery({
+    queryKey: ['fav-count', id],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from('favorites')
+        .select('*', { count: 'exact', head: true })
+        .eq('listing_id', id!);
+      return count || 0;
+    },
+    enabled: !!id,
+  });
+
+  const { data: isFavorited, refetch: refetchFav } = useQuery({
+    queryKey: ['is-fav', id, user?.id],
+    queryFn: async () => {
+      if (!user) return false;
+      const { data } = await supabase
+        .from('favorites')
+        .select('id')
+        .eq('listing_id', id!)
+        .eq('user_id', user.id)
+        .maybeSingle();
+      return !!data;
+    },
+    enabled: !!id,
+  });
+
   useEffect(() => {
     if (id) {
       supabase.rpc('increment_views', { _listing_id: id });
@@ -53,6 +80,16 @@ export default function ListingDetail() {
 
   const images = (listing.listing_images || []).sort((a: any, b: any) => a.sort_order - b.sort_order);
   const seller = listing.profiles as any;
+
+  const toggleFavorite = async () => {
+    if (!user) return;
+    if (isFavorited) {
+      await supabase.from('favorites').delete().eq('listing_id', id!).eq('user_id', user.id);
+    } else {
+      await supabase.from('favorites').insert({ listing_id: id!, user_id: user.id });
+    }
+    refetchFav();
+  };
 
   const handleReport = async () => {
     if (!user || !reportReason) return;
@@ -105,6 +142,7 @@ export default function ListingDetail() {
             <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
               <span className="flex items-center gap-1"><MapPin className="h-4 w-4" />{t(`locations.${listing.location_area}`)}</span>
               <span className="flex items-center gap-1"><Eye className="h-4 w-4" />{listing.views_count} {t('listing.views')}</span>
+              <span className="flex items-center gap-1"><Heart className={`h-4 w-4 ${isFavorited ? 'text-red-500 fill-red-500' : ''}`} />{favCount ?? 0} {t('listing.favorites')}</span>
               <span className="flex items-center gap-1"><Calendar className="h-4 w-4" />{new Date(listing.created_at).toLocaleDateString()}</span>
             </div>
             <h2 className="text-lg font-semibold mb-2" style={{ fontFamily: 'DM Sans' }}>{t('listing.description')}</h2>
@@ -150,6 +188,19 @@ export default function ListingDetail() {
               )}
             </CardContent>
           </Card>
+
+          {/* Favorite */}
+          {user && (
+            <Button
+              variant={isFavorited ? "default" : "outline"}
+              size="sm"
+              className="w-full gap-2"
+              onClick={toggleFavorite}
+            >
+              <Heart className={`h-4 w-4 ${isFavorited ? 'fill-current' : ''}`} />
+              {isFavorited ? t('listing.removeFromFavorites') : t('listing.addToFavorites')}
+            </Button>
+          )}
 
           {/* Share */}
           <Button

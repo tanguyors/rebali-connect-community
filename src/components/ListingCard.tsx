@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Eye, Clock, Briefcase } from 'lucide-react';
+import { MapPin, Eye, Clock, Briefcase, Heart } from 'lucide-react';
 import { formatPrice, CATEGORY_ICONS, CATEGORY_PLACEHOLDERS } from '@/lib/constants';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
@@ -42,6 +42,18 @@ export default function ListingCard({ listing }: ListingCardProps) {
       return data;
     },
     staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: favCount } = useQuery({
+    queryKey: ['fav-count', listing.id],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from('favorites')
+        .select('*', { count: 'exact', head: true })
+        .eq('listing_id', listing.id);
+      return count || 0;
+    },
+    staleTime: 60 * 1000,
   });
 
   const isPro = sellerProfile?.user_type === 'business';
@@ -98,6 +110,10 @@ export default function ListingCard({ listing }: ListingCardProps) {
             <span className="flex items-center gap-1">
               <Eye className="h-3 w-3" />
               {listing.views_count}
+            </span>
+            <span className="flex items-center gap-1">
+              <Heart className="h-3 w-3" />
+              {favCount ?? 0}
             </span>
           </div>
           <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">

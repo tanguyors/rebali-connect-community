@@ -69,6 +69,7 @@
   "conditions": { "new": "New", "like_new": "Like New", "good": "Good", "fair": "Fair", "for_parts": "For Parts" },
   "listing": {
     "postedBy": "Posted by", "condition": "Condition", "location": "Location", "views": "views",
+    "favorites": "favorites", "addToFavorites": "Add to favorites", "removeFromFavorites": "Remove from favorites",
     "contactSeller": "Contact Seller", "whatsapp": "WhatsApp", "call": "Call",
     "reportListing": "Report this listing", "markSold": "Mark as Sold", "archive": "Archive",
     "reactivate": "Reactivate", "autoTranslate": "Auto-translate", "translatedBy": "Machine translated",
