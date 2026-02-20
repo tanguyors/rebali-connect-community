@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
+import logo from '@/assets/logo.png';
 import { useAuth } from '@/contexts/AuthContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import { Button } from '@/components/ui/button';
@@ -37,9 +38,7 @@ export default function Header() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Re-Bali
-            </span>
+            <img src={logo} alt="Re-Bali" className="h-9" />
           </Link>
           <Button className="hidden md:inline-flex gap-1.5 rounded-full px-6" onClick={() => navigate('/create')}>
             <Plus className="h-4 w-4" />
