@@ -6,7 +6,7 @@
     "price": "Price", "free": "Free", "contact": "Contact", "report": "Report", "share": "Share",
     "close": "Close", "confirm": "Confirm", "or": "or", "submit": "Submit", "required": "Required", "optional": "Optional"
   },
-  "nav": { "home": "Home", "browse": "Browse", "sell": "Sell", "myListings": "My Listings", "profile": "Profile", "admin": "Admin", "about": "About", "safety": "Safety Tips", "rules": "Rules", "vip": "VIP" },
+  "nav": { "home": "Home", "browse": "Browse", "sell": "Sell", "myListings": "My Listings", "profile": "Profile", "admin": "Admin", "about": "About", "safety": "Safety Tips", "rules": "Rules", "vip": "VIP", "searches": "Searches", "favorites": "Favorites", "messages": "Messages", "loginSignup": "Log in" },
   "home": {
     "hero": "Buy & Sell in Bali", "heroSub": "The trusted marketplace for expats, locals, and businesses in Bali",
     "searchPlaceholder": "Search furniture, vehicles, real estate...", "categories": "Browse Categories",

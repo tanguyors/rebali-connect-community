@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Plus, User, LogOut, Shield } from 'lucide-react';
+import { Menu, Plus, User, LogOut, Shield, Search, Heart, MessageCircle, Bell } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,15 +41,28 @@ export default function Header() {
           </Button>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <LanguageSwitcher />
-          
+
           {user ? (
             <>
+              <Button variant="ghost" size="sm" className="hidden sm:inline-flex flex-col items-center gap-0.5 h-auto py-1.5 px-3" onClick={() => navigate('/browse')}>
+                <Search className="h-5 w-5" />
+                <span className="text-[10px]">{t('nav.searches')}</span>
+              </Button>
+              <Button variant="ghost" size="sm" className="hidden sm:inline-flex flex-col items-center gap-0.5 h-auto py-1.5 px-3" onClick={() => navigate('/browse')}>
+                <Heart className="h-5 w-5" />
+                <span className="text-[10px]">{t('nav.favorites')}</span>
+              </Button>
+              <Button variant="ghost" size="sm" className="hidden sm:inline-flex flex-col items-center gap-0.5 h-auto py-1.5 px-3" onClick={() => navigate('/browse')}>
+                <MessageCircle className="h-5 w-5" />
+                <span className="text-[10px]">{t('nav.messages')}</span>
+              </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full">
+                  <Button variant="ghost" size="sm" className="hidden sm:inline-flex flex-col items-center gap-0.5 h-auto py-1.5 px-3 rounded-full">
                     <User className="h-5 w-5" />
+                    <span className="text-[10px]">{t('nav.profile')}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
@@ -74,14 +87,10 @@ export default function Header() {
               </DropdownMenu>
             </>
           ) : (
-            <div className="hidden sm:flex gap-2">
-              <Button variant="ghost" size="sm" onClick={() => navigate('/auth')}>
-                {t('common.login')}
-              </Button>
-              <Button size="sm" onClick={() => navigate('/auth?tab=signup')}>
-                {t('common.signup')}
-              </Button>
-            </div>
+            <Button variant="ghost" size="sm" className="hidden sm:inline-flex flex-col items-center gap-0.5 h-auto py-1.5 px-3" onClick={() => navigate('/auth')}>
+              <User className="h-5 w-5" />
+              <span className="text-[10px]">{t('nav.loginSignup')}</span>
+            </Button>
           )}
 
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
