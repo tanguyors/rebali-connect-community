@@ -5,6 +5,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, Plus, User, LogOut, Shield, Search, Heart, MessageCircle, Bell } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +20,7 @@ export default function Header() {
   const { user, profile, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [headerSearch, setHeaderSearch] = useState('');
 
   const authGuard = (path: string) => () => {
     navigate(user ? path : '/auth');
@@ -46,6 +48,22 @@ export default function Header() {
         </div>
 
         <div className="hidden sm:flex items-center gap-0">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const q = headerSearch.trim();
+              if (q) navigate(`/browse?q=${encodeURIComponent(q)}`);
+            }}
+            className="relative mr-2"
+          >
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={headerSearch}
+              onChange={(e) => setHeaderSearch(e.target.value)}
+              placeholder={t('home.searchPlaceholder')}
+              className="pl-8 h-9 w-48 lg:w-64 rounded-full text-sm"
+            />
+          </form>
           <LanguageSwitcher />
 
           <Button variant="ghost" size="sm" className="flex-col items-center gap-0.5 h-auto py-1.5 px-3" onClick={authGuard('/browse')}>
