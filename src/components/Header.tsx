@@ -41,57 +41,60 @@ export default function Header() {
           </Button>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="hidden sm:flex items-center gap-0">
           <LanguageSwitcher />
 
+          <Button variant="ghost" size="sm" className="flex-col items-center gap-0.5 h-auto py-1.5 px-3" onClick={() => navigate('/browse')}>
+            <Bell className="h-5 w-5" strokeWidth={1.5} />
+            <span className="text-[10px]">{t('nav.searches')}</span>
+          </Button>
+          <Button variant="ghost" size="sm" className="flex-col items-center gap-0.5 h-auto py-1.5 px-3" onClick={() => navigate('/browse')}>
+            <Heart className="h-5 w-5" strokeWidth={1.5} />
+            <span className="text-[10px]">{t('nav.favorites')}</span>
+          </Button>
+          <Button variant="ghost" size="sm" className="flex-col items-center gap-0.5 h-auto py-1.5 px-3" onClick={() => navigate('/browse')}>
+            <MessageCircle className="h-5 w-5" strokeWidth={1.5} />
+            <span className="text-[10px]">{t('nav.messages')}</span>
+          </Button>
+
           {user ? (
-            <>
-              <Button variant="ghost" size="sm" className="hidden sm:inline-flex flex-col items-center gap-0.5 h-auto py-1.5 px-3" onClick={() => navigate('/browse')}>
-                <Search className="h-5 w-5" />
-                <span className="text-[10px]">{t('nav.searches')}</span>
-              </Button>
-              <Button variant="ghost" size="sm" className="hidden sm:inline-flex flex-col items-center gap-0.5 h-auto py-1.5 px-3" onClick={() => navigate('/browse')}>
-                <Heart className="h-5 w-5" />
-                <span className="text-[10px]">{t('nav.favorites')}</span>
-              </Button>
-              <Button variant="ghost" size="sm" className="hidden sm:inline-flex flex-col items-center gap-0.5 h-auto py-1.5 px-3" onClick={() => navigate('/browse')}>
-                <MessageCircle className="h-5 w-5" />
-                <span className="text-[10px]">{t('nav.messages')}</span>
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="hidden sm:inline-flex flex-col items-center gap-0.5 h-auto py-1.5 px-3 rounded-full">
-                    <User className="h-5 w-5" />
-                    <span className="text-[10px]">{t('nav.profile')}</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={() => navigate('/my-listings')}>
-                    {t('nav.myListings')}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="flex-col items-center gap-0.5 h-auto py-1.5 px-3">
+                  <User className="h-5 w-5" strokeWidth={1.5} />
+                  <span className="text-[10px]">{t('nav.profile')}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => navigate('/my-listings')}>
+                  {t('nav.myListings')}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/profile')}>
+                  {t('nav.profile')}
+                </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem onClick={() => navigate('/admin')}>
+                    <Shield className="h-4 w-4 mr-2" />
+                    {t('nav.admin')}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/profile')}>
-                    {t('nav.profile')}
-                  </DropdownMenuItem>
-                  {isAdmin && (
-                    <DropdownMenuItem onClick={() => navigate('/admin')}>
-                      <Shield className="h-4 w-4 mr-2" />
-                      {t('nav.admin')}
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={signOut}>
-                    <LogOut className="h-4 w-4 mr-2" />
-                    {t('common.logout')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={signOut}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  {t('common.logout')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex flex-col items-center gap-0.5 h-auto py-1.5 px-3" onClick={() => navigate('/auth')}>
-              <User className="h-5 w-5" />
+            <Button variant="ghost" size="sm" className="flex-col items-center gap-0.5 h-auto py-1.5 px-3" onClick={() => navigate('/auth')}>
+              <User className="h-5 w-5" strokeWidth={1.5} />
               <span className="text-[10px]">{t('nav.loginSignup')}</span>
             </Button>
           )}
+        </div>
+
+        <div className="flex sm:hidden items-center gap-1">
+          <LanguageSwitcher />
 
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild className="md:hidden">
