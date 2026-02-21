@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import ListingCard from '@/components/ListingCard';
 import AnimatedHeroText from '@/components/AnimatedHeroText';
 import { Search, Plus, ArrowRight } from 'lucide-react';
+import CategoryMarquee from '@/components/CategoryMarquee';
 import { CATEGORIES, CATEGORY_ICONS } from '@/lib/constants';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
@@ -35,6 +36,8 @@ export default function Home() {
 
   return (
     <div>
+      <CategoryMarquee />
+
       {/* Hero – friendly & colorful */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/10">
         <div className="absolute inset-0 pointer-events-none">
