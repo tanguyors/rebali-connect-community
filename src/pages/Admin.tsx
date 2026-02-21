@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { Shield, AlertTriangle, Users, FileText, CheckCircle, BarChart3, Search, Ban, Eye, Phone, MessageSquare, Globe, Calendar, User, MapPin, Tag, Package, DollarSign, BarChart2, Trash2, Archive, Pencil, Save, X } from 'lucide-react';
+import { Shield, AlertTriangle, Users, FileText, CheckCircle, BarChart3, Search, Ban, Eye, Phone, MessageSquare, Globe, Calendar, User, MapPin, Tag, Package, DollarSign, BarChart2, Trash2, Archive, Pencil, Save, X, Fingerprint, Wifi, WifiOff, ShieldCheck, ShieldAlert, FileCheck } from 'lucide-react';
 import { CATEGORY_TREE } from '@/lib/constants';
 
 export default function Admin() {
@@ -66,6 +66,58 @@ export default function Admin() {
       const { data } = await supabase
         .from('listings')
         .select('*, profiles:seller_id(display_name)')
+        .order('created_at', { ascending: false });
+      return data || [];
+    },
+    enabled: isAdmin,
+  });
+
+  // Trust scores query
+  const { data: trustScores } = useQuery({
+    queryKey: ['admin-trust-scores'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('trust_scores')
+        .select('*')
+        .order('score', { ascending: true });
+      return data || [];
+    },
+    enabled: isAdmin,
+  });
+
+  // User devices query
+  const { data: allDevices } = useQuery({
+    queryKey: ['admin-devices'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('user_devices')
+        .select('*')
+        .order('created_at', { ascending: false });
+      return data || [];
+    },
+    enabled: isAdmin,
+  });
+
+  // ID verifications query
+  const { data: idVerifications, refetch: refetchVerifications } = useQuery({
+    queryKey: ['admin-id-verifications'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('id_verifications')
+        .select('*')
+        .order('created_at', { ascending: false });
+      return data || [];
+    },
+    enabled: isAdmin,
+  });
+
+  // Banned devices query
+  const { data: bannedDevices, refetch: refetchBannedDevices } = useQuery({
+    queryKey: ['admin-banned-devices'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('banned_devices')
+        .select('*')
         .order('created_at', { ascending: false });
       return data || [];
     },
@@ -603,18 +655,21 @@ export default function Admin() {
       <ListingDetailDialog />
 
       <Tabs defaultValue="stats">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="stats" className="flex items-center gap-1">
-            <BarChart3 className="h-4 w-4" /> {t('admin.statistics')}
+            <BarChart3 className="h-4 w-4" /> <span className="hidden sm:inline">{t('admin.statistics')}</span>
           </TabsTrigger>
           <TabsTrigger value="reports" className="flex items-center gap-1">
-            <AlertTriangle className="h-4 w-4" /> {t('admin.reports')} ({pendingReports.length})
+            <AlertTriangle className="h-4 w-4" /> <span className="hidden sm:inline">{t('admin.reports')}</span> ({pendingReports.length})
           </TabsTrigger>
           <TabsTrigger value="users" className="flex items-center gap-1">
-            <Users className="h-4 w-4" /> {t('admin.users')}
+            <Users className="h-4 w-4" /> <span className="hidden sm:inline">{t('admin.users')}</span>
           </TabsTrigger>
           <TabsTrigger value="listings" className="flex items-center gap-1">
-            <FileText className="h-4 w-4" /> {t('admin.listings')}
+            <FileText className="h-4 w-4" /> <span className="hidden sm:inline">{t('admin.listings')}</span>
+          </TabsTrigger>
+          <TabsTrigger value="security" className="flex items-center gap-1">
+            <Fingerprint className="h-4 w-4" /> <span className="hidden sm:inline">{t('security.securityTab')}</span>
           </TabsTrigger>
         </TabsList>
 
@@ -776,6 +831,203 @@ export default function Admin() {
               </TableBody>
             </Table>
           </div>
+        </TabsContent>
+
+        {/* Security Tab */}
+        <TabsContent value="security" className="mt-4 space-y-6">
+          {/* Security Overview Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Card><CardContent className="p-4 text-center">
+              <ShieldAlert className="h-6 w-6 text-destructive mx-auto mb-1" />
+              <p className="text-2xl font-bold">{profiles?.filter((p: any) => p.risk_level === 'high').length || 0}</p>
+              <p className="text-xs text-muted-foreground">High Risk</p>
+            </CardContent></Card>
+            <Card><CardContent className="p-4 text-center">
+              <AlertTriangle className="h-6 w-6 text-accent mx-auto mb-1" />
+              <p className="text-2xl font-bold">{profiles?.filter((p: any) => p.risk_level === 'medium').length || 0}</p>
+              <p className="text-xs text-muted-foreground">Medium Risk</p>
+            </CardContent></Card>
+            <Card><CardContent className="p-4 text-center">
+              <ShieldCheck className="h-6 w-6 text-primary mx-auto mb-1" />
+              <p className="text-2xl font-bold">{profiles?.filter((p: any) => p.phone_verified).length || 0}</p>
+              <p className="text-xs text-muted-foreground">{t('security.whatsappVerified')}</p>
+            </CardContent></Card>
+            <Card><CardContent className="p-4 text-center">
+              <FileCheck className="h-6 w-6 text-primary mx-auto mb-1" />
+              <p className="text-2xl font-bold">{idVerifications?.filter((v: any) => v.status === 'pending').length || 0}</p>
+              <p className="text-xs text-muted-foreground">{t('security.pendingVerifications')}</p>
+            </CardContent></Card>
+          </div>
+
+          {/* Trust Scores Table */}
+          <Card>
+            <CardContent className="p-4">
+              <h3 className="font-bold mb-3 flex items-center gap-2"><Fingerprint className="h-5 w-5" /> {t('security.trustScore')} — {t('admin.users')}</h3>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t('admin.colName')}</TableHead>
+                      <TableHead>{t('security.trustScore')}</TableHead>
+                      <TableHead>{t('security.riskLevel')}</TableHead>
+                      <TableHead>WhatsApp</TableHead>
+                      <TableHead>Verified Seller</TableHead>
+                      <TableHead>{t('admin.colActions')}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {(profiles || [])
+                      .sort((a: any, b: any) => (a.trust_score ?? 50) - (b.trust_score ?? 50))
+                      .slice(0, 50)
+                      .map((p: any) => (
+                      <TableRow key={p.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setSelectedUser(p)}>
+                        <TableCell className="font-medium">{p.display_name || '?'}</TableCell>
+                        <TableCell>
+                          <span className={`font-bold ${p.trust_score < 30 ? 'text-destructive' : p.trust_score < 60 ? 'text-accent' : 'text-primary'}`}>
+                            {p.trust_score ?? 50}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={p.risk_level === 'high' ? 'destructive' : p.risk_level === 'medium' ? 'outline' : 'secondary'}>
+                            {p.risk_level}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{p.phone_verified ? '✅' : '—'}</TableCell>
+                        <TableCell>{p.is_verified_seller ? '✅' : '—'}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); setSelectedUser(p); }}>
+                              <Eye className="h-3 w-3" />
+                            </Button>
+                            {!p.is_banned && (
+                              <Button size="sm" variant="destructive" onClick={(e) => { e.stopPropagation(); banUser(p.id, true); }}>
+                                <Ban className="h-3 w-3" />
+                              </Button>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* ID Verifications Pending */}
+          <Card>
+            <CardContent className="p-4">
+              <h3 className="font-bold mb-3 flex items-center gap-2"><FileCheck className="h-5 w-5" /> {t('security.pendingVerifications')}</h3>
+              {(!idVerifications || idVerifications.filter((v: any) => v.status === 'pending').length === 0) ? (
+                <p className="text-sm text-muted-foreground py-4 text-center">{t('common.noResults')}</p>
+              ) : (
+                <div className="space-y-3">
+                  {idVerifications.filter((v: any) => v.status === 'pending').map((v: any) => {
+                    const vProfile = profiles?.find((p: any) => p.id === v.user_id);
+                    return (
+                      <div key={v.id} className="flex items-center justify-between p-3 rounded-md border">
+                        <div>
+                          <p className="font-medium">{vProfile?.display_name || v.user_id.slice(0, 8)}</p>
+                          <p className="text-xs text-muted-foreground">{v.document_type} — {new Date(v.created_at).toLocaleDateString()}</p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button size="sm" onClick={async () => {
+                            await supabase.from('id_verifications').update({ status: 'approved' as any, reviewed_by: user.id, reviewed_at: new Date().toISOString() }).eq('id', v.id);
+                            await supabase.from('profiles').update({ is_verified_seller: true }).eq('id', v.user_id);
+                            refetchVerifications();
+                            qc.invalidateQueries({ queryKey: ['admin-profiles'] });
+                            toast({ title: t('security.approve') });
+                          }}>
+                            <CheckCircle className="h-3 w-3 mr-1" /> {t('security.approve')}
+                          </Button>
+                          <Button size="sm" variant="destructive" onClick={async () => {
+                            await supabase.from('id_verifications').update({ status: 'rejected' as any, reviewed_by: user.id, reviewed_at: new Date().toISOString() }).eq('id', v.id);
+                            refetchVerifications();
+                            toast({ title: t('security.reject') });
+                          }}>
+                            <X className="h-3 w-3 mr-1" /> {t('security.reject')}
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Device History & Linked Accounts */}
+          <Card>
+            <CardContent className="p-4">
+              <h3 className="font-bold mb-3 flex items-center gap-2"><Wifi className="h-5 w-5" /> {t('security.deviceHistory')} / {t('security.linkedAccounts')}</h3>
+              {(() => {
+                // Find device hashes shared by multiple users
+                const hashToUsers: Record<string, Set<string>> = {};
+                (allDevices || []).forEach((d: any) => {
+                  if (!hashToUsers[d.device_hash]) hashToUsers[d.device_hash] = new Set();
+                  hashToUsers[d.device_hash].add(d.user_id);
+                });
+                const sharedHashes = Object.entries(hashToUsers).filter(([, users]) => users.size > 1);
+
+                if (sharedHashes.length === 0) {
+                  return <p className="text-sm text-muted-foreground py-4 text-center">{t('common.noResults')}</p>;
+                }
+
+                return (
+                  <div className="space-y-3">
+                    {sharedHashes.map(([hash, userIds]) => (
+                      <div key={hash} className="p-3 rounded-md border border-destructive/30 bg-destructive/5">
+                        <p className="text-xs font-mono text-muted-foreground mb-2">Device: {hash.slice(0, 16)}...</p>
+                        <div className="flex flex-wrap gap-2">
+                          {Array.from(userIds).map(uid => {
+                            const p = profiles?.find((pr: any) => pr.id === uid);
+                            return (
+                              <Badge key={uid} variant="outline" className="cursor-pointer" onClick={() => setSelectedUser(p)}>
+                                {p?.display_name || uid.slice(0, 8)}
+                              </Badge>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </CardContent>
+          </Card>
+
+          {/* Banned Devices */}
+          <Card>
+            <CardContent className="p-4">
+              <h3 className="font-bold mb-3 flex items-center gap-2"><Ban className="h-5 w-5" /> {t('security.banDevice')} / {t('security.banPhone')}</h3>
+              {(!bannedDevices || bannedDevices.length === 0) ? (
+                <p className="text-sm text-muted-foreground py-4 text-center">{t('common.noResults')}</p>
+              ) : (
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Value</TableHead>
+                        <TableHead>Reason</TableHead>
+                        <TableHead>Date</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {bannedDevices.map((bd: any) => (
+                        <TableRow key={bd.id}>
+                          <TableCell>{bd.device_hash ? 'Device' : 'Phone'}</TableCell>
+                          <TableCell className="font-mono text-xs">{bd.device_hash?.slice(0, 16) || bd.phone_number || '—'}...</TableCell>
+                          <TableCell className="text-sm">{bd.reason}</TableCell>
+                          <TableCell className="text-sm text-muted-foreground">{new Date(bd.created_at).toLocaleDateString()}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
