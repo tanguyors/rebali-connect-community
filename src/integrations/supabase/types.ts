@@ -242,6 +242,7 @@ export type Database = {
           created_at: string
           currency: string
           description_original: string
+          extra_fields: Json | null
           id: string
           lang_original: string
           location_area: string
@@ -259,6 +260,7 @@ export type Database = {
           created_at?: string
           currency?: string
           description_original: string
+          extra_fields?: Json | null
           id?: string
           lang_original?: string
           location_area: string
@@ -276,6 +278,7 @@ export type Database = {
           created_at?: string
           currency?: string
           description_original?: string
+          extra_fields?: Json | null
           id?: string
           lang_original?: string
           location_area?: string

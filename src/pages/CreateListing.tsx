@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { CATEGORIES, CATEGORY_TREE, LOCATIONS, CONDITIONS, CURRENCIES, CATEGORY_ICONS, MAX_ACTIVE_LISTINGS, formatPrice } from '@/lib/constants';
+import { CATEGORIES, CATEGORY_TREE, LOCATIONS, CONDITIONS, CURRENCIES, CATEGORY_ICONS, MAX_ACTIVE_LISTINGS, formatPrice, CATEGORY_FIELDS } from '@/lib/constants';
 import { SUPPORTED_LANGUAGES } from '@/i18n';
 import { toast } from '@/hooks/use-toast';
 import { Upload, X, ChevronLeft, ChevronRight, Check } from 'lucide-react';
@@ -39,6 +39,7 @@ export default function CreateListing() {
     location: '',
     condition: 'good',
   });
+  const [extraFields, setExtraFields] = useState<Record<string, string>>({});
   const [photos, setPhotos] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
 
@@ -76,6 +77,9 @@ export default function CreateListing() {
         location: data.location_area,
         condition: data.condition,
       });
+      if (data.extra_fields && typeof data.extra_fields === 'object') {
+        setExtraFields(data.extra_fields as Record<string, string>);
+      }
       const imgs = (data.listing_images || []).sort((a: any, b: any) => a.sort_order - b.sort_order);
       setExistingImageUrls(imgs.map((img: any) => ({
         id: img.id,
@@ -182,6 +186,7 @@ export default function CreateListing() {
           currency: form.currency,
           location_area: form.location,
           condition: form.condition as any,
+          extra_fields: extraFields,
         }).eq('id', editId);
         if (error) throw error;
 
@@ -217,6 +222,7 @@ export default function CreateListing() {
           location_area: form.location,
           condition: form.condition as any,
           status: 'active',
+          extra_fields: extraFields,
         }).select().single();
 
         if (error) throw error;
@@ -382,6 +388,40 @@ export default function CreateListing() {
               </SelectContent>
             </Select>
           </div>
+
+          {/* Category-specific extra fields */}
+          {CATEGORY_FIELDS[form.category] && (
+            <div className="border-t border-border pt-4 mt-4">
+              <h3 className="text-sm font-semibold text-muted-foreground mb-3">{t('extraFields.categorySpecificInfo')}</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {CATEGORY_FIELDS[form.category].map(field => (
+                  <div key={field.key} className={field.type === 'text' && !field.suffix ? 'col-span-2 sm:col-span-1' : ''}>
+                    <Label>{t(field.labelKey)} {field.required ? '*' : ''}</Label>
+                    {field.type === 'select' && field.options ? (
+                      <Select value={extraFields[field.key] || ''} onValueChange={v => setExtraFields(prev => ({ ...prev, [field.key]: v }))}>
+                        <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+                        <SelectContent>
+                          {field.options.map(opt => (
+                            <SelectItem key={opt} value={opt}>{t(`extraFields.${opt}`)}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <div className="relative">
+                        <Input
+                          type={field.type === 'number' ? 'number' : 'text'}
+                          placeholder={field.placeholder || ''}
+                          value={extraFields[field.key] || ''}
+                          onChange={e => setExtraFields(prev => ({ ...prev, [field.key]: e.target.value }))}
+                        />
+                        {field.suffix && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">{field.suffix}</span>}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

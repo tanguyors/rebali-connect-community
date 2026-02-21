@@ -88,6 +88,55 @@ export const CATEGORY_PLACEHOLDERS: Record<string, string> = {
 export const MAX_ACTIVE_LISTINGS = 5;
 export const MAX_PHOTOS = 10;
 
+// Category-specific extra fields configuration
+// type: 'text' | 'number' | 'select'
+export type ExtraFieldDef = {
+  key: string;
+  labelKey: string; // i18n key
+  type: 'text' | 'number' | 'select';
+  options?: readonly string[]; // for select type, values are i18n keys
+  required?: boolean;
+  placeholder?: string;
+  suffix?: string;
+};
+
+export const CONTRACT_TYPES = ['cdi', 'cdd', 'interim', 'freelance', 'stage', 'alternance', 'independant'] as const;
+export const JOB_SECTORS = ['immobilier', 'informatique', 'commerce', 'sante', 'education', 'restauration', 'transport', 'batiment', 'industrie', 'finance', 'communication', 'juridique', 'agriculture', 'tourisme', 'autre'] as const;
+export const WORK_TIMES = ['full_time', 'part_time'] as const;
+export const FUEL_TYPES = ['essence', 'diesel', 'electrique', 'hybride', 'gpl'] as const;
+export const PROPERTY_TYPES = ['apartment', 'house', 'villa', 'land', 'commercial', 'room'] as const;
+
+export const CATEGORY_FIELDS: Record<string, ExtraFieldDef[]> = {
+  emploi: [
+    { key: 'contract_type', labelKey: 'extraFields.contractType', type: 'select', options: CONTRACT_TYPES, required: true },
+    { key: 'job_sector', labelKey: 'extraFields.jobSector', type: 'select', options: JOB_SECTORS },
+    { key: 'work_time', labelKey: 'extraFields.workTime', type: 'select', options: WORK_TIMES },
+    { key: 'salary', labelKey: 'extraFields.salary', type: 'text', placeholder: 'ex: 5-10M IDR/month' },
+    { key: 'company_name', labelKey: 'extraFields.companyName', type: 'text' },
+  ],
+  vehicules: [
+    { key: 'brand', labelKey: 'extraFields.brand', type: 'text', required: true },
+    { key: 'model', labelKey: 'extraFields.model', type: 'text' },
+    { key: 'year', labelKey: 'extraFields.year', type: 'number', placeholder: 'ex: 2022' },
+    { key: 'mileage', labelKey: 'extraFields.mileage', type: 'number', suffix: 'km' },
+    { key: 'fuel_type', labelKey: 'extraFields.fuelType', type: 'select', options: FUEL_TYPES },
+  ],
+  immobilier: [
+    { key: 'property_type', labelKey: 'extraFields.propertyType', type: 'select', options: PROPERTY_TYPES, required: true },
+    { key: 'surface', labelKey: 'extraFields.surface', type: 'number', suffix: 'm²' },
+    { key: 'rooms', labelKey: 'extraFields.rooms', type: 'number' },
+    { key: 'furnished', labelKey: 'extraFields.furnished', type: 'select', options: ['yes', 'no'] as const },
+  ],
+  mode: [
+    { key: 'brand', labelKey: 'extraFields.brand', type: 'text' },
+    { key: 'size', labelKey: 'extraFields.size', type: 'text', placeholder: 'ex: M, 42, US 10' },
+  ],
+  electronique: [
+    { key: 'brand', labelKey: 'extraFields.brand', type: 'text' },
+    { key: 'model', labelKey: 'extraFields.model', type: 'text' },
+  ],
+};
+
 export function formatPrice(price: number, currency: string): string {
   if (price === 0) return 'Free';
   const formatter = new Intl.NumberFormat(currency === 'IDR' ? 'id-ID' : 'en-US', {

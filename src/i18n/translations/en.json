@@ -264,5 +264,23 @@
     "you": "You",
     "sendMessage": "Send a message",
     "conversationStarted": "Conversation started!"
+  },
+  "extraFields": {
+    "contractType": "Contract Type", "jobSector": "Industry Sector", "workTime": "Work Schedule",
+    "salary": "Salary", "companyName": "Company Name",
+    "brand": "Brand", "model": "Model", "year": "Year", "mileage": "Mileage", "fuelType": "Fuel Type",
+    "propertyType": "Property Type", "surface": "Surface Area", "rooms": "Rooms", "furnished": "Furnished",
+    "size": "Size",
+    "cdi": "Permanent", "cdd": "Fixed-term", "interim": "Temporary", "freelance": "Freelance",
+    "stage": "Internship", "alternance": "Apprenticeship", "independant": "Independent",
+    "immobilier": "Real Estate", "informatique": "IT", "commerce": "Commerce", "sante": "Healthcare",
+    "education": "Education", "restauration": "Food & Beverage", "transport": "Transport",
+    "batiment": "Construction", "industrie": "Industry", "finance": "Finance",
+    "communication": "Media", "juridique": "Legal", "agriculture": "Agriculture", "tourisme": "Tourism", "autre": "Other",
+    "full_time": "Full-time", "part_time": "Part-time",
+    "essence": "Petrol", "diesel": "Diesel", "electrique": "Electric", "hybride": "Hybrid", "gpl": "LPG",
+    "apartment": "Apartment", "house": "House", "villa": "Villa", "land": "Land", "commercial": "Commercial", "room": "Room",
+    "yes": "Yes", "no": "No",
+    "categorySpecificInfo": "Category Details"
   }
 }

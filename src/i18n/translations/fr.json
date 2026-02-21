@@ -132,5 +132,23 @@
     "you": "Vous",
     "sendMessage": "Envoyer un message",
     "conversationStarted": "Conversation démarrée !"
+  },
+  "extraFields": {
+    "contractType": "Type de contrat", "jobSector": "Secteur d'activité", "workTime": "Temps de travail",
+    "salary": "Salaire", "companyName": "Nom de l'entreprise",
+    "brand": "Marque", "model": "Modèle", "year": "Année", "mileage": "Kilométrage", "fuelType": "Carburant",
+    "propertyType": "Type de bien", "surface": "Surface", "rooms": "Pièces", "furnished": "Meublé",
+    "size": "Taille",
+    "cdi": "CDI", "cdd": "CDD", "interim": "Intérim", "freelance": "Freelance",
+    "stage": "Stage", "alternance": "Alternance", "independant": "Indépendant",
+    "immobilier": "Immobilier", "informatique": "Informatique", "commerce": "Commerce", "sante": "Santé",
+    "education": "Éducation", "restauration": "Restauration", "transport": "Transport",
+    "batiment": "Bâtiment", "industrie": "Industrie", "finance": "Finance",
+    "communication": "Communication", "juridique": "Juridique", "agriculture": "Agriculture", "tourisme": "Tourisme", "autre": "Autre",
+    "full_time": "Temps plein", "part_time": "Temps partiel",
+    "essence": "Essence", "diesel": "Diesel", "electrique": "Électrique", "hybride": "Hybride", "gpl": "GPL",
+    "apartment": "Appartement", "house": "Maison", "villa": "Villa", "land": "Terrain", "commercial": "Commercial", "room": "Chambre",
+    "yes": "Oui", "no": "Non",
+    "categorySpecificInfo": "Détails de la catégorie"
   }
 }
