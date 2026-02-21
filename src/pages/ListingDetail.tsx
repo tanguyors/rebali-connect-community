@@ -296,7 +296,32 @@ export default function ListingDetail() {
 
             <Separator className="my-6" />
 
-            {/* Seller section (bottom, like LeBonCoin) */}
+            {/* Location */}
+            <div>
+              <h2 className="text-xl font-extrabold mb-3">{t('listing.location')}</h2>
+              <p className="font-bold mb-3">{t(`locations.${listing.location_area}`)}, Bali</p>
+              <a
+                href={`https://www.google.com/maps/search/${encodeURIComponent(t(`locations.${listing.location_area}`) + ', Bali, Indonesia')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block rounded-xl overflow-hidden border border-border hover:shadow-md transition-shadow"
+              >
+                <img
+                  src={`https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(t(`locations.${listing.location_area}`) + ',Bali,Indonesia')}&zoom=13&size=700x300&scale=2&maptype=roadmap&key=&style=feature:all|element:labels.text.fill|color:0x333333&style=feature:water|color:0xc9d6e5`}
+                  alt={t(`locations.${listing.location_area}`)}
+                  className="w-full h-48 object-cover bg-muted"
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                />
+                <div className="bg-muted/50 w-full h-48 flex items-center justify-center" style={{ marginTop: '-12rem' }}>
+                  <div className="bg-card rounded-xl shadow-md px-5 py-3 flex items-center gap-2">
+                    <MapPin className="h-5 w-5 text-primary" />
+                    <span className="font-bold">{t(`locations.${listing.location_area}`)}, Bali</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+            <Separator className="my-6" />
             <div>
               <h2 className="text-xl font-extrabold mb-4">{t('listing.soldBy')}</h2>
               <Link to={`/seller/${seller?.id}`} className="flex items-center gap-4 group">
