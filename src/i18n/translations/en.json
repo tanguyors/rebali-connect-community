@@ -75,7 +75,9 @@
     "reactivate": "Reactivate", "autoTranslate": "Auto-translate", "translatedBy": "Machine translated",
     "originalLang": "Original language", "description": "Description", "details": "Details",
     "sellerInfo": "Seller Information", "similarListings": "Similar Listings",
-    "noPhone": "No phone provided", "noWhatsapp": "No WhatsApp provided", "linkCopied": "Link copied to clipboard!"
+    "noPhone": "No phone provided", "noWhatsapp": "No WhatsApp provided", "linkCopied": "Link copied to clipboard!",
+    "keyInfo": "Key Information", "category": "Category", "seePhotos": "See all photos",
+    "soldBy": "Sold by", "contactBtn": "Contact", "sellerListings": "Listings from this seller", "seeMoreListings": "See more listings"
   },
   "createListing": {
     "title": "Create a Listing", "stepCategory": "Category", "stepDetails": "Details", "stepPhotos": "Photos",
