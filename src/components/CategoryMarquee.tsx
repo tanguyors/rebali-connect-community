@@ -1,12 +1,15 @@
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { CATEGORIES, CATEGORY_ICONS } from '@/lib/constants';
+import { CATEGORIES, CATEGORY_ICONS, CATEGORY_TREE } from '@/lib/constants';
 import { useRef, useEffect, useState } from 'react';
 
 export default function CategoryMarquee() {
   const { t } = useLanguage();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [paused, setPaused] = useState(false);
+  const [hoveredCat, setHoveredCat] = useState<string | null>(null);
+  const [popoverPos, setPopoverPos] = useState<{ left: number; top: number } | null>(null);
+  const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -18,7 +21,6 @@ export default function CategoryMarquee() {
     const step = () => {
       if (!paused && el) {
         el.scrollLeft += speed;
-        // Loop: when we've scrolled past the first set, reset
         if (el.scrollLeft >= el.scrollWidth / 2) {
           el.scrollLeft = 0;
         }
@@ -30,15 +32,41 @@ export default function CategoryMarquee() {
     return () => cancelAnimationFrame(animId);
   }, [paused]);
 
+  const handleCatEnter = (cat: string, e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+    const rect = e.currentTarget.getBoundingClientRect();
+    setPopoverPos({ left: rect.left, top: rect.bottom });
+    setHoveredCat(cat);
+    setPaused(true);
+  };
+
+  const handleCatLeave = () => {
+    hoverTimeout.current = setTimeout(() => {
+      setHoveredCat(null);
+      setPaused(false);
+    }, 150);
+  };
+
+  const handlePopoverEnter = () => {
+    if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+  };
+
+  const handlePopoverLeave = () => {
+    hoverTimeout.current = setTimeout(() => {
+      setHoveredCat(null);
+      setPaused(false);
+    }, 150);
+  };
+
   // Duplicate items for seamless loop
   const items = [...CATEGORIES, ...CATEGORIES];
 
+  const subcategories = hoveredCat ? CATEGORY_TREE[hoveredCat] : [];
+
   return (
-    <section className="border-b border-border/50 bg-card overflow-hidden">
+    <section className="border-b border-border/50 bg-card overflow-visible relative">
       <div
         ref={scrollRef}
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
         className="flex overflow-x-hidden scrollbar-hide"
         style={{ scrollBehavior: 'auto' }}
       >
@@ -46,6 +74,8 @@ export default function CategoryMarquee() {
           <Link
             key={`${cat}-${i}`}
             to={`/browse?category=${cat}`}
+            onMouseEnter={(e) => handleCatEnter(cat, e)}
+            onMouseLeave={handleCatLeave}
             className="flex items-center gap-1.5 px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/10 transition-colors whitespace-nowrap border-b-2 border-transparent hover:border-primary shrink-0"
           >
             <span className="text-lg">{CATEGORY_ICONS[cat]}</span>
@@ -53,6 +83,31 @@ export default function CategoryMarquee() {
           </Link>
         ))}
       </div>
+
+      {/* Subcategory popover */}
+      {hoveredCat && popoverPos && subcategories.length > 0 && (
+        <div
+          onMouseEnter={handlePopoverEnter}
+          onMouseLeave={handlePopoverLeave}
+          className="fixed z-50 bg-popover border border-border rounded-lg shadow-lg p-3 min-w-[200px] max-w-[320px] animate-in fade-in-0 zoom-in-95 duration-150"
+          style={{ left: popoverPos.left, top: popoverPos.top + 4 }}
+        >
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 px-1">
+            {CATEGORY_ICONS[hoveredCat]} {t(`categories.${hoveredCat}`)}
+          </p>
+          <div className="flex flex-wrap gap-1">
+            {subcategories.map((sub) => (
+              <Link
+                key={sub}
+                to={`/browse?category=${hoveredCat}&subcategory=${sub}`}
+                className="block px-2.5 py-1.5 text-sm rounded-md text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+              >
+                {t(`subcategories.${sub}`)}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
