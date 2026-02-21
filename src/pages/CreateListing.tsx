@@ -13,7 +13,8 @@ import { Badge } from '@/components/ui/badge';
 import { CATEGORIES, CATEGORY_TREE, LOCATIONS, CONDITIONS, CURRENCIES, CATEGORY_ICONS, MAX_ACTIVE_LISTINGS, formatPrice, CATEGORY_FIELDS } from '@/lib/constants';
 import { SUPPORTED_LANGUAGES } from '@/i18n';
 import { toast } from '@/hooks/use-toast';
-import { Upload, X, ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { Upload, X, ChevronLeft, ChevronRight, Check, MapPin, Loader2 } from 'lucide-react';
+import { LOCATION_COORDS, getDistanceKm } from '@/lib/constants';
 import { useQuery } from '@tanstack/react-query';
 
 const STEPS = ['stepCategory', 'stepDetails', 'stepPhotos', 'stepPreview'] as const;
@@ -42,6 +43,7 @@ export default function CreateListing() {
   const [extraFields, setExtraFields] = useState<Record<string, string>>({});
   const [photos, setPhotos] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+  const [locating, setLocating] = useState(false);
 
   const { data: activeCount } = useQuery({
     queryKey: ['active-listing-count', user?.id],
@@ -353,31 +355,53 @@ export default function CreateListing() {
             <Label>{t('createListing.descriptionLabel')} *</Label>
             <Textarea placeholder={t('createListing.descriptionPlaceholder')} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={5} />
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label>{t('createListing.priceLabel')} *</Label>
-              <Input type="number" min="0" placeholder={t('createListing.pricePlaceholder')} value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} />
-            </div>
-            <div>
-              <Label>{t('createListing.currencyLabel')}</Label>
-              <Select value={form.currency} onValueChange={v => setForm(f => ({ ...f, currency: v }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {CURRENCIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
+          <div>
+            <Label>{t('createListing.priceLabel')} * <span className="text-muted-foreground font-normal text-xs">IDR</span></Label>
+            <Input type="number" min="0" placeholder={t('createListing.pricePlaceholder')} value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} />
           </div>
           <div>
             <Label>{t('createListing.locationLabel')} *</Label>
-            <Select value={form.location} onValueChange={v => setForm(f => ({ ...f, location: v }))}>
-              <SelectTrigger><SelectValue placeholder={t('createListing.selectLocation')} /></SelectTrigger>
-              <SelectContent>
-                {LOCATIONS.map(l => (
-                  <SelectItem key={l} value={l}>{t(`locations.${l}`)}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex gap-2">
+              <Select value={form.location} onValueChange={v => setForm(f => ({ ...f, location: v }))}>
+                <SelectTrigger className="flex-1"><SelectValue placeholder={t('createListing.selectLocation')} /></SelectTrigger>
+                <SelectContent>
+                  {LOCATIONS.map(l => (
+                    <SelectItem key={l} value={l}>{t(`locations.${l}`)}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                disabled={locating}
+                onClick={() => {
+                  setLocating(true);
+                  navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                      const { latitude, longitude } = pos.coords;
+                      let closest = 'other';
+                      let minDist = Infinity;
+                      for (const [loc, coords] of Object.entries(LOCATION_COORDS)) {
+                        if (loc === 'other') continue;
+                        const d = getDistanceKm(latitude, longitude, coords.lat, coords.lng);
+                        if (d < minDist) { minDist = d; closest = loc; }
+                      }
+                      setForm(f => ({ ...f, location: closest }));
+                      setLocating(false);
+                      toast({ title: t(`locations.${closest}`) });
+                    },
+                    () => {
+                      setLocating(false);
+                      toast({ title: t('common.error'), variant: 'destructive' });
+                    },
+                    { enableHighAccuracy: false, timeout: 10000 }
+                  );
+                }}
+              >
+                {locating ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}
+              </Button>
+            </div>
           </div>
           <div>
             <Label>{t('createListing.conditionLabel')}</Label>
