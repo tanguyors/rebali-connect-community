@@ -114,12 +114,36 @@ export const VEHICLE_BRANDS = [
   'Tesla', 'Toyota', 'Triumph', 'Vespa', 'Volkswagen', 'Volvo', 'Yamaha', 'autre',
 ] as const;
 
-export const ELECTRONICS_BRANDS = [
-  'Acer', 'Apple', 'Asus', 'Bang & Olufsen', 'Beats', 'Bose', 'Canon', 'Corsair',
-  'Dell', 'DJI', 'Fujifilm', 'Garmin', 'Google', 'GoPro', 'HP', 'HTC', 'Huawei',
-  'JBL', 'Lenovo', 'LG', 'Logitech', 'Marshall', 'Meta', 'Microsoft', 'Motorola',
-  'Nikon', 'Nintendo', 'Nokia', 'Nothing', 'OnePlus', 'Oppo', 'Panasonic', 'Philips',
-  'Razer', 'Realme', 'Samsung', 'Sharp', 'Sony', 'TCL', 'Vivo', 'Xiaomi', 'autre',
+export const COMPUTER_BRANDS = [
+  'Acer', 'Apple', 'Asus', 'Dell', 'HP', 'Huawei', 'Lenovo', 'LG', 'Microsoft',
+  'MSI', 'Razer', 'Samsung', 'Toshiba', 'autre',
+] as const;
+
+export const PHONE_BRANDS = [
+  'Apple', 'Google', 'Honor', 'HTC', 'Huawei', 'Motorola', 'Nokia', 'Nothing',
+  'OnePlus', 'Oppo', 'Realme', 'Samsung', 'Sony', 'Vivo', 'Xiaomi', 'autre',
+] as const;
+
+export const TABLET_BRANDS = [
+  'Amazon', 'Apple', 'Huawei', 'Lenovo', 'Microsoft', 'Samsung', 'Xiaomi', 'autre',
+] as const;
+
+export const CONSOLE_BRANDS = [
+  'Microsoft', 'Nintendo', 'Sony', 'Valve', 'autre',
+] as const;
+
+export const PHOTO_AUDIO_VIDEO_BRANDS = [
+  'Bang & Olufsen', 'Beats', 'Bose', 'Canon', 'DJI', 'Fujifilm', 'Garmin',
+  'GoPro', 'JBL', 'Marshall', 'Nikon', 'Olympus', 'Panasonic', 'Philips',
+  'Samsung', 'Sharp', 'Sony', 'TCL', 'autre',
+] as const;
+
+export const ACCESSORIES_INFO_BRANDS = [
+  'Corsair', 'HP', 'Logitech', 'Microsoft', 'Razer', 'Samsung', 'SteelSeries', 'autre',
+] as const;
+
+export const PHONE_ACCESSORIES_BRANDS = [
+  'Anker', 'Apple', 'Belkin', 'JBL', 'Samsung', 'Spigen', 'autre',
 ] as const;
 
 export const FASHION_BRANDS = [
@@ -162,7 +186,42 @@ export const CATEGORY_FIELDS: Record<string, ExtraFieldDef[]> = {
     { key: 'size', labelKey: 'extraFields.size', type: 'text', placeholder: 'ex: M, 42, US 10' },
   ],
   electronique: [
-    { key: 'brand', labelKey: 'extraFields.brand', type: 'select', options: ELECTRONICS_BRANDS, rawOptions: true },
+    { key: 'brand', labelKey: 'extraFields.brand', type: 'select', options: COMPUTER_BRANDS, rawOptions: true },
+    { key: 'model', labelKey: 'extraFields.model', type: 'text' },
+  ],
+};
+
+// Subcategory-specific field overrides (takes priority over category-level)
+export const SUBCATEGORY_FIELDS: Record<string, ExtraFieldDef[]> = {
+  ordinateurs: [
+    { key: 'brand', labelKey: 'extraFields.brand', type: 'select', options: COMPUTER_BRANDS, rawOptions: true },
+    { key: 'model', labelKey: 'extraFields.model', type: 'text' },
+  ],
+  accessoires_info: [
+    { key: 'brand', labelKey: 'extraFields.brand', type: 'select', options: ACCESSORIES_INFO_BRANDS, rawOptions: true },
+    { key: 'model', labelKey: 'extraFields.model', type: 'text' },
+  ],
+  tablettes_liseuses: [
+    { key: 'brand', labelKey: 'extraFields.brand', type: 'select', options: TABLET_BRANDS, rawOptions: true },
+    { key: 'model', labelKey: 'extraFields.model', type: 'text' },
+  ],
+  photo_audio_video: [
+    { key: 'brand', labelKey: 'extraFields.brand', type: 'select', options: PHOTO_AUDIO_VIDEO_BRANDS, rawOptions: true },
+    { key: 'model', labelKey: 'extraFields.model', type: 'text' },
+  ],
+  telephones_connectes: [
+    { key: 'brand', labelKey: 'extraFields.brand', type: 'select', options: PHONE_BRANDS, rawOptions: true },
+    { key: 'model', labelKey: 'extraFields.model', type: 'text' },
+  ],
+  accessoires_telephone: [
+    { key: 'brand', labelKey: 'extraFields.brand', type: 'select', options: PHONE_ACCESSORIES_BRANDS, rawOptions: true },
+    { key: 'model', labelKey: 'extraFields.model', type: 'text' },
+  ],
+  consoles: [
+    { key: 'brand', labelKey: 'extraFields.brand', type: 'select', options: CONSOLE_BRANDS, rawOptions: true },
+    { key: 'model', labelKey: 'extraFields.model', type: 'text' },
+  ],
+  jeux_video: [
     { key: 'model', labelKey: 'extraFields.model', type: 'text' },
   ],
   animaux: [

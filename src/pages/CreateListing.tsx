@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { CATEGORIES, CATEGORY_TREE, LOCATIONS, CONDITIONS, CATEGORY_ICONS, MAX_ACTIVE_LISTINGS, formatPrice, CATEGORY_FIELDS, CATEGORIES_WITHOUT_CONDITION } from '@/lib/constants';
+import { CATEGORIES, CATEGORY_TREE, LOCATIONS, CONDITIONS, CATEGORY_ICONS, MAX_ACTIVE_LISTINGS, formatPrice, CATEGORY_FIELDS, SUBCATEGORY_FIELDS, CATEGORIES_WITHOUT_CONDITION } from '@/lib/constants';
 import { SUPPORTED_LANGUAGES } from '@/i18n';
 import { toast } from '@/hooks/use-toast';
 import { Upload, X, ChevronLeft, ChevronRight, Check, MapPin, Loader2 } from 'lucide-react';
@@ -415,12 +415,15 @@ export default function CreateListing() {
             </div>
           )}
 
-          {/* Category-specific extra fields */}
-          {CATEGORY_FIELDS[form.category] && (
+          {/* Category-specific extra fields (subcategory overrides category) */}
+          {(() => {
+            const fields = SUBCATEGORY_FIELDS[form.subcategory] || CATEGORY_FIELDS[form.category];
+            if (!fields) return null;
+            return (
             <div className="border-t border-border pt-4 mt-4">
               <h3 className="text-sm font-semibold text-muted-foreground mb-3">{t('extraFields.categorySpecificInfo')}</h3>
               <div className="grid grid-cols-2 gap-3">
-                {CATEGORY_FIELDS[form.category].map(field => (
+                {fields.map(field => (
                   <div key={field.key} className={field.type === 'text' && !field.suffix ? 'col-span-2 sm:col-span-1' : ''}>
                     <Label>{t(field.labelKey)} {field.required ? '*' : ''}</Label>
                     {field.type === 'select' && field.options ? (
@@ -462,7 +465,8 @@ export default function CreateListing() {
                 ))}
               </div>
             </div>
-          )}
+            );
+          })()}
         </div>
       )}
 
