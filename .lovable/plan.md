@@ -1,108 +1,80 @@
 
-# Plan d'amelioration globale de Re-Bali
+# Traduction automatique des annonces et recherche multilingue
 
-Ce plan couvre 4 axes d'amelioration, a implementer etape par etape.
+## Objectif
+Permettre que chaque annonce soit automatiquement traduite dans les 8 langues supportees, et que la recherche trouve les annonces quelle que soit la langue de publication ou de recherche.
 
----
+## Ce qui existe aujourd'hui
+- A la creation d'une annonce, des "placeholders" sont inseres dans `listing_translations` avec le texte "Pending translation" pour toutes les langues sauf l'anglais
+- La recherche ne filtre que sur `title_original` et `description_original` (langue de publication uniquement)
+- Aucune edge function de traduction n'existe
 
-## Etape 1 — Performance & Optimisation
+## Plan d'implementation
 
-### Probleme actuel
-Chaque `ListingCard` effectue 2 requetes individuelles (profil vendeur + compteur favoris), ce qui cree un probleme N+1 : pour 8 annonces sur la page d'accueil, cela genere 16 requetes supplementaires.
+### 1. Edge Function `translate-listing`
+Creer une nouvelle edge function qui :
+- Recoit un `listing_id` en parametre
+- Lit le `title_original` et `description_original` depuis la table `listings`
+- Utilise l'API Google Translate (gratuite via endpoint public) pour traduire le titre et la description dans les 7 autres langues
+- Met a jour les lignes existantes dans `listing_translations` avec les vraies traductions
 
-### Solution
-- **Home.tsx / Browse.tsx** : enrichir la requete principale pour inclure `profiles:seller_id(user_type, is_verified_seller)` et le compteur de favoris directement, puis transmettre ces donnees aux `ListingCard` via props
-- **ListingCard.tsx** : accepter les donnees vendeur et favoris en props optionnels, ne faire la requete que si les props ne sont pas fournis (retro-compatible)
-- **Browse.tsx** : ajouter un debounce sur le champ de recherche (300ms) pour eviter les requetes a chaque frappe
+L'appel se fera via l'endpoint Google Translate public (pas besoin de cle API).
 
----
+### 2. Appel automatique apres publication
+Modifier `CreateListing.tsx` pour :
+- Apres l'insertion de l'annonce et des placeholders, appeler l'edge function `translate-listing` en arriere-plan (sans bloquer l'utilisateur)
+- Meme chose lors de l'edition d'une annonce
 
-## Etape 2 — Messages en temps reel (Supabase Realtime)
+### 3. Recherche multilingue dans Browse
+Modifier la requete de recherche dans `Browse.tsx` pour :
+- D'abord chercher les `listing_id` correspondants dans `listing_translations` (titre et description dans toutes les langues)
+- Combiner avec la recherche sur `title_original` / `description_original`
+- Cela se fera via une fonction SQL `search_listings` qui effectue un `UNION` entre les deux sources
 
-### Probleme actuel
-Les messages utilisent un polling toutes les 5 secondes (`refetchInterval: 5000`), ce qui est inefficace et ajoute de la latence.
-
-### Solution
-- **Messages.tsx** : remplacer le polling par un abonnement Supabase Realtime sur la table `messages` filtre par `conversation_id`
-- Quand un nouveau message arrive via le canal, l'ajouter directement au cache React Query
-- Ajouter egalement un canal Realtime pour la liste des conversations (nouveaux messages non lus)
-- Nettoyage du canal dans le `useEffect` cleanup
-
----
-
-## Etape 3 — Politique de retention des documents
-
-### Probleme actuel
-Les documents d'identite chiffres restent stockes indefiniment apres approbation ou rejet.
-
-### Solution
-1. **Migration SQL** : ajouter une colonne `documents_purged_at` (timestamptz, nullable) a la table `id_verifications`
-2. **Edge Function `purge-expired-docs`** : 
-   - Parcourt les verifications approuvees/rejetees datant de plus de 30 jours
-   - Supprime les fichiers du bucket `id-verifications` via le service role
-   - Met a jour `documents_purged_at` avec la date courante
-3. **Cron job** : planifier l'execution quotidienne via `pg_cron` + `pg_net`
-4. **Admin.tsx** : afficher le statut de purge dans les cartes de verification (documents purges ou toujours disponibles)
-
----
-
-## Etape 4 — UX & Design
-
-### 4a. Menu mobile complet
-- **Header.tsx** : ajouter les liens de navigation manquants dans le menu mobile (Browse, Favoris, Messages, Mes annonces, Profil)
-- Ajouter une barre de navigation mobile fixe en bas de l'ecran (bottom nav) avec les 5 icones principales : Accueil, Parcourir, Vendre, Messages, Profil
-
-### 4b. Etats de chargement (skeletons)
-- **Home.tsx** : ajouter des skeletons pour les cartes d'annonces pendant le chargement
-- **ListingDetail.tsx** : ameliorer le skeleton existant avec une vraie structure (image, titre, prix)
-- **Profile.tsx** : ajouter un skeleton pendant le chargement du profil
-
-### 4c. Animations avec Framer Motion
-- Ajouter des animations d'entree sur les cartes d'annonces (fade-in + slide-up echelonne)
-- Animer les transitions entre les etapes du formulaire de creation
-- Ajouter une animation subtile sur le changement de favoris (coeur qui pulse)
-
-### 4d. Mode sombre
-- L'application utilise deja le systeme de design Tailwind/shadcn avec des variables CSS. Verifier que toutes les pages respectent le theme (pas de couleurs codees en dur)
-- Ajouter un bouton de basculement clair/sombre dans le header via `next-themes` (deja installe)
-
----
-
-## Ordre d'implementation
-
-| Ordre | Etape | Fichiers principaux |
-|-------|-------|-------------------|
-| 1 | Performance (N+1) | ListingCard.tsx, Home.tsx, Browse.tsx |
-| 2 | Messages Realtime | Messages.tsx |
-| 3 | Retention documents | Migration SQL, nouvelle edge function, Admin.tsx |
-| 4a | Mobile nav | Header.tsx, nouveau composant BottomNav |
-| 4b | Skeletons | Home.tsx, ListingDetail.tsx, Profile.tsx |
-| 4c | Animations | ListingCard.tsx, CreateListing.tsx |
-| 4d | Mode sombre | Header.tsx, index.css |
-
----
+### 4. Fonction SQL `search_listings`
+Creer une fonction de base de donnees qui :
+- Prend un terme de recherche en parametre
+- Cherche dans `listings.title_original`, `listings.description_original` ET `listing_translations.title`, `listing_translations.description`
+- Retourne les IDs distincts des annonces correspondantes
 
 ## Details techniques
 
-### Realtime (Etape 2)
+### Edge Function `translate-listing`
 ```text
-useEffect
-  |-- subscribe to channel "messages:{convId}"
-  |-- on INSERT -> append to React Query cache
-  |-- return () => unsubscribe
+POST /translate-listing
+Body: { listing_id: "uuid" }
+
+1. Lire listing (title_original, description_original, lang_original)
+2. Pour chaque langue cible (sauf lang_original):
+   - Traduire titre et description via Google Translate
+   - UPDATE listing_translations SET title=..., description=... WHERE listing_id=... AND lang=...
+3. Retourner succes
 ```
 
-### Purge cron (Etape 3)
+### Fonction SQL pour la recherche
 ```text
-pg_cron (daily 3am)
-  |-- POST /functions/v1/purge-expired-docs
-  |-- Edge function:
-  |     |-- SELECT verifications WHERE status IN ('approved','rejected')
-  |     |     AND created_at < now() - 30 days
-  |     |     AND documents_purged_at IS NULL
-  |     |-- DELETE files from storage
-  |     |-- UPDATE documents_purged_at = now()
+CREATE FUNCTION search_listings(search_term text)
+RETURNS SETOF uuid AS $$
+  SELECT DISTINCT l.id FROM listings l
+  WHERE l.status = 'active'
+    AND (l.title_original ILIKE '%' || search_term || '%'
+         OR l.description_original ILIKE '%' || search_term || '%')
+  UNION
+  SELECT DISTINCT lt.listing_id FROM listing_translations lt
+  JOIN listings l ON l.id = lt.listing_id
+  WHERE l.status = 'active'
+    AND (lt.title ILIKE '%' || search_term || '%'
+         OR lt.description ILIKE '%' || search_term || '%')
+$$
 ```
 
-### Bottom Nav (Etape 4a)
-Un composant `BottomNav.tsx` affiche uniquement sur mobile (hidden md:), avec 5 boutons : Accueil, Parcourir, Vendre (+), Messages, Profil. Integre dans `Layout.tsx`.
+### Modification de Browse.tsx
+- Si un terme de recherche est present, appeler `supabase.rpc('search_listings', { search_term })` pour obtenir les IDs, puis filtrer avec `.in('id', matchingIds)`
+- Si pas de recherche, comportement inchange
+
+### Fichiers concernes
+- **Nouveau** : `supabase/functions/translate-listing/index.ts`
+- **Migration SQL** : nouvelle fonction `search_listings`
+- **Modifie** : `src/pages/CreateListing.tsx` (appel traduction apres publication/edition)
+- **Modifie** : `src/pages/Browse.tsx` (recherche multilingue via RPC)
+- **Modifie** : `supabase/config.toml` (enregistrer la nouvelle edge function)
