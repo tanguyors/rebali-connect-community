@@ -188,6 +188,15 @@ export default function CreateListing() {
     return null;
   }
 
+  if (!profile?.phone_verified) {
+    return (
+      <div className="container mx-auto px-4 py-20 text-center">
+        <p className="text-lg text-muted-foreground">{t('createListing.whatsappRequired')}</p>
+        <Button className="mt-4" onClick={() => navigate('/profile')}>{t('createListing.verifyWhatsapp')}</Button>
+      </div>
+    );
+  }
+
   if (!canPost) {
     return (
       <div className="container mx-auto px-4 py-20 text-center">

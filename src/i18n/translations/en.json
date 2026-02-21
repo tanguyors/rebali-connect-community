@@ -91,7 +91,9 @@
     "dragOrClick": "Drag and drop or click to upload", "maxPhotos": "Maximum 10 photos",
     "preview": "Preview your listing", "publishListing": "Publish Listing",
     "listingCreated": "Listing created successfully!", "limitReached": "You have reached the maximum of 5 active listings",
-    "atLeastOnePhoto": "Upload at least one photo"
+    "atLeastOnePhoto": "Upload at least one photo",
+    "whatsappRequired": "You must verify your WhatsApp number before posting a listing.",
+    "verifyWhatsapp": "Verify my WhatsApp"
   },
   "auth": {
     "loginTitle": "Welcome back", "loginSubtitle": "Sign in to your Re-Bali account",
@@ -117,7 +119,8 @@
     "deleteAccount": "Delete my account", "deleteAccountTitle": "Delete your account?",
     "deleteAccountDesc": "This will archive all your listings and permanently deactivate your account. This action cannot be undone.",
     "accountDeleted": "Account deleted.",
-    "avatarUpdated": "Profile picture updated!", "avatarError": "Please select an image file.", "avatarTooLarge": "Image must be under 2 MB."
+    "avatarUpdated": "Profile picture updated!", "avatarError": "Please select an image file.", "avatarTooLarge": "Image must be under 2 MB.",
+    "userTypeNotEditable": "Account type is set at registration and cannot be changed."
   },
   "myListings": {
     "title": "My Listings", "active": "Active", "sold": "Sold", "archived": "Archived", "draft": "Draft",

@@ -20,9 +20,6 @@ import { User, Camera, Shield, Star, BarChart3, Eye, ShoppingBag, Package, Mail,
 
 const profileSchema = z.object({
   display_name: z.string().trim().min(2, 'Min 2 characters').max(50, 'Max 50 characters'),
-  phone: z.string().trim().regex(/^$|^\+?[0-9\s\-]{7,20}$/, 'Invalid phone format').optional().or(z.literal('')),
-  whatsapp: z.string().trim().regex(/^$|^\+?[0-9\s\-]{7,20}$/, 'Invalid phone format').optional().or(z.literal('')),
-  user_type: z.enum(['private', 'business']),
   preferred_lang: z.string(),
 });
 
@@ -154,9 +151,6 @@ export default function Profile() {
 
   const [form, setForm] = useState({
     display_name: '',
-    phone: '',
-    whatsapp: '',
-    user_type: 'private',
     preferred_lang: 'en',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -174,9 +168,6 @@ export default function Profile() {
     if (profile) {
       setForm({
         display_name: profile.display_name || '',
-        phone: profile.phone || '',
-        whatsapp: profile.whatsapp || '',
-        user_type: profile.user_type || 'private',
         preferred_lang: profile.preferred_lang || 'en',
       });
     }
@@ -264,9 +255,6 @@ export default function Profile() {
       .from('profiles')
       .update({
         display_name: form.display_name,
-        phone: form.phone || null,
-        whatsapp: form.whatsapp || null,
-        user_type: form.user_type as any,
         preferred_lang: form.preferred_lang,
       })
       .eq('id', user.id);
@@ -392,26 +380,9 @@ export default function Profile() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <Label>{t('profile.phone')} ({t('common.optional')})</Label>
-              <Input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="+62..." />
-              {errors.phone && <p className="text-sm text-destructive mt-1">{errors.phone}</p>}
-            </div>
-            <div>
-              <Label>{t('profile.whatsapp')} ({t('common.optional')})</Label>
-              <Input value={form.whatsapp} onChange={e => setForm(f => ({ ...f, whatsapp: e.target.value }))} placeholder="+62..." />
-              {errors.whatsapp && <p className="text-sm text-destructive mt-1">{errors.whatsapp}</p>}
-            </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
               <Label>{t('profile.userType')}</Label>
-              <Select value={form.user_type} onValueChange={v => setForm(f => ({ ...f, user_type: v }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="private">{t('profile.private')}</SelectItem>
-                  <SelectItem value="business">{t('profile.business')}</SelectItem>
-                </SelectContent>
-              </Select>
+              <Input value={profile?.user_type === 'business' ? t('profile.business') : t('profile.private')} disabled className="bg-muted" />
+              <p className="text-xs text-muted-foreground mt-1">{t('profile.userTypeNotEditable')}</p>
             </div>
             <div>
               <Label>{t('profile.preferredLang')}</Label>
