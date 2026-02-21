@@ -109,7 +109,15 @@
   "profile": {
     "title": "Profile Settings", "displayName": "Display Name", "phone": "Phone Number", "whatsapp": "WhatsApp Number",
     "userType": "Account Type", "private": "Private", "business": "Business", "preferredLang": "Preferred Language",
-    "saved": "Profile saved!", "memberSince": "Member since"
+    "saved": "Profile saved!", "memberSince": "Member since",
+    "viewPublicProfile": "View public profile",
+    "sectionInfo": "Personal Information", "sectionSecurity": "Security", "sectionReviews": "Reviews received",
+    "statsActive": "Active listings", "statsSold": "Sold", "statsTotalViews": "Total views", "statsAvgRating": "Avg. rating",
+    "changePassword": "Change password", "passwordResetSent": "Password reset email sent!",
+    "deleteAccount": "Delete my account", "deleteAccountTitle": "Delete your account?",
+    "deleteAccountDesc": "This will archive all your listings and permanently deactivate your account. This action cannot be undone.",
+    "accountDeleted": "Account deleted.",
+    "avatarUpdated": "Profile picture updated!", "avatarError": "Please select an image file.", "avatarTooLarge": "Image must be under 2 MB."
   },
   "myListings": {
     "title": "My Listings", "active": "Active", "sold": "Sold", "archived": "Archived", "draft": "Draft",
