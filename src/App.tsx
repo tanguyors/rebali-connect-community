@@ -23,6 +23,8 @@ import VIP from "./pages/VIP";
 import NotFound from "./pages/NotFound";
 import SellerProfile from "./pages/SellerProfile";
 import Favorites from "./pages/Favorites";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 
 
 const queryClient = new QueryClient({});
@@ -52,6 +54,8 @@ const App = () => (
                   <Route path="/rules" element={<Rules />} />
                   <Route path="/vip" element={<VIP />} />
                   <Route path="/favorites" element={<Favorites />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/privacy" element={<Privacy />} />
                   
                   <Route path="/seller/:id" element={<SellerProfile />} />
                   <Route path="*" element={<NotFound />} />
