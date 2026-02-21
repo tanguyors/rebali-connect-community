@@ -25,13 +25,18 @@ interface ListingCardProps {
     seller_id: string;
     listing_images?: { storage_path: string }[];
     listing_translations?: { lang: string; title: string }[];
+    profiles?: { user_type: string; is_verified_seller: boolean } | null;
+    favorites?: { count: number }[];
   };
+  sellerProfile?: { user_type: string; is_verified_seller: boolean } | null;
+  favCount?: number;
 }
 
-export default function ListingCard({ listing }: ListingCardProps) {
+export default function ListingCard({ listing, sellerProfile: sellerProfileProp, favCount: favCountProp }: ListingCardProps) {
   const { t, language } = useLanguage();
 
-  const { data: sellerProfile } = useQuery({
+  // Only fetch if not provided via props (backward compatible)
+  const { data: fetchedSellerProfile } = useQuery({
     queryKey: ['seller-profile', listing.seller_id],
     queryFn: async () => {
       const { data } = await supabase
@@ -42,9 +47,10 @@ export default function ListingCard({ listing }: ListingCardProps) {
       return data;
     },
     staleTime: 5 * 60 * 1000,
+    enabled: sellerProfileProp === undefined && !listing.profiles,
   });
 
-  const { data: favCount } = useQuery({
+  const { data: fetchedFavCount } = useQuery({
     queryKey: ['fav-count', listing.id],
     queryFn: async () => {
       const { count } = await supabase
@@ -54,10 +60,14 @@ export default function ListingCard({ listing }: ListingCardProps) {
       return count || 0;
     },
     staleTime: 60 * 1000,
+    enabled: favCountProp === undefined && !listing.favorites,
   });
 
-  const isPro = sellerProfile?.user_type === 'business';
-  const isVerified = sellerProfile?.is_verified_seller === true;
+  const resolvedProfile = sellerProfileProp ?? listing.profiles ?? fetchedSellerProfile;
+  const resolvedFavCount = favCountProp ?? listing.favorites?.[0]?.count ?? fetchedFavCount ?? 0;
+
+  const isPro = resolvedProfile?.user_type === 'business';
+  const isVerified = resolvedProfile?.is_verified_seller === true;
 
   const translation = listing.listing_translations?.find(tr => tr.lang === language);
   const enTranslation = listing.listing_translations?.find(tr => tr.lang === 'en');
@@ -126,7 +136,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
             </span>
             <span className="flex items-center gap-1">
               <Heart className="h-3 w-3" />
-              {favCount ?? 0}
+              {resolvedFavCount}
             </span>
           </div>
           <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">

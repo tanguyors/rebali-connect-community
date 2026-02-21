@@ -8,7 +8,16 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CATEGORIES, LOCATIONS, CONDITIONS, CATEGORY_TREE } from '@/lib/constants';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+  return debounced;
+}
 
 export default function Browse() {
   const { t } = useLanguage();
@@ -23,15 +32,17 @@ export default function Browse() {
   const [maxPrice, setMaxPrice] = useState('');
   const [showFilters, setShowFilters] = useState(false);
 
+  const debouncedSearch = useDebounce(search, 300);
+
   const { data: listings, isLoading } = useQuery({
-    queryKey: ['listings', search, category, subcategory, location, condition, sort, minPrice, maxPrice],
+    queryKey: ['listings', debouncedSearch, category, subcategory, location, condition, sort, minPrice, maxPrice],
     queryFn: async () => {
       let query = supabase
         .from('listings')
-        .select('*, listing_images(storage_path, sort_order), listing_translations(lang, title)')
+        .select('*, listing_images(storage_path, sort_order), listing_translations(lang, title), profiles:seller_id(user_type, is_verified_seller), favorites(count)')
         .eq('status', 'active');
 
-      if (search) query = query.or(`title_original.ilike.%${search}%,description_original.ilike.%${search}%`);
+      if (debouncedSearch) query = query.or(`title_original.ilike.%${debouncedSearch}%,description_original.ilike.%${debouncedSearch}%`);
       if (category !== 'all') query = query.eq('category', category as any);
       if (subcategory !== 'all') query = query.eq('subcategory', subcategory);
       if (location !== 'all') query = query.eq('location_area', location);

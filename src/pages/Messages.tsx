@@ -51,8 +51,46 @@ export default function Messages() {
       return data || [];
     },
     enabled: !!activeConvId,
-    refetchInterval: 5000,
   });
+
+  // Realtime subscription for messages
+  useEffect(() => {
+    if (!activeConvId) return;
+    const channel = supabase
+      .channel(`messages:${activeConvId}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: `conversation_id=eq.${activeConvId}`,
+      }, (payload) => {
+        queryClient.setQueryData(['messages', activeConvId], (old: any[] | undefined) => {
+          if (!old) return [payload.new];
+          if (old.some((m: any) => m.id === payload.new.id)) return old;
+          return [...old, payload.new];
+        });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [activeConvId, queryClient]);
+
+  // Realtime subscription for conversation list updates
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel(`conv-updates:${user.id}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+      }, () => {
+        queryClient.invalidateQueries({ queryKey: ['last-messages'] });
+        queryClient.invalidateQueries({ queryKey: ['unread-counts'] });
+        queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user, queryClient]);
 
   // Fetch last messages for conversation list
   const { data: lastMessages } = useQuery({
