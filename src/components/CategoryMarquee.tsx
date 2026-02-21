@@ -1,36 +1,14 @@
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { CATEGORIES, CATEGORY_ICONS, CATEGORY_TREE } from '@/lib/constants';
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 
 export default function CategoryMarquee() {
   const { t } = useLanguage();
-  const scrollRef = useRef<HTMLDivElement>(null);
   const [paused, setPaused] = useState(false);
   const [hoveredCat, setHoveredCat] = useState<string | null>(null);
   const [popoverPos, setPopoverPos] = useState<{ left: number; top: number } | null>(null);
   const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    let animId: number;
-    let speed = 0.5;
-
-    const step = () => {
-      if (!paused && el) {
-        el.scrollLeft += speed;
-        if (el.scrollLeft >= el.scrollWidth / 2) {
-          el.scrollLeft = 0;
-        }
-      }
-      animId = requestAnimationFrame(step);
-    };
-
-    animId = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(animId);
-  }, [paused]);
 
   const handleCatEnter = (cat: string, e: React.MouseEvent<HTMLAnchorElement>) => {
     if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
@@ -58,30 +36,28 @@ export default function CategoryMarquee() {
     }, 150);
   };
 
-  // Duplicate items for seamless loop
-  const items = [...CATEGORIES, ...CATEGORIES];
-
   const subcategories = hoveredCat ? CATEGORY_TREE[hoveredCat] : [];
 
   return (
     <section className="border-b border-border/50 bg-card overflow-visible relative">
-      <div
-        ref={scrollRef}
-        className="flex overflow-x-hidden scrollbar-hide"
-        style={{ scrollBehavior: 'auto' }}
-      >
-        {items.map((cat, i) => (
-          <Link
-            key={`${cat}-${i}`}
-            to={`/browse?category=${cat}`}
-            onMouseEnter={(e) => handleCatEnter(cat, e)}
-            onMouseLeave={handleCatLeave}
-            className="flex items-center gap-1.5 px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/10 transition-colors whitespace-nowrap border-b-2 border-transparent hover:border-primary shrink-0"
-          >
-            <span className="text-lg">{CATEGORY_ICONS[cat]}</span>
-            <span>{t(`categories.${cat}`)}</span>
-          </Link>
-        ))}
+      <div className="overflow-hidden">
+        <div
+          className={`marquee-track flex w-max ${paused ? 'paused' : ''}`}
+        >
+          {/* Render categories twice for seamless loop */}
+          {[...CATEGORIES, ...CATEGORIES].map((cat, i) => (
+            <Link
+              key={`${cat}-${i}`}
+              to={`/browse?category=${cat}`}
+              onMouseEnter={(e) => handleCatEnter(cat, e)}
+              onMouseLeave={handleCatLeave}
+              className="flex items-center gap-1.5 px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/10 transition-colors whitespace-nowrap border-b-2 border-transparent hover:border-primary shrink-0"
+            >
+              <span className="text-lg">{CATEGORY_ICONS[cat]}</span>
+              <span>{t(`categories.${cat}`)}</span>
+            </Link>
+          ))}
+        </div>
       </div>
 
       {/* Subcategory popover */}
