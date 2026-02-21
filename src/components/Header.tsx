@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Plus, User, LogOut, Shield, Search, Heart, MessageCircle, Bell } from 'lucide-react';
+import { Menu, Plus, User, LogOut, Shield, Search, Heart, MessageCircle, Bell, Sun, Moon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useState } from 'react';
+import { useTheme } from 'next-themes';
 
 export default function Header() {
   const { t } = useLanguage();
@@ -22,7 +23,7 @@ export default function Header() {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [headerSearch, setHeaderSearch] = useState('');
-
+  const { theme, setTheme } = useTheme();
   const authGuard = (path: string) => () => {
     navigate(user ? path : '/auth');
   };
@@ -64,6 +65,11 @@ export default function Header() {
             />
           </form>
           <LanguageSwitcher />
+          <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <span className="sr-only">Toggle theme</span>
+          </Button>
 
           <Button variant="ghost" size="sm" className="flex-col items-center gap-0.5 h-auto py-1.5 px-3" onClick={authGuard('/browse')}>
             <Bell className="h-5 w-5" strokeWidth={1.5} />
@@ -125,11 +131,39 @@ export default function Header() {
             </SheetTrigger>
             <SheetContent side="right" className="w-72">
               <nav className="flex flex-col gap-2 mt-8">
-              <Button className="justify-start gap-1.5" onClick={() => { navigate('/create'); setMobileOpen(false); }}>
+                <Button className="justify-start gap-1.5" onClick={() => { navigate('/create'); setMobileOpen(false); }}>
                   <Plus className="h-4 w-4" />
                   {t('nav.sell')}
                 </Button>
-                {!user && (
+                {navLinks.map(link => (
+                  <Button key={link.href} variant="ghost" className="justify-start" onClick={() => { navigate(link.href); setMobileOpen(false); }}>
+                    {link.label}
+                  </Button>
+                ))}
+                {user ? (
+                  <>
+                    <Button variant="ghost" className="justify-start gap-1.5" onClick={() => { navigate('/favorites'); setMobileOpen(false); }}>
+                      <Heart className="h-4 w-4" /> {t('nav.favorites')}
+                    </Button>
+                    <Button variant="ghost" className="justify-start gap-1.5" onClick={() => { navigate('/messages'); setMobileOpen(false); }}>
+                      <MessageCircle className="h-4 w-4" /> {t('nav.messages')}
+                    </Button>
+                    <Button variant="ghost" className="justify-start gap-1.5" onClick={() => { navigate('/my-listings'); setMobileOpen(false); }}>
+                      <Search className="h-4 w-4" /> {t('nav.myListings')}
+                    </Button>
+                    <Button variant="ghost" className="justify-start gap-1.5" onClick={() => { navigate('/profile'); setMobileOpen(false); }}>
+                      <User className="h-4 w-4" /> {t('nav.profile')}
+                    </Button>
+                    {isAdmin && (
+                      <Button variant="ghost" className="justify-start gap-1.5" onClick={() => { navigate('/admin'); setMobileOpen(false); }}>
+                        <Shield className="h-4 w-4" /> {t('nav.admin')}
+                      </Button>
+                    )}
+                    <Button variant="ghost" className="justify-start gap-1.5 text-destructive" onClick={() => { signOut(); setMobileOpen(false); }}>
+                      <LogOut className="h-4 w-4" /> {t('common.logout')}
+                    </Button>
+                  </>
+                ) : (
                   <>
                     <Button variant="ghost" className="justify-start" onClick={() => { navigate('/auth'); setMobileOpen(false); }}>
                       {t('common.login')}

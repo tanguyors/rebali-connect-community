@@ -10,13 +10,15 @@ import { CATEGORIES, CATEGORY_ICONS } from '@/lib/constants';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { motion } from 'framer-motion';
 
 export default function Home() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { data: listings } = useQuery({
+  const { data: listings, isLoading } = useQuery({
     queryKey: ['latest-listings'],
     queryFn: async () => {
       const { data } = await supabase
@@ -38,7 +40,7 @@ export default function Home() {
     <div>
       <CategoryMarquee />
 
-      {/* Hero – friendly & colorful */}
+      {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/10">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-10 left-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
@@ -85,24 +87,42 @@ export default function Home() {
       </section>
 
       {/* Latest Listings */}
-      {listings && listings.length > 0 && (
-        <section className="container mx-auto px-4 py-10">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl md:text-2xl font-extrabold">{t('home.latest')}</h2>
-            <Button variant="ghost" size="sm" asChild className="gap-1 text-primary hover:text-primary font-bold">
-              <Link to="/browse">
-                {t('common.viewAll')}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {listings.map((listing: any) => (
-              <ListingCard key={listing.id} listing={listing} />
-            ))}
-          </div>
-        </section>
-      )}
+      <section className="container mx-auto px-4 py-10">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl md:text-2xl font-extrabold">{t('home.latest')}</h2>
+          <Button variant="ghost" size="sm" asChild className="gap-1 text-primary hover:text-primary font-bold">
+            <Link to="/browse">
+              {t('common.viewAll')}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {isLoading ? (
+            Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="aspect-[4/3] w-full rounded-lg" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-5 w-1/2" />
+                <Skeleton className="h-3 w-full" />
+              </div>
+            ))
+          ) : listings && listings.length > 0 ? (
+            listings.map((listing: any, i: number) => (
+              <motion.div
+                key={listing.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: i * 0.05 }}
+              >
+                <ListingCard listing={listing} />
+              </motion.div>
+            ))
+          ) : (
+            <p className="col-span-full text-center text-muted-foreground py-8">{t('common.noResults')}</p>
+          )}
+        </div>
+      </section>
 
       {/* How it works */}
       <section className="bg-card border-t border-border/50 py-14 mt-4">

@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.decrypt-document]
 verify_jwt = false
+
+[functions.purge-expired-docs]
+verify_jwt = false

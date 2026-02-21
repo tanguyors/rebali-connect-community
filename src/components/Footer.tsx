@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-export default function Footer() {
+export default function Footer({ className }: { className?: string }) {
   const { t } = useLanguage();
 
   return (
-    <footer className="border-t bg-card mt-auto">
+    <footer className={`border-t bg-card mt-auto ${className || ''}`}>
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>

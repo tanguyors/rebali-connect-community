@@ -1,0 +1,68 @@
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { Home, Search, Plus, MessageCircle, User } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+const NAV_ITEMS = [
+  { icon: Home, labelKey: 'nav.home', path: '/' },
+  { icon: Search, labelKey: 'nav.browse', path: '/browse' },
+  { icon: Plus, labelKey: 'nav.sell', path: '/create', accent: true },
+  { icon: MessageCircle, labelKey: 'nav.messages', path: '/messages' },
+  { icon: User, labelKey: 'nav.profile', path: '/profile' },
+];
+
+export default function BottomNav() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { t } = useLanguage();
+  const { user } = useAuth();
+
+  const handleNav = (path: string) => {
+    if (!user && ['/messages', '/profile', '/create'].includes(path)) {
+      navigate('/auth');
+    } else {
+      navigate(path);
+    }
+  };
+
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-t md:hidden safe-area-bottom">
+      <div className="flex items-center justify-around h-16 px-2">
+        {NAV_ITEMS.map((item) => {
+          const isActive = location.pathname === item.path;
+          const Icon = item.icon;
+
+          if (item.accent) {
+            return (
+              <button
+                key={item.path}
+                onClick={() => handleNav(item.path)}
+                className="flex flex-col items-center justify-center -mt-4"
+              >
+                <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-lg">
+                  <Icon className="h-6 w-6 text-primary-foreground" />
+                </div>
+                <span className="text-[10px] mt-0.5 font-semibold text-primary">{t(item.labelKey)}</span>
+              </button>
+            );
+          }
+
+          return (
+            <button
+              key={item.path}
+              onClick={() => handleNav(item.path)}
+              className={cn(
+                "flex flex-col items-center justify-center gap-0.5 py-1 px-3 transition-colors",
+                isActive ? "text-primary" : "text-muted-foreground"
+              )}
+            >
+              <Icon className="h-5 w-5" strokeWidth={isActive ? 2.5 : 1.5} />
+              <span className={cn("text-[10px]", isActive && "font-bold")}>{t(item.labelKey)}</span>
+            </button>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}

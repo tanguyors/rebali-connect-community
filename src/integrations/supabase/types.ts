@@ -131,6 +131,7 @@ export type Database = {
           created_at: string
           document_path: string
           document_type: string
+          documents_purged_at: string | null
           id: string
           reviewed_at: string | null
           reviewed_by: string | null
@@ -142,6 +143,7 @@ export type Database = {
           created_at?: string
           document_path: string
           document_type: string
+          documents_purged_at?: string | null
           id?: string
           reviewed_at?: string | null
           reviewed_by?: string | null
@@ -153,6 +155,7 @@ export type Database = {
           created_at?: string
           document_path?: string
           document_type?: string
+          documents_purged_at?: string | null
           id?: string
           reviewed_at?: string | null
           reviewed_by?: string | null
