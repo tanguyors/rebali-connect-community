@@ -13,6 +13,22 @@ import { useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
 
+function useCategoryListings(category: string) {
+  return useQuery({
+    queryKey: ['category-listings', category],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('listings')
+        .select('*, listing_images(storage_path, sort_order), listing_translations(lang, title), profiles:seller_id(user_type, is_verified_seller), favorites(count)')
+        .eq('status', 'active')
+        .eq('category', category)
+        .order('created_at', { ascending: false })
+        .limit(4);
+      return data || [];
+    },
+  });
+}
+
 export default function Home() {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -143,6 +159,58 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Category: Immobilier */}
+      <CategoryRow category="immobilier" />
+
+      {/* Category: Emploi */}
+      <CategoryRow category="emploi" />
     </div>
+  );
+}
+
+function CategoryRow({ category }: { category: string }) {
+  const { t } = useLanguage();
+  const { data: listings, isLoading } = useCategoryListings(category);
+
+  return (
+    <section className="container mx-auto px-4 py-10">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl md:text-2xl font-extrabold flex items-center gap-2">
+          {CATEGORY_ICONS[category]} {t(`categories.${category}`)}
+        </h2>
+        <Button variant="ghost" size="sm" asChild className="gap-1 text-primary hover:text-primary font-bold">
+          <Link to={`/browse?category=${category}`}>
+            {t('common.viewAll')}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </Button>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {isLoading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="space-y-2">
+              <Skeleton className="aspect-[4/3] w-full rounded-lg" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-5 w-1/2" />
+              <Skeleton className="h-3 w-full" />
+            </div>
+          ))
+        ) : listings && listings.length > 0 ? (
+          listings.map((listing: any, i: number) => (
+            <motion.div
+              key={listing.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: i * 0.05 }}
+            >
+              <ListingCard listing={listing} />
+            </motion.div>
+          ))
+        ) : (
+          <p className="col-span-full text-center text-muted-foreground py-8">{t('common.noResults')}</p>
+        )}
+      </div>
+    </section>
   );
 }
