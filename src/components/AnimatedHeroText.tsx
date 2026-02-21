@@ -30,7 +30,7 @@ export default function AnimatedHeroText() {
   }, [words.length]);
 
   return (
-    <h1 className="text-4xl md:text-6xl font-bold tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+    <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
       <span>Re</span>
       <span
         className={`inline-block text-primary transition-all duration-300 ${
