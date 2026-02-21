@@ -25,7 +25,7 @@ import SellerProfile from "./pages/SellerProfile";
 import Favorites from "./pages/Favorites";
 
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
