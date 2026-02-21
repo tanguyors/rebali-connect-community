@@ -4,8 +4,7 @@ import logo from '@/assets/logo.png';
 import { useAuth } from '@/contexts/AuthContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Plus, User, LogOut, Shield, Search, Heart, Bell, Sun, Moon } from 'lucide-react';
+import { Plus, User, LogOut, Shield, Search, Heart, Bell, Sun, Moon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
@@ -21,27 +20,35 @@ export default function Header() {
   const { t } = useLanguage();
   const { user, profile, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [headerSearch, setHeaderSearch] = useState('');
   const { theme, setTheme } = useTheme();
+
   const authGuard = (path: string) => () => {
     navigate(user ? path : '/auth');
   };
 
-  const navLinks = [
-    { href: '/browse', label: t('nav.browse') },
-    { href: '/about', label: t('nav.about') },
-    { href: '/safety', label: t('nav.safety') },
-  ];
-
   return (
     <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-lg border-b">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-6">
+        {/* Mobile: language left, logo center, theme right */}
+        <div className="flex sm:hidden items-center justify-between w-full">
+          <LanguageSwitcher />
+          <Link to="/" className="absolute left-1/2 -translate-x-1/2">
+            <img src={logo} alt="Re-Bali" className="h-8" />
+          </Link>
+          <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <span className="sr-only">Toggle theme</span>
+          </Button>
+        </div>
+
+        {/* Desktop */}
+        <div className="hidden sm:flex items-center gap-6">
           <Link to="/" className="flex items-center gap-2">
             <img src={logo} alt="Re-Bali" className="h-8" />
           </Link>
-          <Button className="hidden md:inline-flex gap-1.5 rounded-full px-6" onClick={() => navigate('/create')}>
+          <Button className="gap-1.5 rounded-full px-6" onClick={() => navigate('/create')}>
             <Plus className="h-4 w-4" />
             {t('nav.sell')}
           </Button>
@@ -114,61 +121,6 @@ export default function Header() {
               <span className="text-[10px]">{t('nav.loginSignup')}</span>
             </Button>
           )}
-        </div>
-
-        <div className="flex sm:hidden items-center gap-1">
-          <LanguageSwitcher />
-
-          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-72">
-              <nav className="flex flex-col gap-2 mt-8">
-                <Button className="justify-start gap-1.5" onClick={() => { navigate('/create'); setMobileOpen(false); }}>
-                  <Plus className="h-4 w-4" />
-                  {t('nav.sell')}
-                </Button>
-                {navLinks.map(link => (
-                  <Button key={link.href} variant="ghost" className="justify-start" onClick={() => { navigate(link.href); setMobileOpen(false); }}>
-                    {link.label}
-                  </Button>
-                ))}
-                {user ? (
-                  <>
-                    <Button variant="ghost" className="justify-start gap-1.5" onClick={() => { navigate('/favorites'); setMobileOpen(false); }}>
-                      <Heart className="h-4 w-4" /> {t('nav.favorites')}
-                    </Button>
-                    <Button variant="ghost" className="justify-start gap-1.5" onClick={() => { navigate('/my-listings'); setMobileOpen(false); }}>
-                      <Search className="h-4 w-4" /> {t('nav.myListings')}
-                    </Button>
-                    <Button variant="ghost" className="justify-start gap-1.5" onClick={() => { navigate('/profile'); setMobileOpen(false); }}>
-                      <User className="h-4 w-4" /> {t('nav.profile')}
-                    </Button>
-                    {isAdmin && (
-                      <Button variant="ghost" className="justify-start gap-1.5" onClick={() => { navigate('/admin'); setMobileOpen(false); }}>
-                        <Shield className="h-4 w-4" /> {t('nav.admin')}
-                      </Button>
-                    )}
-                    <Button variant="ghost" className="justify-start gap-1.5 text-destructive" onClick={() => { signOut(); setMobileOpen(false); }}>
-                      <LogOut className="h-4 w-4" /> {t('common.logout')}
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button variant="ghost" className="justify-start" onClick={() => { navigate('/auth'); setMobileOpen(false); }}>
-                      {t('common.login')}
-                    </Button>
-                    <Button className="justify-start" onClick={() => { navigate('/auth?tab=signup'); setMobileOpen(false); }}>
-                      {t('common.signup')}
-                    </Button>
-                  </>
-                )}
-              </nav>
-            </SheetContent>
-          </Sheet>
         </div>
       </div>
     </header>
