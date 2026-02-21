@@ -1,31 +1,63 @@
 
 
-# Badge "Vendeur Verifie" + Ameliorations UX
+# Page Favoris + Messagerie In-App
 
 ## Contexte
 
-La verification d'identite est implementee cote profil et admin, mais le badge "Vendeur Verifie" n'apparait nulle part dans l'experience acheteur. Un vendeur verifie n'a aucune distinction visuelle sur ses annonces ou son profil public.
+Le Header contient des liens vers `/favorites` et `/messages` mais ces pages n'existent pas. Le systeme de favoris est deja fonctionnel en base (table `favorites` avec RLS) mais il manque une page dediee. Pour la messagerie, une table de conversations sera necessaire.
 
-## Modifications prevues
+## 1. Page Favoris (`/favorites`)
 
-### 1. Badge "Vendeur Verifie" sur ListingCard
+Creer une page simple qui affiche toutes les annonces que l'utilisateur a mises en favori.
 
-Le composant `ListingCard` charge deja le profil vendeur mais ne recupere que `user_type`. Ajouter `is_verified_seller` a la requete et afficher un badge ShieldCheck vert a cote du badge Pro/Private quand le vendeur est verifie.
+- Query `favorites` filtree par `user_id = auth.uid()`, join sur `listings` avec `listing_images` et `listing_translations`
+- Reutiliser le composant `ListingCard` existant pour l'affichage
+- Message si aucun favori : "Vous n'avez pas encore de favoris"
+- Redirection vers `/auth` si non connecte
 
-### 2. Badge "Vendeur Verifie" sur ListingDetail
+## 2. Systeme de messagerie in-app
 
-Dans la page de detail d'annonce, afficher le badge verifie :
-- Dans la section "Vendu par" (colonne gauche, ligne 352)
-- Dans la carte vendeur sidebar (colonne droite, ligne 468)
-- La requete existante charge `profiles!seller_id(...)` : ajouter `is_verified_seller` au select
+### Nouvelle table `conversations`
 
-### 3. Badge "Vendeur Verifie" sur SellerProfile
+| Colonne | Type | Description |
+|---|---|---|
+| id | uuid PK | |
+| listing_id | uuid FK | Annonce concernee |
+| buyer_id | uuid | Acheteur |
+| seller_id | uuid | Vendeur |
+| created_at | timestamptz | |
+| updated_at | timestamptz | |
 
-Le profil public du vendeur charge deja toutes les colonnes (`select('*')`). Ajouter un badge ShieldCheck vert a cote du nom si `seller.is_verified_seller === true`.
+### Nouvelle table `messages`
 
-### 4. Bouton "Modifier" sur MyListings
+| Colonne | Type | Description |
+|---|---|---|
+| id | uuid PK | |
+| conversation_id | uuid FK | |
+| sender_id | uuid | Auteur du message |
+| content | text | Contenu |
+| read | boolean | Lu par le destinataire |
+| created_at | timestamptz | |
 
-Actuellement les vendeurs ne peuvent pas modifier leurs annonces apres publication. Ajouter un bouton "Modifier" sur chaque annonce active dans MyListings qui redirige vers `/create?edit={listing_id}`. Adapter le composant CreateListing pour detecter le parametre `edit` et pre-remplir le formulaire avec les donnees existantes.
+### RLS Policies
+
+- `conversations` : SELECT/INSERT pour les participants (`buyer_id` ou `seller_id = auth.uid()`)
+- `messages` : SELECT pour les participants de la conversation, INSERT pour les participants
+
+### Page Messages (`/messages`)
+
+- Liste des conversations avec apercu du dernier message
+- Vue conversation avec historique des messages et champ de saisie
+- Indicateur de messages non lus
+- Bouton "Contacter le vendeur" sur `ListingDetail` ouvre/cree une conversation
+
+## 3. Routes et Navigation
+
+Ajouter les routes `/favorites` et `/messages` dans `App.tsx`.
+
+## 4. Traductions
+
+Ajouter les cles `favorites.*` et `messages.*` dans les 8 fichiers de traduction.
 
 ---
 
@@ -33,26 +65,18 @@ Actuellement les vendeurs ne peuvent pas modifier leurs annonces apres publicati
 
 | Fichier | Modification |
 |---|---|
-| `src/components/ListingCard.tsx` | Ajouter `is_verified_seller` au select du profil vendeur, afficher badge ShieldCheck |
-| `src/pages/ListingDetail.tsx` | Ajouter `is_verified_seller` au select profiles, afficher badge dans les 2 sections vendeur |
-| `src/pages/SellerProfile.tsx` | Afficher badge ShieldCheck si `seller.is_verified_seller` |
-| `src/pages/MyListings.tsx` | Ajouter bouton "Modifier" avec lien vers `/create?edit={id}` |
-| `src/pages/CreateListing.tsx` | Detecter `?edit=id`, charger l'annonce existante, pre-remplir le formulaire, switcher le bouton en "Mettre a jour" |
-| `src/i18n/translations/*.json` | Ajouter les cles `listing.edit`, `listing.update`, `myListings.edit` dans les 8 langues |
+| Migration SQL | Creer tables `conversations` et `messages` avec RLS |
+| `src/pages/Favorites.tsx` | Nouvelle page favoris |
+| `src/pages/Messages.tsx` | Nouvelle page messagerie |
+| `src/App.tsx` | Ajouter routes `/favorites` et `/messages` |
+| `src/pages/ListingDetail.tsx` | Bouton "Envoyer un message" qui cree/ouvre une conversation |
+| `src/i18n/translations/*.json` | Cles favorites + messages dans 8 langues |
 
-### Badge verifie (composant reutilise)
+### Logique de conversation
 
-Le badge suivra le meme style que dans Profile.tsx :
-- Icone `ShieldCheck` verte
-- Texte "Verified" ou traduction locale
-- Style : `bg-green-500/10 text-green-600 border-green-500/20`
-
-### Logique edition annonce (CreateListing)
-
-1. Lire `searchParams.get('edit')` au montage
-2. Si present, charger l'annonce depuis `listings` avec ses images
-3. Pre-remplir tous les champs du formulaire
-4. Remplacer le bouton "Publier" par "Mettre a jour"
-5. Au submit, utiliser `update` au lieu de `insert` sur la table `listings`
-6. Conserver les images existantes, permettre d'en ajouter/supprimer
+1. Sur ListingDetail, bouton "Envoyer un message" verifie si une conversation existe deja entre l'acheteur et le vendeur pour cette annonce
+2. Si oui, redirige vers `/messages?conv={conversation_id}`
+3. Si non, cree la conversation puis redirige
+4. Page Messages : liste des conversations a gauche, messages a droite (ou vue mobile empilee)
+5. Realtime optionnel via `supabase.channel` pour les nouveaux messages
 
