@@ -68,7 +68,7 @@
   "filters": { "allCategories": "Toutes les catégories", "allSubcategories": "Toutes les sous-catégories", "allLocations": "Toutes les localisations", "allConditions": "Tous les états", "priceRange": "Fourchette de prix", "minPrice": "Prix min", "maxPrice": "Prix max", "sortNewest": "Plus récent", "sortPriceLow": "Prix croissant", "sortPriceHigh": "Prix décroissant", "clearFilters": "Réinitialiser", "results": "résultats" },
   "footer": { "tagline": "La marketplace de confiance à Bali", "marketplace": "Marketplace", "company": "Entreprise", "legal": "Légal", "terms": "Conditions d'utilisation", "privacy": "Politique de confidentialité", "copyright": "© 2025 Re-Bali. Tous droits réservés." },
   "notFound": { "title": "Page non trouvée", "description": "La page que vous recherchez n'existe pas.", "backHome": "Retour à l'accueil" },
-  "notifications": { "listingActive": "Annonce réactivée", "listingSold": "Annonce marquée vendue", "listingArchived": "Annonce archivée", "vipNotify": "Vous serez notifié du lancement VIP !" },
+  "notifications": { "newListing": "Nouvelle annonce !", "listingActive": "Annonce réactivée", "listingSold": "Annonce marquée vendue", "listingArchived": "Annonce archivée", "vipNotify": "Vous serez notifié du lancement VIP !" },
   "adminLabels": { "accessDenied": "Accès refusé", "listing": "Annonce", "reporter": "Signaleur", "deleted": "Supprimé", "unknown": "Inconnu" },
   "seller": { "activeListings": "annonces actives", "reviews": "avis", "reviewsTitle": "Avis clients", "leaveReview": "Laisser un avis", "reviewPlaceholder": "Partagez votre expérience avec ce vendeur...", "reviewSubmitted": "Avis envoyé !", "noReviews": "Aucun avis pour le moment", "allListings": "Annonces" }
 }
