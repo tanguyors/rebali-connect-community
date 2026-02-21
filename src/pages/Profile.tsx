@@ -1,20 +1,36 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { SUPPORTED_LANGUAGES } from '@/i18n';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { z } from 'zod';
+import { User, Camera, Shield, Star, BarChart3, Eye, ShoppingBag, Package, Mail, Lock, Trash2, ExternalLink } from 'lucide-react';
+
+const profileSchema = z.object({
+  display_name: z.string().trim().min(2, 'Min 2 characters').max(50, 'Max 50 characters'),
+  phone: z.string().trim().regex(/^$|^\+?[0-9\s\-]{7,20}$/, 'Invalid phone format').optional().or(z.literal('')),
+  whatsapp: z.string().trim().regex(/^$|^\+?[0-9\s\-]{7,20}$/, 'Invalid phone format').optional().or(z.literal('')),
+  user_type: z.enum(['private', 'business']),
+  preferred_lang: z.string(),
+});
 
 export default function Profile() {
   const { t, setLanguage } = useLanguage();
   const { user, profile, refreshProfile } = useAuth();
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [form, setForm] = useState({
     display_name: '',
     phone: '',
@@ -22,7 +38,16 @@ export default function Profile() {
     user_type: 'private',
     preferred_lang: 'en',
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  // Stats
+  const [stats, setStats] = useState({ active: 0, sold: 0, totalViews: 0, avgRating: 0, reviewCount: 0 });
+  // Reviews
+  const [reviews, setReviews] = useState<any[]>([]);
 
   useEffect(() => {
     if (profile) {
@@ -36,10 +61,84 @@ export default function Profile() {
     }
   }, [profile]);
 
+  useEffect(() => {
+    if (!user) return;
+    // Fetch stats
+    const fetchStats = async () => {
+      const { data: listings } = await supabase
+        .from('listings')
+        .select('status, views_count')
+        .eq('seller_id', user.id);
+
+      const active = listings?.filter(l => l.status === 'active').length || 0;
+      const sold = listings?.filter(l => l.status === 'sold').length || 0;
+      const totalViews = listings?.reduce((sum, l) => sum + (l.views_count || 0), 0) || 0;
+
+      const { data: revs } = await supabase
+        .from('reviews')
+        .select('rating, comment, created_at, reviewer_id, profiles!reviews_reviewer_id_fkey(display_name, avatar_url)')
+        .eq('seller_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      const avgRating = revs && revs.length > 0
+        ? revs.reduce((sum, r) => sum + r.rating, 0) / revs.length
+        : 0;
+
+      setStats({ active, sold, totalViews, avgRating, reviewCount: revs?.length || 0 });
+      setReviews(revs || []);
+    };
+    fetchStats();
+  }, [user]);
+
   if (!user) { navigate('/auth'); return null; }
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      toast({ title: t('profile.avatarError'), variant: 'destructive' });
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast({ title: t('profile.avatarTooLarge'), variant: 'destructive' });
+      return;
+    }
+
+    setAvatarUploading(true);
+    const ext = file.name.split('.').pop();
+    const path = `${user.id}/avatar.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(path, file, { upsert: true });
+
+    if (uploadError) {
+      toast({ title: 'Upload error', description: uploadError.message, variant: 'destructive' });
+      setAvatarUploading(false);
+      return;
+    }
+
+    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path);
+    const avatarUrl = `${publicUrl}?t=${Date.now()}`;
+
+    await supabase.from('profiles').update({ avatar_url: avatarUrl }).eq('id', user.id);
+    await refreshProfile();
+    toast({ title: t('profile.avatarUpdated') });
+    setAvatarUploading(false);
+  };
+
   const handleSave = async () => {
+    const result = profileSchema.safeParse(form);
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.errors.forEach(e => { fieldErrors[e.path[0] as string] = e.message; });
+      setErrors(fieldErrors);
+      return;
+    }
+    setErrors({});
     setLoading(true);
+
     const { error } = await supabase
       .from('profiles')
       .update({
@@ -60,45 +159,236 @@ export default function Profile() {
     setLoading(false);
   };
 
+  const handleResetPassword = async () => {
+    const { error } = await supabase.auth.resetPasswordForEmail(user.email!, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (error) toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    else toast({ title: t('profile.passwordResetSent') });
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    // Archive all active listings
+    await supabase
+      .from('listings')
+      .update({ status: 'archived' as any })
+      .eq('seller_id', user.id)
+      .eq('status', 'active');
+
+    // Ban the profile (soft delete)
+    await supabase
+      .from('profiles')
+      .update({ is_banned: true, display_name: '[Deleted Account]' })
+      .eq('id', user.id);
+
+    await supabase.auth.signOut();
+    toast({ title: t('profile.accountDeleted') });
+    setDeleting(false);
+    setDeleteDialogOpen(false);
+    navigate('/');
+  };
+
+  const memberSince = profile?.created_at
+    ? new Date(profile.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long' })
+    : '';
+
+  const initials = (profile?.display_name || 'U').slice(0, 2).toUpperCase();
+
   return (
-    <div className="container mx-auto px-4 py-6 max-w-lg">
-      <h1 className="text-3xl font-bold mb-6">{t('profile.title')}</h1>
+    <div className="container mx-auto px-4 py-6 max-w-3xl space-y-6">
+      {/* Header with Avatar */}
       <Card>
-        <CardContent className="p-6 space-y-4">
+        <CardContent className="p-6">
+          <div className="flex flex-col sm:flex-row items-center gap-5">
+            <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+              <Avatar className="h-24 w-24 border-4 border-primary/20">
+                <AvatarImage src={profile?.avatar_url} alt={profile?.display_name} />
+                <AvatarFallback className="text-2xl bg-primary/10 text-primary">{initials}</AvatarFallback>
+              </Avatar>
+              <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <Camera className="h-6 w-6 text-white" />
+              </div>
+              {avatarUploading && (
+                <div className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center">
+                  <div className="h-6 w-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+            </div>
+            <div className="flex-1 text-center sm:text-left space-y-1">
+              <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
+                <h1 className="text-2xl font-bold">{profile?.display_name || t('profile.displayName')}</h1>
+                <Badge variant={profile?.user_type === 'business' ? 'default' : 'secondary'}>
+                  {profile?.user_type === 'business' ? t('common.pro') : t('common.private')}
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground">{t('profile.memberSince')} {memberSince}</p>
+              {stats.reviewCount > 0 && (
+                <div className="flex items-center gap-1 justify-center sm:justify-start">
+                  <Star className="h-4 w-4 fill-accent text-accent" />
+                  <span className="font-semibold">{stats.avgRating.toFixed(1)}</span>
+                  <span className="text-muted-foreground text-sm">({stats.reviewCount} {t('seller.reviews')})</span>
+                </div>
+              )}
+              <Button variant="outline" size="sm" className="mt-2" onClick={() => navigate(`/seller/${encodeURIComponent(user.id)}`)}>
+                <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
+                {t('profile.viewPublicProfile')}
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {[
+          { icon: Package, label: t('profile.statsActive'), value: stats.active, color: 'text-primary' },
+          { icon: ShoppingBag, label: t('profile.statsSold'), value: stats.sold, color: 'text-accent' },
+          { icon: Eye, label: t('profile.statsTotalViews'), value: stats.totalViews, color: 'text-muted-foreground' },
+          { icon: Star, label: t('profile.statsAvgRating'), value: stats.reviewCount > 0 ? stats.avgRating.toFixed(1) : '—', color: 'text-accent' },
+        ].map((stat, i) => (
+          <Card key={i}>
+            <CardContent className="p-4 flex flex-col items-center gap-1">
+              <stat.icon className={`h-5 w-5 ${stat.color}`} />
+              <span className="text-2xl font-bold">{stat.value}</span>
+              <span className="text-xs text-muted-foreground text-center">{stat.label}</span>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Information Form */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><User className="h-5 w-5" /> {t('profile.sectionInfo')}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <div>
-            <Label>{t('profile.displayName')}</Label>
+            <Label>{t('profile.displayName')} *</Label>
             <Input value={form.display_name} onChange={e => setForm(f => ({ ...f, display_name: e.target.value }))} />
+            {errors.display_name && <p className="text-sm text-destructive mt-1">{errors.display_name}</p>}
           </div>
-          <div>
-            <Label>{t('profile.phone')} ({t('common.optional')})</Label>
-            <Input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="+62..." />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Label>{t('profile.phone')} ({t('common.optional')})</Label>
+              <Input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="+62..." />
+              {errors.phone && <p className="text-sm text-destructive mt-1">{errors.phone}</p>}
+            </div>
+            <div>
+              <Label>{t('profile.whatsapp')} ({t('common.optional')})</Label>
+              <Input value={form.whatsapp} onChange={e => setForm(f => ({ ...f, whatsapp: e.target.value }))} placeholder="+62..." />
+              {errors.whatsapp && <p className="text-sm text-destructive mt-1">{errors.whatsapp}</p>}
+            </div>
           </div>
-          <div>
-            <Label>{t('profile.whatsapp')} ({t('common.optional')})</Label>
-            <Input value={form.whatsapp} onChange={e => setForm(f => ({ ...f, whatsapp: e.target.value }))} placeholder="+62..." />
-          </div>
-          <div>
-            <Label>{t('profile.userType')}</Label>
-            <Select value={form.user_type} onValueChange={v => setForm(f => ({ ...f, user_type: v }))}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="private">{t('profile.private')}</SelectItem>
-                <SelectItem value="business">{t('profile.business')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label>{t('profile.preferredLang')}</Label>
-            <Select value={form.preferred_lang} onValueChange={v => setForm(f => ({ ...f, preferred_lang: v }))}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {SUPPORTED_LANGUAGES.map(l => (
-                  <SelectItem key={l.code} value={l.code}>{l.flag} {l.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Label>{t('profile.userType')}</Label>
+              <Select value={form.user_type} onValueChange={v => setForm(f => ({ ...f, user_type: v }))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="private">{t('profile.private')}</SelectItem>
+                  <SelectItem value="business">{t('profile.business')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>{t('profile.preferredLang')}</Label>
+              <Select value={form.preferred_lang} onValueChange={v => setForm(f => ({ ...f, preferred_lang: v }))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {SUPPORTED_LANGUAGES.map(l => (
+                    <SelectItem key={l.code} value={l.code}>{l.flag} {l.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <Button onClick={handleSave} disabled={loading} className="w-full">{t('common.save')}</Button>
+        </CardContent>
+      </Card>
+
+      {/* Security */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Shield className="h-5 w-5" /> {t('profile.sectionSecurity')}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label>{t('auth.email')}</Label>
+            <Input value={user.email || ''} disabled className="bg-muted" />
+          </div>
+          <Separator />
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button variant="outline" onClick={handleResetPassword} className="flex-1">
+              <Lock className="h-4 w-4 mr-2" />
+              {t('profile.changePassword')}
+            </Button>
+            <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="destructive" className="flex-1">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {t('profile.deleteAccount')}
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{t('profile.deleteAccountTitle')}</DialogTitle>
+                  <DialogDescription>{t('profile.deleteAccountDesc')}</DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>{t('common.cancel')}</Button>
+                  <Button variant="destructive" onClick={handleDeleteAccount} disabled={deleting}>
+                    {deleting ? t('common.loading') : t('common.confirm')}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Reviews Received */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Star className="h-5 w-5" /> {t('profile.sectionReviews')}</CardTitle>
+          {stats.reviewCount > 0 && (
+            <CardDescription>
+              {stats.avgRating.toFixed(1)} / 5 — {stats.reviewCount} {t('seller.reviews')}
+            </CardDescription>
+          )}
+        </CardHeader>
+        <CardContent>
+          {reviews.length === 0 ? (
+            <p className="text-muted-foreground text-sm">{t('seller.noReviews')}</p>
+          ) : (
+            <div className="space-y-4">
+              {reviews.map((rev) => (
+                <div key={rev.id} className="flex gap-3">
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage src={(rev.profiles as any)?.avatar_url} />
+                    <AvatarFallback className="text-xs">
+                      {((rev.profiles as any)?.display_name || '?').slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-sm">{(rev.profiles as any)?.display_name || '?'}</span>
+                      <div className="flex">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star key={i} className={`h-3.5 w-3.5 ${i < rev.rating ? 'fill-accent text-accent' : 'text-muted'}`} />
+                        ))}
+                      </div>
+                    </div>
+                    {rev.comment && <p className="text-sm text-muted-foreground mt-0.5">{rev.comment}</p>}
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {new Date(rev.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
