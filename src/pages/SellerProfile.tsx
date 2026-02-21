@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import ListingCard from '@/components/ListingCard';
-import { User, Briefcase, Star, Calendar, MessageCircle, Phone, Package } from 'lucide-react';
+import { User, Briefcase, Star, Calendar, MessageCircle, Phone, Package, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 
@@ -109,6 +109,12 @@ export default function SellerProfile() {
                   <Badge className="bg-primary text-primary-foreground gap-1">
                     <Briefcase className="h-3 w-3" />
                     Pro
+                  </Badge>
+                )}
+                {seller.is_verified_seller && (
+                  <Badge className="bg-green-500/10 text-green-600 border-green-500/20 gap-1">
+                    <ShieldCheck className="h-3 w-3" />
+                    {t('security.verifiedSeller')}
                   </Badge>
                 )}
               </div>

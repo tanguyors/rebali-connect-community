@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Eye, Clock, Briefcase, Heart } from 'lucide-react';
+import { MapPin, Eye, Clock, Briefcase, Heart, ShieldCheck } from 'lucide-react';
 import { formatPrice, CATEGORY_ICONS, CATEGORY_PLACEHOLDERS } from '@/lib/constants';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
@@ -36,7 +36,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
     queryFn: async () => {
       const { data } = await supabase
         .from('profiles')
-        .select('user_type')
+        .select('user_type, is_verified_seller')
         .eq('id', listing.seller_id)
         .single();
       return data;
@@ -57,6 +57,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
   });
 
   const isPro = sellerProfile?.user_type === 'business';
+  const isVerified = sellerProfile?.is_verified_seller === true;
 
   const translation = listing.listing_translations?.find(tr => tr.lang === language);
   const enTranslation = listing.listing_translations?.find(tr => tr.lang === 'en');
@@ -88,16 +89,24 @@ export default function ListingCard({ listing }: ListingCardProps) {
           <Badge className="absolute top-2 left-2 bg-card/90 text-foreground text-xs">
             {CATEGORY_ICONS[listing.category]} {t(`categories.${listing.category}`)}
           </Badge>
-          {isPro ? (
-            <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground text-[10px] gap-1 font-bold shadow">
-              <Briefcase className="h-3 w-3" />
-              Pro
-            </Badge>
-          ) : (
-            <Badge variant="secondary" className="absolute top-2 right-2 text-[10px] font-semibold shadow">
-              {t('common.private')}
-            </Badge>
-          )}
+          <div className="absolute top-2 right-2 flex flex-col gap-1 items-end">
+            {isPro ? (
+              <Badge className="bg-primary text-primary-foreground text-[10px] gap-1 font-bold shadow">
+                <Briefcase className="h-3 w-3" />
+                Pro
+              </Badge>
+            ) : (
+              <Badge variant="secondary" className="text-[10px] font-semibold shadow">
+                {t('common.private')}
+              </Badge>
+            )}
+            {isVerified && (
+              <Badge className="bg-green-500/10 text-green-600 border-green-500/20 text-[10px] gap-1 font-semibold shadow">
+                <ShieldCheck className="h-3 w-3" />
+                {t('security.verifiedSeller')}
+              </Badge>
+            )}
+          </div>
         </div>
         <CardContent className="p-3">
           <h3 className="font-semibold text-sm line-clamp-2 mb-1 group-hover:text-primary transition-colors">

@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { formatPrice, CATEGORY_ICONS, MAX_ACTIVE_LISTINGS } from '@/lib/constants';
-import { Plus, Eye, ArchiveRestore } from 'lucide-react';
+import { Plus, Eye, ArchiveRestore, Pencil } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 
@@ -69,6 +69,9 @@ export default function MyListings() {
           <div className="flex flex-col gap-1">
             {listing.status === 'active' && (
               <>
+                <Button size="sm" variant="outline" onClick={() => navigate(`/create?edit=${listing.id}`)} className="gap-1">
+                  <Pencil className="h-3 w-3" /> {t('listing.edit')}
+                </Button>
                 <Button size="sm" variant="outline" onClick={() => updateStatus(listing.id, 'sold')}>
                   {t('listing.markSold')}
                 </Button>

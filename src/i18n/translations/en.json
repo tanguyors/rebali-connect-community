@@ -78,7 +78,11 @@
     "noPhone": "No phone provided", "noWhatsapp": "No WhatsApp provided", "linkCopied": "Link copied to clipboard!",
     "keyInfo": "Key Information", "category": "Category", "seePhotos": "See all photos",
     "soldBy": "Sold by", "contactBtn": "Contact", "sellerListings": "Listings from this seller", "seeMoreListings": "See more listings",
-    "similarListings": "You might also like"
+    "similarListings": "You might also like",
+    "edit": "Edit",
+    "editListing": "Edit Listing",
+    "update": "Update Listing",
+    "updated": "Listing updated!"
   },
   "createListing": {
     "title": "Create a Listing", "stepCategory": "Category", "stepDetails": "Details", "stepPhotos": "Photos",

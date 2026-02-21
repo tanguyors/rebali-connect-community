@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { formatPrice, CATEGORY_ICONS, CATEGORY_PLACEHOLDERS } from '@/lib/constants';
-import { MapPin, Eye, Phone, MessageCircle, Flag, User, Calendar, Share2, Heart, ChevronRight, ThumbsUp, Star, Briefcase, ArrowRight } from 'lucide-react';
+import { MapPin, Eye, Phone, MessageCircle, Flag, User, Calendar, Share2, Heart, ChevronRight, ThumbsUp, Star, Briefcase, ArrowRight, ShieldCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
@@ -52,7 +52,7 @@ export default function ListingDetail() {
     queryFn: async () => {
       const { data } = await supabase
         .from('listings')
-        .select('*, listing_images(id, storage_path, sort_order), listing_translations(lang, title, description, is_machine), profiles!seller_id(id, display_name, whatsapp, phone, user_type, avatar_url, created_at)')
+        .select('*, listing_images(id, storage_path, sort_order), listing_translations(lang, title, description, is_machine), profiles!seller_id(id, display_name, whatsapp, phone, user_type, avatar_url, created_at, is_verified_seller)')
         .eq('id', id!)
         .single();
       return data;
@@ -366,12 +366,20 @@ export default function ListingDetail() {
                 <Calendar className="h-4 w-4" />
                 <span>{t('profile.memberSince')} {seller?.created_at ? new Date(seller.created_at).toLocaleDateString() : ''}</span>
               </div>
-              {isPro && (
-                <Badge className="mt-2 bg-primary text-primary-foreground gap-1 rounded-full">
-                  <Briefcase className="h-3.5 w-3.5" />
-                  Pro
-                </Badge>
-              )}
+              <div className="flex items-center gap-2 mt-2">
+                {isPro && (
+                  <Badge className="bg-primary text-primary-foreground gap-1 rounded-full">
+                    <Briefcase className="h-3.5 w-3.5" />
+                    Pro
+                  </Badge>
+                )}
+                {seller?.is_verified_seller && (
+                  <Badge className="bg-green-500/10 text-green-600 border-green-500/20 gap-1 rounded-full">
+                    <ShieldCheck className="h-3.5 w-3.5" />
+                    {t('security.verifiedSeller')}
+                  </Badge>
+                )}
+              </div>
             </div>
 
             {/* Seller's other listings */}
@@ -465,7 +473,12 @@ export default function ListingDetail() {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-bold group-hover:text-primary transition-colors">{seller?.display_name || 'User'}</p>
+                      <div className="flex items-center gap-1.5">
+                        <p className="font-bold group-hover:text-primary transition-colors">{seller?.display_name || 'User'}</p>
+                        {seller?.is_verified_seller && (
+                          <ShieldCheck className="h-4 w-4 text-green-600" />
+                        )}
+                      </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         {avgRating && (
                           <span className="flex items-center gap-0.5">
