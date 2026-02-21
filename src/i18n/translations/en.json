@@ -184,7 +184,7 @@
     "terms": "Terms of Service", "privacy": "Privacy Policy", "copyright": "All rights reserved."
   },
   "notFound": { "title": "Page not found", "description": "Oops! The page you're looking for doesn't exist.", "backHome": "Return to Home" },
-  "notifications": { "listingActive": "Listing reactivated", "listingSold": "Listing marked as sold", "listingArchived": "Listing archived", "vipNotify": "You'll be notified when VIP launches!" },
+  "notifications": { "newListing": "New listing!", "listingActive": "Listing reactivated", "listingSold": "Listing marked as sold", "listingArchived": "Listing archived", "vipNotify": "You'll be notified when VIP launches!" },
   "adminLabels": { "accessDenied": "Access denied", "listing": "Listing", "reporter": "Reporter", "deleted": "Deleted", "unknown": "Unknown" },
   "seller": { "activeListings": "active listings", "reviews": "reviews", "reviewsTitle": "Reviews", "leaveReview": "Leave a review", "reviewPlaceholder": "Share your experience with this seller...", "reviewSubmitted": "Review submitted!", "noReviews": "No reviews yet", "allListings": "Listings" }
 }
