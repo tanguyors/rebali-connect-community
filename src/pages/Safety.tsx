@@ -31,6 +31,12 @@ export default function Safety() {
           </Card>
         ))}
       </div>
+      {/* Legal disclaimer */}
+      <Card className="mt-8 border-primary/20 bg-primary/5">
+        <CardContent className="p-5">
+          <p className="text-sm text-muted-foreground italic">{t('security.disclaimer')}</p>
+        </CardContent>
+      </Card>
     </div>
   );
 }

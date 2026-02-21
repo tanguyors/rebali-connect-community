@@ -483,7 +483,8 @@ export default function ListingDetail() {
                   <div className="space-y-2.5">
                     {seller?.whatsapp && (
                       <Button className="w-full gap-2 rounded-full font-bold text-base h-12" asChild>
-                      <a href={`https://wa.me/${seller.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par votre annonce "${title}" à ${formatPrice(listing.price, listing.currency)}. Est-elle toujours disponible ?\n\n${window.location.href}`)}`} target="_blank" rel="noopener noreferrer">
+                      <a href={`https://wa.me/${seller.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par votre annonce "${title}" à ${formatPrice(listing.price, listing.currency)}. Est-elle toujours disponible ?\n\n${window.location.href}`)}`} target="_blank" rel="noopener noreferrer"
+                        onClick={() => { supabase.from('whatsapp_click_logs').insert({ listing_id: listing.id, user_id: user?.id || null }); }}>
                           <MessageCircle className="h-5 w-5" />
                           {t('listing.whatsapp')}
                         </a>
@@ -530,7 +531,8 @@ export default function ListingDetail() {
         </button>
         {seller?.whatsapp ? (
           <Button className="flex-1 gap-2 rounded-full font-bold text-base h-12" asChild>
-            <a href={`https://wa.me/${seller.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par votre annonce "${title}" à ${formatPrice(listing.price, listing.currency)}. Est-elle toujours disponible ?\n\n${window.location.href}`)}`} target="_blank" rel="noopener noreferrer">
+            <a href={`https://wa.me/${seller.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par votre annonce "${title}" à ${formatPrice(listing.price, listing.currency)}. Est-elle toujours disponible ?\n\n${window.location.href}`)}`} target="_blank" rel="noopener noreferrer"
+              onClick={() => { supabase.from('whatsapp_click_logs').insert({ listing_id: listing.id, user_id: user?.id || null }); }}>
               <MessageCircle className="h-5 w-5" />
               {t('listing.contactBtn')}
             </a>

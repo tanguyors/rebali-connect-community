@@ -23,12 +23,44 @@ export default function Auth() {
   const [userType, setUserType] = useState<'private' | 'business'>('private');
   const [loading, setLoading] = useState(false);
 
+  // Device fingerprinting
+  const getDeviceHash = async (): Promise<string> => {
+    const raw = [
+      navigator.userAgent,
+      navigator.language,
+      screen.width.toString(),
+      screen.height.toString(),
+      navigator.platform,
+    ].join('|');
+    const encoder = new TextEncoder();
+    const data = encoder.encode(raw);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  };
+
+  const logDevice = async (userId: string) => {
+    try {
+      const deviceHash = await getDeviceHash();
+      await supabase.functions.invoke('log-device', {
+        body: { device_hash: deviceHash, user_agent: navigator.userAgent, user_id: userId },
+      });
+    } catch {
+      // Silently fail - device logging is best-effort
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) toast({ title: 'Error', description: error.message, variant: 'destructive' });
-    else navigate('/');
+    else {
+      // Get user ID from session and log device
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) logDevice(session.user.id);
+      navigate('/');
+    }
     setLoading(false);
   };
 
@@ -57,7 +89,10 @@ export default function Auth() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithOtp({ email });
     if (error) toast({ title: 'Error', description: error.message, variant: 'destructive' });
-    else toast({ title: t('auth.magicLinkSent') });
+    else {
+      toast({ title: t('auth.magicLinkSent') });
+      // Device will be logged on next login via auth state change
+    }
     setLoading(false);
   };
 

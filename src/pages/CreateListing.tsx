@@ -20,7 +20,7 @@ const STEPS = ['stepCategory', 'stepDetails', 'stepPhotos', 'stepPreview'] as co
 
 export default function CreateListing() {
   const { t } = useLanguage();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -74,8 +74,65 @@ export default function CreateListing() {
     return true;
   };
 
+  // Content filtering patterns
+  const SUSPICIOUS_PATTERNS = [
+    /wa\.me\//i, /t\.me\//i, /bit\.ly\//i, /tinyurl\.com/i,
+    /https?:\/\/[^\s]+/i, /telegram/i, /whatsapp\.com/i, /signal\.me/i,
+    /(\+?\d{1,3}[\s.-]?)?\(?\d{2,4}\)?[\s.-]?\d{3,4}[\s.-]?\d{3,5}/,
+  ];
+
+  const checkContent = (text: string): boolean => {
+    return SUSPICIOUS_PATTERNS.some(p => p.test(text));
+  };
+
+  // Watermark function
+  const addWatermark = async (file: File, username: string): Promise<File> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(img, 0, 0);
+
+        // Watermark text
+        const date = new Date().toLocaleDateString('fr-FR');
+        const text = `Re-Bali - @${username} - ${date}`;
+        const fontSize = Math.max(14, Math.floor(img.width / 40));
+        ctx.font = `${fontSize}px Arial`;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+        ctx.lineWidth = 2;
+
+        const metrics = ctx.measureText(text);
+        const x = img.width - metrics.width - 15;
+        const y = img.height - 15;
+
+        ctx.strokeText(text, x, y);
+        ctx.fillText(text, x, y);
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(new File([blob], file.name, { type: 'image/jpeg' }));
+          } else {
+            resolve(file);
+          }
+        }, 'image/jpeg', 0.9);
+      };
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   const handlePublish = async () => {
     if (!user || !canPost) return;
+
+    // Check content for suspicious patterns
+    if (checkContent(form.description) || checkContent(form.title)) {
+      toast({ title: t('security.contentBlocked'), variant: 'destructive' });
+      return;
+    }
+
     setLoading(true);
     try {
       // 1. Create listing
@@ -94,12 +151,13 @@ export default function CreateListing() {
 
       if (error) throw error;
 
-      // 2. Upload images
+      // 2. Upload images with watermark
+      const username = profile?.display_name || 'user';
       for (let i = 0; i < photos.length; i++) {
-        const file = photos[i];
-        const ext = file.name.split('.').pop();
+        const watermarked = await addWatermark(photos[i], username);
+        const ext = 'jpg';
         const path = `${user.id}/${listing.id}/${i}.${ext}`;
-        await supabase.storage.from('listings').upload(path, file);
+        await supabase.storage.from('listings').upload(path, watermarked);
         await supabase.from('listing_images').insert({
           listing_id: listing.id,
           storage_path: path,

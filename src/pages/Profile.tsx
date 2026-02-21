@@ -11,11 +11,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { SUPPORTED_LANGUAGES } from '@/i18n';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
-import { User, Camera, Shield, Star, BarChart3, Eye, ShoppingBag, Package, Mail, Lock, Trash2, ExternalLink } from 'lucide-react';
+import { User, Camera, Shield, Star, BarChart3, Eye, ShoppingBag, Package, Mail, Lock, Trash2, ExternalLink, MessageCircle, CheckCircle } from 'lucide-react';
 
 const profileSchema = z.object({
   display_name: z.string().trim().min(2, 'Min 2 characters').max(50, 'Max 50 characters'),
@@ -24,6 +25,126 @@ const profileSchema = z.object({
   user_type: z.enum(['private', 'business']),
   preferred_lang: z.string(),
 });
+
+function WhatsAppVerification({ user, profile, refreshProfile }: { user: any; profile: any; refreshProfile: () => Promise<void> }) {
+  const { t } = useLanguage();
+  const [phone, setPhone] = useState('');
+  const [otpValue, setOtpValue] = useState('');
+  const [step, setStep] = useState<'phone' | 'otp'>('phone');
+  const [loading, setLoading] = useState(false);
+
+  if (profile?.phone_verified) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center gap-3">
+            <CheckCircle className="h-6 w-6 text-green-500" />
+            <div>
+              <p className="font-semibold">{t('security.whatsappVerified')}</p>
+              <p className="text-sm text-muted-foreground">{profile.whatsapp}</p>
+            </div>
+            <Badge className="ml-auto bg-green-500/10 text-green-600 border-green-500/20">
+              <CheckCircle className="h-3.5 w-3.5 mr-1" /> {t('security.whatsappVerified')}
+            </Badge>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const handleSendOtp = async () => {
+    if (!phone) return;
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('send-otp', {
+        body: { phone_number: phone, user_id: user.id },
+      });
+      if (error) throw error;
+      if (data?.error) {
+        const errorKey = data.error === 'rate_limited' ? 'rateLimited'
+          : data.error === 'phone_already_used' ? 'phoneAlreadyUsed'
+          : data.error === 'phone_banned' ? 'phoneBanned' : 'codeError';
+        toast({ title: t(`security.${errorKey}`), variant: 'destructive' });
+      } else {
+        toast({ title: t('security.codeSent') });
+        setStep('otp');
+      }
+    } catch {
+      toast({ title: t('security.codeError'), variant: 'destructive' });
+    }
+    setLoading(false);
+  };
+
+  const handleVerifyOtp = async () => {
+    if (otpValue.length !== 6) return;
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-otp', {
+        body: { phone_number: phone, otp_code: otpValue, user_id: user.id },
+      });
+      if (error) throw error;
+      if (data?.error) {
+        const errorKey = data.error === 'max_attempts' ? 'maxAttemptsReached'
+          : data.error === 'no_valid_otp' ? 'noValidOtp' : 'verificationFailed';
+        toast({ title: t(`security.${errorKey}`), variant: 'destructive' });
+      } else {
+        toast({ title: t('security.verificationSuccess') });
+        await refreshProfile();
+      }
+    } catch {
+      toast({ title: t('security.verificationFailed'), variant: 'destructive' });
+    }
+    setLoading(false);
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <MessageCircle className="h-5 w-5" /> {t('security.verifyWhatsapp')}
+        </CardTitle>
+        <CardDescription>{t('security.verifyWhatsappDesc')}</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {step === 'phone' ? (
+          <>
+            <div>
+              <Label>{t('security.phoneNumber')}</Label>
+              <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder={t('security.phonePlaceholder')} />
+            </div>
+            <Button onClick={handleSendOtp} disabled={loading || !phone} className="w-full">
+              {t('security.sendCode')}
+            </Button>
+          </>
+        ) : (
+          <>
+            <div>
+              <Label>{t('security.enterCode')}</Label>
+              <div className="flex justify-center mt-2">
+                <InputOTP maxLength={6} value={otpValue} onChange={setOtpValue}>
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
+            </div>
+            <Button onClick={handleVerifyOtp} disabled={loading || otpValue.length !== 6} className="w-full">
+              {t('security.verifyCode')}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => { setStep('phone'); setOtpValue(''); }}>
+              {t('common.back')}
+            </Button>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function Profile() {
   const { t, setLanguage } = useLanguage();
@@ -307,6 +428,9 @@ export default function Profile() {
           <Button onClick={handleSave} disabled={loading} className="w-full">{t('common.save')}</Button>
         </CardContent>
       </Card>
+
+      {/* WhatsApp Verification */}
+      <WhatsAppVerification user={user} profile={profile} refreshProfile={refreshProfile} />
 
       {/* Security */}
       <Card>
