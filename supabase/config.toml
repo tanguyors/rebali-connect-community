@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.purge-expired-docs]
 verify_jwt = false
+
+[functions.translate-listing]
+verify_jwt = false

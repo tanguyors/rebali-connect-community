@@ -640,6 +640,7 @@ export type Database = {
         Returns: boolean
       }
       increment_views: { Args: { _listing_id: string }; Returns: undefined }
+      search_listings: { Args: { search_term: string }; Returns: string[] }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

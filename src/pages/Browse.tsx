@@ -68,12 +68,20 @@ export default function Browse() {
   const { data: listings, isLoading } = useQuery({
     queryKey: ['listings', debouncedSearch, category, subcategory, location, condition, sort, minPrice, maxPrice],
     queryFn: async () => {
+      // If searching, use multilingual search RPC to get matching IDs first
+      let matchingIds: string[] | null = null;
+      if (debouncedSearch) {
+        const { data: ids } = await supabase.rpc('search_listings', { search_term: debouncedSearch });
+        matchingIds = (ids as string[]) || [];
+        if (matchingIds.length === 0) return [];
+      }
+
       let query = supabase
         .from('listings')
         .select('*, listing_images(storage_path, sort_order), listing_translations(lang, title), profiles:seller_id(user_type, is_verified_seller), favorites(count)')
         .eq('status', 'active');
 
-      if (debouncedSearch) query = query.or(`title_original.ilike.%${debouncedSearch}%,description_original.ilike.%${debouncedSearch}%`);
+      if (matchingIds) query = query.in('id', matchingIds);
       if (category !== 'all') query = query.eq('category', category as any);
       if (subcategory !== 'all') query = query.eq('subcategory', subcategory);
       if (location !== 'all') query = query.eq('location_area', location);

@@ -199,6 +199,9 @@ export default function CreateListing() {
           });
         }
 
+        // Trigger translation in background
+        supabase.functions.invoke('translate-listing', { body: { listing_id: editId } });
+
         toast({ title: t('listing.updated') });
         navigate(`/listing/${editId}`);
       } else {
@@ -241,6 +244,9 @@ export default function CreateListing() {
           is_machine: true,
         }));
         await supabase.from('listing_translations').insert(translations);
+
+        // Trigger translation in background
+        supabase.functions.invoke('translate-listing', { body: { listing_id: listing.id } });
 
         toast({ title: t('createListing.listingCreated') });
         navigate(`/listing/${listing.id}`);
