@@ -102,6 +102,22 @@
     "securityTab": "Sécurité",
     "disclaimer": "Re-Bali agit en tant que plateforme de mise en relation entre acheteurs et vendeurs. Les transactions sont effectuées directement entre utilisateurs. Re-Bali n'est pas responsable de la qualité, de la sécurité ou de la légalité des articles publiés.",
     "maxAttemptsReached": "Nombre maximum de tentatives atteint. Demandez un nouveau code.",
-    "noValidOtp": "Aucun code valide trouvé. Veuillez en demander un nouveau."
+    "noValidOtp": "Aucun code valide trouvé. Veuillez en demander un nouveau.",
+    "becomeVerified": "Devenir Vendeur Vérifié",
+    "becomeVerifiedDesc": "Soumettez votre pièce d'identité pour obtenir le badge Vendeur Vérifié",
+    "verifiedSellerDesc": "Votre identité a été vérifiée. Les acheteurs peuvent vous faire confiance.",
+    "verificationPending": "Vérification en cours",
+    "verificationPendingDesc": "Vos documents sont en cours d'examen. Cela prend généralement 24-48 heures.",
+    "verificationRejected": "Votre vérification précédente a été rejetée. Veuillez soumettre des documents lisibles.",
+    "documentType": "Type de document",
+    "passport": "Passeport",
+    "uploadDocument": "Télécharger votre pièce d'identité",
+    "uploadSelfie": "Télécharger un selfie avec votre document",
+    "selfieHint": "Tenez votre pièce d'identité à côté de votre visage, les deux bien visibles",
+    "chooseFile": "Choisir un fichier (max 5 Mo)",
+    "fileTooLarge": "Le fichier doit être une image de moins de 5 Mo",
+    "submitVerification": "Soumettre la vérification",
+    "verificationSubmitted": "Vérification soumise ! Nous l'examinerons sous peu.",
+    "verificationError": "Échec de la soumission"
   }
 }

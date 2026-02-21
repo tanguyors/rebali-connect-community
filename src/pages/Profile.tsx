@@ -16,7 +16,7 @@ import { SUPPORTED_LANGUAGES } from '@/i18n';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
-import { User, Camera, Shield, Star, BarChart3, Eye, ShoppingBag, Package, Mail, Lock, Trash2, ExternalLink, MessageCircle, CheckCircle } from 'lucide-react';
+import { User, Camera, Shield, Star, BarChart3, Eye, ShoppingBag, Package, Mail, Lock, Trash2, ExternalLink, MessageCircle, CheckCircle, ShieldCheck, Clock, Upload } from 'lucide-react';
 
 const profileSchema = z.object({
   display_name: z.string().trim().min(2, 'Min 2 characters').max(50, 'Max 50 characters'),
@@ -138,6 +138,171 @@ function WhatsAppVerification({ user, profile, refreshProfile }: { user: any; pr
             </Button>
           </>
         )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function IdVerification({ user, profile, refreshProfile }: { user: any; profile: any; refreshProfile: () => Promise<void> }) {
+  const { t } = useLanguage();
+  const [docType, setDocType] = useState<string>('ktp');
+  const [docFile, setDocFile] = useState<File | null>(null);
+  const [selfieFile, setSelfieFile] = useState<File | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
+  const [loadingStatus, setLoadingStatus] = useState(true);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      const { data } = await supabase
+        .from('id_verifications')
+        .select('status')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1);
+      if (data && data.length > 0) setVerificationStatus(data[0].status);
+      setLoadingStatus(false);
+    };
+    fetchStatus();
+  }, [user.id]);
+
+  if (loadingStatus) return null;
+
+  // Already verified
+  if (profile?.is_verified_seller || verificationStatus === 'approved') {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center gap-3">
+            <ShieldCheck className="h-6 w-6 text-green-500" />
+            <div>
+              <p className="font-semibold text-green-700">{t('security.verifiedSeller')}</p>
+              <p className="text-sm text-muted-foreground">{t('security.verifiedSellerDesc')}</p>
+            </div>
+            <Badge className="ml-auto bg-green-500/10 text-green-600 border-green-500/20">
+              <ShieldCheck className="h-3.5 w-3.5 mr-1" /> {t('security.verifiedSeller')}
+            </Badge>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Pending verification
+  if (verificationStatus === 'pending') {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center gap-3">
+            <Clock className="h-6 w-6 text-amber-500" />
+            <div>
+              <p className="font-semibold text-amber-700">{t('security.verificationPending')}</p>
+              <p className="text-sm text-muted-foreground">{t('security.verificationPendingDesc')}</p>
+            </div>
+            <Badge className="ml-auto bg-amber-500/10 text-amber-600 border-amber-500/20">
+              <Clock className="h-3.5 w-3.5 mr-1" /> {t('admin.pending')}
+            </Badge>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const validateFile = (file: File) => {
+    if (!file.type.startsWith('image/')) return false;
+    if (file.size > 5 * 1024 * 1024) return false;
+    return true;
+  };
+
+  const handleSubmit = async () => {
+    if (!docFile || !selfieFile) return;
+    if (!validateFile(docFile) || !validateFile(selfieFile)) {
+      toast({ title: t('security.fileTooLarge'), variant: 'destructive' });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const docExt = docFile.name.split('.').pop();
+      const selfieExt = selfieFile.name.split('.').pop();
+      const docPath = `${user.id}/document.${docExt}`;
+      const selfiePath = `${user.id}/selfie.${selfieExt}`;
+
+      const [docUpload, selfieUpload] = await Promise.all([
+        supabase.storage.from('id-verifications').upload(docPath, docFile, { upsert: true }),
+        supabase.storage.from('id-verifications').upload(selfiePath, selfieFile, { upsert: true }),
+      ]);
+
+      if (docUpload.error) throw docUpload.error;
+      if (selfieUpload.error) throw selfieUpload.error;
+
+      const { error } = await supabase.from('id_verifications').insert({
+        user_id: user.id,
+        document_type: docType,
+        document_path: docPath,
+        selfie_path: selfiePath,
+      });
+
+      if (error) throw error;
+      setVerificationStatus('pending');
+      toast({ title: t('security.verificationSubmitted') });
+    } catch (err: any) {
+      toast({ title: t('security.verificationError'), description: err.message, variant: 'destructive' });
+    }
+    setSubmitting(false);
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <ShieldCheck className="h-5 w-5" /> {t('security.becomeVerified')}
+        </CardTitle>
+        <CardDescription>{t('security.becomeVerifiedDesc')}</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {verificationStatus === 'rejected' && (
+          <div className="p-3 rounded-md bg-destructive/10 text-destructive text-sm">
+            {t('security.verificationRejected')}
+          </div>
+        )}
+        <div>
+          <Label>{t('security.documentType')}</Label>
+          <Select value={docType} onValueChange={setDocType}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ktp">KTP</SelectItem>
+              <SelectItem value="passport">{t('security.passport')}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label>{t('security.uploadDocument')}</Label>
+          <div className="mt-1.5">
+            <label className="flex items-center gap-2 cursor-pointer border border-dashed rounded-md p-3 hover:bg-muted/50 transition-colors">
+              <Upload className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">
+                {docFile ? docFile.name : t('security.chooseFile')}
+              </span>
+              <input type="file" accept="image/*" className="hidden" onChange={e => setDocFile(e.target.files?.[0] || null)} />
+            </label>
+          </div>
+        </div>
+        <div>
+          <Label>{t('security.uploadSelfie')}</Label>
+          <div className="mt-1.5">
+            <label className="flex items-center gap-2 cursor-pointer border border-dashed rounded-md p-3 hover:bg-muted/50 transition-colors">
+              <Upload className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">
+                {selfieFile ? selfieFile.name : t('security.chooseFile')}
+              </span>
+              <input type="file" accept="image/*" className="hidden" onChange={e => setSelfieFile(e.target.files?.[0] || null)} />
+            </label>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">{t('security.selfieHint')}</p>
+        </div>
+        <Button onClick={handleSubmit} disabled={submitting || !docFile || !selfieFile} className="w-full">
+          {submitting ? t('common.loading') : t('security.submitVerification')}
+        </Button>
       </CardContent>
     </Card>
   );
@@ -402,6 +567,9 @@ export default function Profile() {
 
       {/* WhatsApp Verification */}
       <WhatsAppVerification user={user} profile={profile} refreshProfile={refreshProfile} />
+
+      {/* Identity Verification */}
+      <IdVerification user={user} profile={profile} refreshProfile={refreshProfile} />
 
       {/* Security */}
       <Card>
