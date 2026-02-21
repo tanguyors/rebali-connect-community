@@ -281,7 +281,11 @@
     "essence": "Petrol", "diesel": "Diesel", "electrique": "Electric", "hybride": "Hybrid", "gpl": "LPG",
     "apartment": "Apartment", "house": "House", "villa": "Villa", "land": "Land", "commercial": "Commercial", "room": "Room",
     "yes": "Yes", "no": "No",
-    "categorySpecificInfo": "Category Details"
+    "categorySpecificInfo": "Category Details",
+    "animalType": "Animal Type", "breed": "Breed", "age": "Age",
+    "chien": "Dog", "chat": "Cat", "oiseau": "Bird", "poisson": "Fish",
+    "reptile": "Reptile", "rongeur": "Rodent", "cheval": "Horse",
+    "specifyOther": "Please specify..."
   },
   "legal": {
     "termsTitle": "Terms of Use",

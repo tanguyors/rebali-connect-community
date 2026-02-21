@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { CATEGORIES, CATEGORY_TREE, LOCATIONS, CONDITIONS, CURRENCIES, CATEGORY_ICONS, MAX_ACTIVE_LISTINGS, formatPrice, CATEGORY_FIELDS } from '@/lib/constants';
+import { CATEGORIES, CATEGORY_TREE, LOCATIONS, CONDITIONS, CATEGORY_ICONS, MAX_ACTIVE_LISTINGS, formatPrice, CATEGORY_FIELDS, CATEGORIES_WITHOUT_CONDITION } from '@/lib/constants';
 import { SUPPORTED_LANGUAGES } from '@/i18n';
 import { toast } from '@/hooks/use-toast';
 import { Upload, X, ChevronLeft, ChevronRight, Check, MapPin, Loader2 } from 'lucide-react';
@@ -403,15 +403,17 @@ export default function CreateListing() {
               </Button>
             </div>
           </div>
-          <div>
-            <Label>{t('createListing.conditionLabel')}</Label>
-            <Select value={form.condition} onValueChange={v => setForm(f => ({ ...f, condition: v }))}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {CONDITIONS.map(c => <SelectItem key={c} value={c}>{t(`conditions.${c}`)}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
+          {!CATEGORIES_WITHOUT_CONDITION.includes(form.category as any) && (
+            <div>
+              <Label>{t('createListing.conditionLabel')}</Label>
+              <Select value={form.condition} onValueChange={v => setForm(f => ({ ...f, condition: v }))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {CONDITIONS.map(c => <SelectItem key={c} value={c}>{t(`conditions.${c}`)}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           {/* Category-specific extra fields */}
           {CATEGORY_FIELDS[form.category] && (
@@ -422,14 +424,29 @@ export default function CreateListing() {
                   <div key={field.key} className={field.type === 'text' && !field.suffix ? 'col-span-2 sm:col-span-1' : ''}>
                     <Label>{t(field.labelKey)} {field.required ? '*' : ''}</Label>
                     {field.type === 'select' && field.options ? (
-                      <Select value={extraFields[field.key] || ''} onValueChange={v => setExtraFields(prev => ({ ...prev, [field.key]: v }))}>
-                        <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
-                        <SelectContent>
-                          {field.options.map(opt => (
-                            <SelectItem key={opt} value={opt}>{t(`extraFields.${opt}`)}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <>
+                        <Select value={extraFields[field.key] || ''} onValueChange={v => {
+                          setExtraFields(prev => ({ ...prev, [field.key]: v }));
+                          if (v !== 'autre') setExtraFields(prev => { const copy = { ...prev }; delete copy[field.key + '_custom']; return copy; });
+                        }}>
+                          <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+                          <SelectContent>
+                            {field.options.map(opt => (
+                              <SelectItem key={opt} value={opt}>
+                                {field.rawOptions ? (opt === 'autre' ? t('extraFields.autre') : opt) : t(`extraFields.${opt}`)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {extraFields[field.key] === 'autre' && (
+                          <Input
+                            className="mt-2"
+                            placeholder={t('extraFields.specifyOther')}
+                            value={extraFields[field.key + '_custom'] || ''}
+                            onChange={e => setExtraFields(prev => ({ ...prev, [field.key + '_custom']: e.target.value }))}
+                          />
+                        )}
+                      </>
                     ) : (
                       <div className="relative">
                         <Input

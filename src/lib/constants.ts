@@ -94,17 +94,47 @@ export type ExtraFieldDef = {
   key: string;
   labelKey: string; // i18n key
   type: 'text' | 'number' | 'select';
-  options?: readonly string[]; // for select type, values are i18n keys
+  options?: readonly string[]; // for select type
   required?: boolean;
   placeholder?: string;
   suffix?: string;
+  rawOptions?: boolean; // if true, display option values as-is (no i18n translation)
 };
-
 export const CONTRACT_TYPES = ['cdi', 'cdd', 'interim', 'freelance', 'stage', 'alternance', 'independant'] as const;
 export const JOB_SECTORS = ['immobilier', 'informatique', 'commerce', 'sante', 'education', 'restauration', 'transport', 'batiment', 'industrie', 'finance', 'communication', 'juridique', 'agriculture', 'tourisme', 'autre'] as const;
 export const WORK_TIMES = ['full_time', 'part_time'] as const;
 export const FUEL_TYPES = ['essence', 'diesel', 'electrique', 'hybride', 'gpl'] as const;
 export const PROPERTY_TYPES = ['apartment', 'house', 'villa', 'land', 'commercial', 'room'] as const;
+
+export const VEHICLE_BRANDS = [
+  'Audi', 'BMW', 'Chevrolet', 'Citroën', 'Daihatsu', 'Ducati', 'Fiat', 'Ford',
+  'Harley-Davidson', 'Honda', 'Hyundai', 'Isuzu', 'Jeep', 'Kawasaki', 'Kia', 'KTM',
+  'Land Rover', 'Lexus', 'Mazda', 'Mercedes-Benz', 'Mini', 'Mitsubishi', 'Nissan',
+  'Opel', 'Peugeot', 'Piaggio', 'Porsche', 'Renault', 'Subaru', 'Suzuki',
+  'Tesla', 'Toyota', 'Triumph', 'Vespa', 'Volkswagen', 'Volvo', 'Yamaha', 'autre',
+] as const;
+
+export const ELECTRONICS_BRANDS = [
+  'Acer', 'Apple', 'Asus', 'Bang & Olufsen', 'Beats', 'Bose', 'Canon', 'Corsair',
+  'Dell', 'DJI', 'Fujifilm', 'Garmin', 'Google', 'GoPro', 'HP', 'HTC', 'Huawei',
+  'JBL', 'Lenovo', 'LG', 'Logitech', 'Marshall', 'Meta', 'Microsoft', 'Motorola',
+  'Nikon', 'Nintendo', 'Nokia', 'Nothing', 'OnePlus', 'Oppo', 'Panasonic', 'Philips',
+  'Razer', 'Realme', 'Samsung', 'Sharp', 'Sony', 'TCL', 'Vivo', 'Xiaomi', 'autre',
+] as const;
+
+export const FASHION_BRANDS = [
+  'Adidas', 'Balenciaga', 'Burberry', 'Calvin Klein', 'Chanel', 'Converse', 'Dior',
+  'Dolce & Gabbana', 'Fendi', 'Gucci', 'H&M', 'Hermès', 'Hugo Boss', 'Lacoste',
+  "Levi's", 'Louis Vuitton', 'Mango', 'Michael Kors', 'New Balance', 'Nike',
+  'Prada', 'Puma', 'Ralph Lauren', 'Ray-Ban', 'Reebok', 'Saint Laurent',
+  'The North Face', 'Tommy Hilfiger', 'Uniqlo', 'Valentino', 'Vans', 'Versace', 'Zara', 'autre',
+] as const;
+
+export const ANIMAL_TYPES = [
+  'chien', 'chat', 'oiseau', 'poisson', 'reptile', 'rongeur', 'cheval', 'autre',
+] as const;
+
+export const CATEGORIES_WITHOUT_CONDITION = ['emploi', 'immobilier', 'services', 'vacances', 'animaux'] as const;
 
 export const CATEGORY_FIELDS: Record<string, ExtraFieldDef[]> = {
   emploi: [
@@ -115,7 +145,7 @@ export const CATEGORY_FIELDS: Record<string, ExtraFieldDef[]> = {
     { key: 'company_name', labelKey: 'extraFields.companyName', type: 'text' },
   ],
   vehicules: [
-    { key: 'brand', labelKey: 'extraFields.brand', type: 'text', required: true },
+    { key: 'brand', labelKey: 'extraFields.brand', type: 'select', options: VEHICLE_BRANDS, rawOptions: true, required: true },
     { key: 'model', labelKey: 'extraFields.model', type: 'text' },
     { key: 'year', labelKey: 'extraFields.year', type: 'number', placeholder: 'ex: 2022' },
     { key: 'mileage', labelKey: 'extraFields.mileage', type: 'number', suffix: 'km' },
@@ -128,12 +158,17 @@ export const CATEGORY_FIELDS: Record<string, ExtraFieldDef[]> = {
     { key: 'furnished', labelKey: 'extraFields.furnished', type: 'select', options: ['yes', 'no'] as const },
   ],
   mode: [
-    { key: 'brand', labelKey: 'extraFields.brand', type: 'text' },
+    { key: 'brand', labelKey: 'extraFields.brand', type: 'select', options: FASHION_BRANDS, rawOptions: true },
     { key: 'size', labelKey: 'extraFields.size', type: 'text', placeholder: 'ex: M, 42, US 10' },
   ],
   electronique: [
-    { key: 'brand', labelKey: 'extraFields.brand', type: 'text' },
+    { key: 'brand', labelKey: 'extraFields.brand', type: 'select', options: ELECTRONICS_BRANDS, rawOptions: true },
     { key: 'model', labelKey: 'extraFields.model', type: 'text' },
+  ],
+  animaux: [
+    { key: 'animal_type', labelKey: 'extraFields.animalType', type: 'select', options: ANIMAL_TYPES },
+    { key: 'breed', labelKey: 'extraFields.breed', type: 'text' },
+    { key: 'age', labelKey: 'extraFields.age', type: 'text', placeholder: 'ex: 2 ans' },
   ],
 };
 
