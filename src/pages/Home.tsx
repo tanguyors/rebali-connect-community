@@ -66,25 +66,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Categories grid */}
-      <section className="container mx-auto px-4 py-10">
-        <h2 className="text-xl md:text-2xl font-extrabold mb-6">{t('nav.browse')}</h2>
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-3">
-          {CATEGORIES.map((cat) => (
-            <Link
-              key={cat}
-              to={`/browse?category=${cat}`}
-              className="flex flex-col items-center gap-2 p-4 rounded-xl bg-card border border-border/50 hover:border-primary/50 hover:shadow-md transition-all duration-200 group"
-            >
-              <span className="text-3xl group-hover:scale-110 transition-transform">{CATEGORY_ICONS[cat]}</span>
-              <span className="text-xs font-semibold text-center text-muted-foreground group-hover:text-foreground transition-colors leading-tight">
-                {t(`categories.${cat}`)}
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
       {/* CTA Banner */}
       <section className="container mx-auto px-4">
         <div className="relative overflow-hidden rounded-2xl bg-primary px-8 py-10 md:py-12">
