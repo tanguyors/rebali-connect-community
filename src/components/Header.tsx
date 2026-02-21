@@ -38,7 +38,7 @@ export default function Header() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="Re-Bali" className="h-10" />
+            <img src={logo} alt="Re-Bali" className="h-8" />
           </Link>
           <Button className="hidden md:inline-flex gap-1.5 rounded-full px-6" onClick={() => navigate('/create')}>
             <Plus className="h-4 w-4" />
