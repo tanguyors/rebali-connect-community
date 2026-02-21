@@ -119,5 +119,18 @@
     "submitVerification": "Soumettre la vérification",
     "verificationSubmitted": "Vérification soumise ! Nous l'examinerons sous peu.",
     "verificationError": "Échec de la soumission"
+  },
+  "favorites": {
+    "title": "Mes Favoris",
+    "empty": "Vous n'avez pas encore de favoris"
+  },
+  "messages": {
+    "title": "Messages",
+    "empty": "Aucune conversation",
+    "selectConversation": "Sélectionnez une conversation",
+    "placeholder": "Écrire un message...",
+    "you": "Vous",
+    "sendMessage": "Envoyer un message",
+    "conversationStarted": "Conversation démarrée !"
   }
 }

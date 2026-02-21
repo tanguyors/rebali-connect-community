@@ -71,5 +71,18 @@
     "submitVerification": "提交验证",
     "verificationSubmitted": "验证已提交！我们将尽快审核。",
     "verificationError": "提交验证失败"
+  },
+  "favorites": {
+    "title": "我的收藏",
+    "empty": "您还没有收藏"
+  },
+  "messages": {
+    "title": "消息",
+    "empty": "暂无对话",
+    "selectConversation": "选择一个对话",
+    "placeholder": "输入消息...",
+    "you": "你",
+    "sendMessage": "发送消息",
+    "conversationStarted": "对话已开始！"
   }
 }

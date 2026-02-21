@@ -250,5 +250,18 @@
     "submitVerification": "Submit verification",
     "verificationSubmitted": "Verification submitted! We'll review it shortly.",
     "verificationError": "Failed to submit verification"
+  },
+  "favorites": {
+    "title": "My Favorites",
+    "empty": "You haven't saved any favorites yet"
+  },
+  "messages": {
+    "title": "Messages",
+    "empty": "No conversations yet",
+    "selectConversation": "Select a conversation",
+    "placeholder": "Type a message...",
+    "you": "You",
+    "sendMessage": "Send a message",
+    "conversationStarted": "Conversation started!"
   }
 }

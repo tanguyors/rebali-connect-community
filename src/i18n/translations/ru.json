@@ -71,5 +71,18 @@
     "submitVerification": "Отправить на верификацию",
     "verificationSubmitted": "Верификация отправлена! Мы рассмотрим её в ближайшее время.",
     "verificationError": "Не удалось отправить верификацию"
+  },
+  "favorites": {
+    "title": "Мои избранные",
+    "empty": "У вас пока нет избранных"
+  },
+  "messages": {
+    "title": "Сообщения",
+    "empty": "Пока нет бесед",
+    "selectConversation": "Выберите беседу",
+    "placeholder": "Написать сообщение...",
+    "you": "Вы",
+    "sendMessage": "Отправить сообщение",
+    "conversationStarted": "Беседа начата!"
   }
 }

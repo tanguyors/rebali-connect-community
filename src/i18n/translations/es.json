@@ -71,5 +71,18 @@
     "submitVerification": "Enviar verificación",
     "verificationSubmitted": "¡Verificación enviada! La revisaremos en breve.",
     "verificationError": "Error al enviar la verificación"
+  },
+  "favorites": {
+    "title": "Mis Favoritos",
+    "empty": "Aún no tienes favoritos"
+  },
+  "messages": {
+    "title": "Mensajes",
+    "empty": "Sin conversaciones",
+    "selectConversation": "Selecciona una conversación",
+    "placeholder": "Escribe un mensaje...",
+    "you": "Tú",
+    "sendMessage": "Enviar mensaje",
+    "conversationStarted": "¡Conversación iniciada!"
   }
 }

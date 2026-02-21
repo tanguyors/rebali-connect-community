@@ -71,5 +71,18 @@
     "submitVerification": "Verificatie indienen",
     "verificationSubmitted": "Verificatie ingediend! We beoordelen het binnenkort.",
     "verificationError": "Verificatie indienen mislukt"
+  },
+  "favorites": {
+    "title": "Mijn Favorieten",
+    "empty": "Je hebt nog geen favorieten"
+  },
+  "messages": {
+    "title": "Berichten",
+    "empty": "Nog geen gesprekken",
+    "selectConversation": "Selecteer een gesprek",
+    "placeholder": "Typ een bericht...",
+    "you": "Jij",
+    "sendMessage": "Bericht sturen",
+    "conversationStarted": "Gesprek gestart!"
   }
 }

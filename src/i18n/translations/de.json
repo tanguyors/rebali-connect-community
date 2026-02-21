@@ -71,5 +71,18 @@
     "submitVerification": "Verifizierung einreichen",
     "verificationSubmitted": "Verifizierung eingereicht! Wir prüfen sie in Kürze.",
     "verificationError": "Verifizierung fehlgeschlagen"
+  },
+  "favorites": {
+    "title": "Meine Favoriten",
+    "empty": "Noch keine Favoriten gespeichert"
+  },
+  "messages": {
+    "title": "Nachrichten",
+    "empty": "Noch keine Unterhaltungen",
+    "selectConversation": "Wählen Sie eine Unterhaltung",
+    "placeholder": "Nachricht schreiben...",
+    "you": "Sie",
+    "sendMessage": "Nachricht senden",
+    "conversationStarted": "Unterhaltung gestartet!"
   }
 }

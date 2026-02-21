@@ -71,5 +71,18 @@
     "submitVerification": "Kirim verifikasi",
     "verificationSubmitted": "Verifikasi terkirim! Kami akan meninjaunya segera.",
     "verificationError": "Gagal mengirim verifikasi"
+  },
+  "favorites": {
+    "title": "Favorit Saya",
+    "empty": "Anda belum memiliki favorit"
+  },
+  "messages": {
+    "title": "Pesan",
+    "empty": "Belum ada percakapan",
+    "selectConversation": "Pilih percakapan",
+    "placeholder": "Tulis pesan...",
+    "you": "Anda",
+    "sendMessage": "Kirim pesan",
+    "conversationStarted": "Percakapan dimulai!"
   }
 }

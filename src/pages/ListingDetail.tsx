@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
@@ -42,6 +42,7 @@ export default function ListingDetail() {
   const { id } = useParams<{ id: string }>();
   const { t, language } = useLanguage();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [currentImage, setCurrentImage] = useState(0);
   const [reportReason, setReportReason] = useState('');
   const [reportDetails, setReportDetails] = useState('');
@@ -196,6 +197,31 @@ export default function ListingDetail() {
     setReportOpen(false);
     setReportReason('');
     setReportDetails('');
+  };
+
+  const handleSendMessage = async () => {
+    if (!user || !listing || user.id === listing.seller_id) return;
+    // Check if conversation already exists
+    const { data: existing } = await supabase
+      .from('conversations')
+      .select('id')
+      .eq('listing_id', listing.id)
+      .eq('buyer_id', user.id)
+      .eq('seller_id', listing.seller_id)
+      .maybeSingle();
+    if (existing) {
+      navigate(`/messages?conv=${existing.id}`);
+    } else {
+      const { data: newConv } = await supabase
+        .from('conversations')
+        .insert({ listing_id: listing.id, buyer_id: user.id, seller_id: listing.seller_id })
+        .select('id')
+        .single();
+      if (newConv) {
+        toast({ title: t('messages.conversationStarted') });
+        navigate(`/messages?conv=${newConv.id}`);
+      }
+    }
   };
 
   return (
@@ -513,6 +539,12 @@ export default function ListingDetail() {
                     )}
                     {!seller?.whatsapp && !seller?.phone && (
                       <p className="text-sm text-muted-foreground text-center py-2">{t('listing.noWhatsapp')}</p>
+                    )}
+                    {user && user.id !== listing.seller_id && (
+                      <Button variant="secondary" className="w-full gap-2 rounded-full font-bold text-base h-12" onClick={handleSendMessage}>
+                        <MessageCircle className="h-5 w-5" />
+                        {t('messages.sendMessage')}
+                      </Button>
                     )}
                   </div>
                 </CardContent>
