@@ -3,6 +3,7 @@ import Header from './Header';
 import Footer from './Footer';
 import NewListingNotification from './NewListingNotification';
 import BottomNav from './BottomNav';
+import PwaInstallButton from './PwaInstallButton';
 
 export default function Layout() {
   return (
@@ -13,6 +14,7 @@ export default function Layout() {
       </main>
       <Footer className="hidden md:block" />
       <BottomNav />
+      <PwaInstallButton />
       <NewListingNotification />
     </div>
   );
