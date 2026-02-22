@@ -250,11 +250,11 @@ Deno.serve(async (req) => {
         .map((p: string) => p.replace(/[^0-9]/g, ""));
 
       if (profilePhones.length > 0 && !profilePhones.includes(sender)) {
-        // Phone mismatch — warn the buyer but still relay
+        // Phone mismatch — confirm message sent but warn about reply destination
         await sendFonnte(
           FONNTE_TOKEN,
           sender,
-          "⚠️ Re-Bali: The WhatsApp number you're messaging from doesn't match your profile. Please update your WhatsApp number in your Re-Bali profile settings to avoid issues."
+          "✅ Message envoyé. ⚠️ Attention : le numéro d'expédition n'est pas celui renseigné dans votre profil. Vous recevrez la réponse sur le numéro enregistré dans votre profil Re-Bali."
         );
 
         // Log risk event
