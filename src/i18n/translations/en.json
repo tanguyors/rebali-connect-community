@@ -85,7 +85,9 @@
     "updated": "Listing updated!",
     "contactWhatsApp": "Contact on WhatsApp",
     "phoneVerified": "Phone verified",
-    "loginToContact": "Log in to contact the seller"
+    "loginToContact": "Log in to contact the seller",
+    "yourMessage": "Your message",
+    "sendViaWhatsApp": "Send via WhatsApp"
   },
   "createListing": {
     "title": "Create a Listing", "stepCategory": "Category", "stepDetails": "Details", "stepPhotos": "Photos",

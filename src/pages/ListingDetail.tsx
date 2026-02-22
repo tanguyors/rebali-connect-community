@@ -12,6 +12,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { formatPrice, CATEGORY_ICONS, CATEGORY_PLACEHOLDERS, REBALI_WA_NUMBER } from '@/lib/constants';
 import { MapPin, Eye, Phone, MessageCircle, Flag, User, Calendar, Share2, Heart, ChevronRight, ThumbsUp, Star, Briefcase, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
+import { Input } from '@/components/ui/input';
 import { useEffect, useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
@@ -47,7 +49,8 @@ export default function ListingDetail() {
   const [reportReason, setReportReason] = useState('');
   const [reportDetails, setReportDetails] = useState('');
   const [reportOpen, setReportOpen] = useState(false);
-
+  const [mobileContactOpen, setMobileContactOpen] = useState(false);
+  const [customMessage, setCustomMessage] = useState('');
   const { data: listing, isLoading } = useQuery({
     queryKey: ['listing', id],
     queryFn: async () => {
@@ -570,7 +573,7 @@ export default function ListingDetail() {
         </div>
       </div>
 
-      {/* Mobile bottom bar */}
+      {/* Mobile bottom bar with Drawer */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border px-4 py-3 flex gap-2 z-40 shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
         <button
           onClick={toggleFavorite}
@@ -578,24 +581,101 @@ export default function ListingDetail() {
         >
           <Heart className={`h-5 w-5 ${isFavorited ? 'text-red-500 fill-red-500' : 'text-foreground'}`} />
         </button>
-        {user && user.id !== listing.seller_id ? (
-          <Button className="flex-1 gap-2 rounded-full font-bold text-base h-12" asChild>
-            <a
-              href={`https://wa.me/${REBALI_WA_NUMBER}?text=${encodeURIComponent(`RB|L=${listing.id}|B=${user.id}| Hi, I'm interested in your item "${title}" at ${formatPrice(listing.price, listing.currency)}. Is it still available?`)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => { supabase.from('whatsapp_click_logs').insert({ listing_id: listing.id, user_id: user.id }); }}
-            >
+
+        <Drawer open={mobileContactOpen} onOpenChange={(open) => {
+          setMobileContactOpen(open);
+          if (open && !customMessage) {
+            setCustomMessage(`Hi, I'm interested in your item "${title}" at ${formatPrice(listing.price, listing.currency)}. Is it still available?`);
+          }
+        }}>
+          <DrawerTrigger asChild>
+            <Button className="flex-1 gap-2 rounded-full font-bold text-base h-12" onClick={() => {
+              if (!user) { toast({ title: t('listing.loginToContact') }); return; }
+              if (user.id === listing.seller_id) return;
+              setMobileContactOpen(true);
+            }}>
               <MessageCircle className="h-5 w-5" />
               {t('listing.contactWhatsApp')}
-            </a>
-          </Button>
-        ) : (
-          <Button className="flex-1 gap-2 rounded-full font-bold text-base h-12" onClick={() => !user ? toast({ title: t('listing.loginToContact') }) : null} disabled={user?.id === listing.seller_id}>
-            <MessageCircle className="h-5 w-5" />
-            {t('listing.contactWhatsApp')}
-          </Button>
-        )}
+            </Button>
+          </DrawerTrigger>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>{t('listing.contactWhatsApp')}</DrawerTitle>
+            </DrawerHeader>
+            <div className="px-4 pb-6 space-y-4">
+              {/* Seller info */}
+              <Link to={`/seller/${seller?.id}`} className="flex items-center gap-3 group" onClick={() => setMobileContactOpen(false)}>
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  {seller?.avatar_url ? (
+                    <img src={seller.avatar_url} className="w-full h-full rounded-full object-cover" alt="" />
+                  ) : (
+                    <User className="h-6 w-6 text-primary" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <p className="font-bold group-hover:text-primary transition-colors">{seller?.display_name || 'User'}</p>
+                    {seller?.is_verified_seller && <ShieldCheck className="h-4 w-4 text-green-600" />}
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    {avgRating && (
+                      <span className="flex items-center gap-0.5">
+                        <Star className="h-3.5 w-3.5 text-accent fill-accent" />
+                        {avgRating} ({sellerReviews?.length})
+                      </span>
+                    )}
+                    <span>{sellerListingCount} {t('seller.activeListings')}</span>
+                  </div>
+                </div>
+                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+              </Link>
+
+              {isPro && (
+                <Badge className="bg-primary text-primary-foreground gap-1 rounded-full">
+                  <Briefcase className="h-3.5 w-3.5" />
+                  Pro
+                </Badge>
+              )}
+
+              <Separator />
+
+              {/* Message form */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t('listing.yourMessage')}</label>
+                <Textarea
+                  value={customMessage}
+                  onChange={(e) => setCustomMessage(e.target.value)}
+                  rows={3}
+                  className="resize-none"
+                />
+              </div>
+
+              {/* Send via WhatsApp */}
+              <Button className="w-full gap-2 rounded-full font-bold text-base h-12" asChild>
+                <a
+                  href={`https://wa.me/${REBALI_WA_NUMBER}?text=${encodeURIComponent(`RB|L=${listing.id}|B=${user?.id || ''}| ${customMessage}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => {
+                    if (user) supabase.from('whatsapp_click_logs').insert({ listing_id: listing.id, user_id: user.id });
+                    setMobileContactOpen(false);
+                  }}
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  {t('listing.sendViaWhatsApp')}
+                </a>
+              </Button>
+
+              {/* In-app message */}
+              {user && user.id !== listing.seller_id && (
+                <Button variant="secondary" className="w-full gap-2 rounded-full font-bold text-base h-12" onClick={() => { setMobileContactOpen(false); handleSendMessage(); }}>
+                  <MessageCircle className="h-5 w-5" />
+                  {t('messages.sendMessage')}
+                </Button>
+              )}
+            </div>
+          </DrawerContent>
+        </Drawer>
       </div>
     </div>
   );
