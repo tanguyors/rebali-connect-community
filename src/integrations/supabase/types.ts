@@ -46,12 +46,14 @@ export type Database = {
           buyer_id: string
           buyer_msg_count: number
           buyer_phone: string | null
+          buyer_short_code: string | null
           created_at: string
           id: string
           listing_id: string
           relay_status: string
           seller_id: string
           seller_msg_count: number
+          seller_short_code: string | null
           total_msg_count: number
           unlocked: boolean
           unlocked_at: string | null
@@ -61,12 +63,14 @@ export type Database = {
           buyer_id: string
           buyer_msg_count?: number
           buyer_phone?: string | null
+          buyer_short_code?: string | null
           created_at?: string
           id?: string
           listing_id: string
           relay_status?: string
           seller_id: string
           seller_msg_count?: number
+          seller_short_code?: string | null
           total_msg_count?: number
           unlocked?: boolean
           unlocked_at?: string | null
@@ -76,12 +80,14 @@ export type Database = {
           buyer_id?: string
           buyer_msg_count?: number
           buyer_phone?: string | null
+          buyer_short_code?: string | null
           created_at?: string
           id?: string
           listing_id?: string
           relay_status?: string
           seller_id?: string
           seller_msg_count?: number
+          seller_short_code?: string | null
           total_msg_count?: number
           unlocked?: boolean
           unlocked_at?: string | null

@@ -56,7 +56,6 @@ async function translateText(text: string, targetLang: string, sourceLang: strin
 }
 
 async function sendFonnte(token: string, target: string, message: string) {
-  // Strip '+' and non-digit chars; set countryCode to "0" to disable Fonnte's auto-prefix
   const cleanTarget = target.replace(/[^0-9]/g, "");
   const res = await fetch("https://api.fonnte.com/send", {
     method: "POST",
@@ -67,6 +66,110 @@ async function sendFonnte(token: string, target: string, message: string) {
     body: JSON.stringify({ target: cleanTarget, message, countryCode: "0" }),
   });
   return res.json();
+}
+
+// Generate next short code for a participant: A, B, C... Z, AA, AB...
+function nextShortCode(existingCodes: string[]): string {
+  const used = new Set(existingCodes.filter(Boolean));
+  // Try single letters first
+  for (let i = 0; i < 26; i++) {
+    const code = String.fromCharCode(65 + i);
+    if (!used.has(code)) return code;
+  }
+  // Then double letters
+  for (let i = 0; i < 26; i++) {
+    for (let j = 0; j < 26; j++) {
+      const code = String.fromCharCode(65 + i) + String.fromCharCode(65 + j);
+      if (!used.has(code)) return code;
+    }
+  }
+  return "ZZ";
+}
+
+// Assign short_code if missing, for the given role column
+async function ensureShortCode(
+  supabase: any,
+  conversation: any,
+  roleColumn: "seller_short_code" | "buyer_short_code",
+  participantIdColumn: "seller_id" | "buyer_id"
+): Promise<string> {
+  if (conversation[roleColumn]) return conversation[roleColumn];
+
+  // Get all existing codes for this participant
+  const { data: existingConvs } = await supabase
+    .from("conversations")
+    .select(roleColumn)
+    .eq(participantIdColumn, conversation[participantIdColumn])
+    .eq("relay_status", "active");
+
+  const existingCodes = (existingConvs || []).map((c: any) => c[roleColumn]);
+  const code = nextShortCode(existingCodes);
+
+  await supabase
+    .from("conversations")
+    .update({ [roleColumn]: code })
+    .eq("id", conversation.id);
+
+  conversation[roleColumn] = code;
+  return code;
+}
+
+// Find seller's conversation by short_code
+async function findConvByShortCode(
+  supabase: any,
+  sellerId: string,
+  code: string,
+  roleColumn: "seller_short_code" | "buyer_short_code"
+): Promise<any | null> {
+  const { data } = await supabase
+    .from("conversations")
+    .select("id, listing_id, buyer_id, seller_id, relay_status, buyer_phone, total_msg_count, buyer_msg_count, seller_msg_count, unlocked, seller_short_code, buyer_short_code")
+    .eq(roleColumn === "seller_short_code" ? "seller_id" : "buyer_id", sellerId)
+    .eq("relay_status", "active")
+    .eq(roleColumn, code.toUpperCase())
+    .maybeSingle();
+  return data;
+}
+
+// Build help message listing active conversations for a participant
+async function buildHelpMessage(
+  supabase: any,
+  participantId: string,
+  roleColumn: "seller_short_code" | "buyer_short_code",
+  participantIdColumn: "seller_id" | "buyer_id",
+  otherIdColumn: "buyer_id" | "seller_id"
+): Promise<string> {
+  const { data: convs } = await supabase
+    .from("conversations")
+    .select(`id, listing_id, ${roleColumn}, ${otherIdColumn}`)
+    .eq(participantIdColumn, participantId)
+    .eq("relay_status", "active")
+    .gt("total_msg_count", 0)
+    .order("updated_at", { ascending: false });
+
+  if (!convs || convs.length === 0) return "";
+
+  const lines: string[] = [];
+  for (const c of convs) {
+    const { data: listing } = await supabase
+      .from("listings")
+      .select("title_original")
+      .eq("id", c.listing_id)
+      .single();
+
+    const { data: otherProfile } = await supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("id", c[otherIdColumn])
+      .single();
+
+    const code = c[roleColumn] || "?";
+    const title = listing?.title_original || "?";
+    const name = otherProfile?.display_name || "?";
+    lines.push(`#${code} - ${title} (${name})`);
+  }
+
+  return `You have multiple active conversations. Prefix your reply with the code:\n${lines.join("\n")}`;
 }
 
 Deno.serve(async (req) => {
@@ -119,7 +222,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Try to parse token
+    // Try to parse token (buyer's first message)
     const tokenMatch = messageBody.match(/(?:ref:)?RB\|L=([a-f0-9-]+)\|B=([a-f0-9-]+)\|/i);
 
     let listingId: string | null = null;
@@ -134,63 +237,130 @@ Deno.serve(async (req) => {
 
     // If no token, try to find existing conversation by sender phone
     if (!listingId || !buyerId) {
-      const { data: existingConv } = await supabase
+      // Parse #X short_code prefix from message
+      const codeMatch = cleanMessage.match(/^#([A-Za-z]{1,2})\s+/);
+      const shortCode = codeMatch ? codeMatch[1].toUpperCase() : null;
+      if (codeMatch) {
+        cleanMessage = cleanMessage.replace(codeMatch[0], "").trim();
+      }
+
+      // Check if sender is a buyer (by buyer_phone)
+      const { data: buyerConvs } = await supabase
         .from("conversations")
-        .select("id, listing_id, buyer_id, seller_id, relay_status, buyer_phone, total_msg_count, buyer_msg_count, seller_msg_count, unlocked")
+        .select("id, listing_id, buyer_id, seller_id, relay_status, buyer_phone, total_msg_count, buyer_msg_count, seller_msg_count, unlocked, seller_short_code, buyer_short_code")
         .eq("buyer_phone", sender)
         .eq("relay_status", "active")
-        .order("updated_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .gt("total_msg_count", 0)
+        .order("updated_at", { ascending: false });
 
-      if (!existingConv) {
-        // Look up seller profile by normalized phone - query all profiles with whatsapp and compare digits
-        const { data: allWaProfiles } = await supabase
-          .from("profiles")
-          .select("id, phone, whatsapp")
-          .not("whatsapp", "is", null);
+      // Check if sender is a seller (by phone/whatsapp in profiles)
+      const { data: allWaProfiles } = await supabase
+        .from("profiles")
+        .select("id, phone, whatsapp")
+        .not("whatsapp", "is", null);
 
-        const sellerProfile = allWaProfiles?.find((p: any) => {
-          const normPhone = (p.phone || "").replace(/[^0-9]/g, "");
-          const normWa = (p.whatsapp || "").replace(/[^0-9]/g, "");
-          return normPhone === sender || normWa === sender;
-        }) || null;
+      const sellerProfile = allWaProfiles?.find((p: any) => {
+        const normPhone = (p.phone || "").replace(/[^0-9]/g, "");
+        const normWa = (p.whatsapp || "").replace(/[^0-9]/g, "");
+        return normPhone === sender || normWa === sender;
+      }) || null;
 
-        if (sellerProfile) {
-          const { data: sellerConv } = await supabase
-            .from("conversations")
-            .select("id, listing_id, buyer_id, seller_id, relay_status, buyer_phone, total_msg_count, buyer_msg_count, seller_msg_count, unlocked")
-            .eq("seller_id", sellerProfile.id)
-            .eq("relay_status", "active")
-            .gt("total_msg_count", 0)
-            .order("updated_at", { ascending: false })
-            .limit(1)
-            .maybeSingle();
+      let sellerConvs: any[] = [];
+      if (sellerProfile) {
+        const { data } = await supabase
+          .from("conversations")
+          .select("id, listing_id, buyer_id, seller_id, relay_status, buyer_phone, total_msg_count, buyer_msg_count, seller_msg_count, unlocked, seller_short_code, buyer_short_code")
+          .eq("seller_id", sellerProfile.id)
+          .eq("relay_status", "active")
+          .gt("total_msg_count", 0)
+          .order("updated_at", { ascending: false });
+        sellerConvs = data || [];
+      }
 
-          if (sellerConv) {
-            return await handleRelay(supabase, FONNTE_TOKEN, sellerConv, sender, cleanMessage, "seller");
+      const hasBuyerConvs = buyerConvs && buyerConvs.length > 0;
+      const hasSellerConvs = sellerConvs.length > 0;
+
+      // If sender has conversations as both buyer and seller, use the code to disambiguate
+      // Try seller first if code matches, then buyer
+      if (shortCode) {
+        // Try seller conv with this code
+        if (hasSellerConvs) {
+          const match = sellerConvs.find((c: any) => c.seller_short_code === shortCode);
+          if (match) {
+            return await handleRelay(supabase, FONNTE_TOKEN, match, sender, cleanMessage, "seller");
           }
         }
+        // Try buyer conv with this code
+        if (hasBuyerConvs) {
+          const match = buyerConvs.find((c: any) => c.buyer_short_code === shortCode);
+          if (match) {
+            return await handleRelay(supabase, FONNTE_TOKEN, match, sender, cleanMessage, "buyer");
+          }
+        }
+        // Code didn't match anything — send help
+        const helpParts: string[] = [];
+        if (hasSellerConvs) {
+          const h = await buildHelpMessage(supabase, sellerProfile!.id, "seller_short_code", "seller_id", "buyer_id");
+          if (h) helpParts.push("As seller:\n" + h);
+        }
+        if (hasBuyerConvs) {
+          const buyerUserId = buyerConvs[0].buyer_id;
+          const h = await buildHelpMessage(supabase, buyerUserId, "buyer_short_code", "buyer_id", "seller_id");
+          if (h) helpParts.push("As buyer:\n" + h);
+        }
+        if (helpParts.length > 0) {
+          await sendFonnte(FONNTE_TOKEN, sender, `⚠️ Code #${shortCode} not found.\n\n${helpParts.join("\n\n")}`);
+        }
+        return new Response(JSON.stringify({ status: "invalid_code" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
 
+      // No code provided
+      // If only one conversation total, route automatically
+      const totalConvs = (buyerConvs?.length || 0) + sellerConvs.length;
+
+      if (totalConvs === 0) {
         console.log("Ignoring message from", sender, "— no token, no active conversation");
         return new Response(JSON.stringify({ status: "no_token" }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
 
-      const { data: sellerProfile } = await supabase
-        .from("profiles")
-        .select("phone, whatsapp")
-        .eq("id", existingConv.seller_id)
-        .single();
+      if (totalConvs === 1) {
+        if (hasSellerConvs) {
+          return await handleRelay(supabase, FONNTE_TOKEN, sellerConvs[0], sender, cleanMessage, "seller");
+        } else {
+          return await handleRelay(supabase, FONNTE_TOKEN, buyerConvs![0], sender, cleanMessage, "buyer");
+        }
+      }
 
-      const sellerPhones = [sellerProfile?.phone, sellerProfile?.whatsapp]
-        .filter(Boolean)
-        .map((p: string) => p.replace(/[^0-9]/g, ""));
+      // Multiple conversations — send help message
+      const helpParts: string[] = [];
+      if (hasSellerConvs) {
+        // Ensure all seller convs have short codes
+        for (const c of sellerConvs) {
+          await ensureShortCode(supabase, c, "seller_short_code", "seller_id");
+        }
+        const h = await buildHelpMessage(supabase, sellerProfile!.id, "seller_short_code", "seller_id", "buyer_id");
+        if (h) helpParts.push(h);
+      }
+      if (hasBuyerConvs) {
+        const buyerUserId = buyerConvs[0].buyer_id;
+        for (const c of buyerConvs) {
+          await ensureShortCode(supabase, c, "buyer_short_code", "buyer_id");
+        }
+        const h = await buildHelpMessage(supabase, buyerUserId, "buyer_short_code", "buyer_id", "seller_id");
+        if (h) helpParts.push(h);
+      }
 
-      const role = sellerPhones.includes(sender) ? "seller" : "buyer";
-      return await handleRelay(supabase, FONNTE_TOKEN, existingConv, sender, cleanMessage, role);
+      await sendFonnte(FONNTE_TOKEN, sender, helpParts.join("\n\n"));
+      return new Response(JSON.stringify({ status: "needs_code" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
+
+    // === Token-based flow (buyer's first/subsequent message with token) ===
 
     // Verify listing exists and is active
     const { data: listing } = await supabase
@@ -216,7 +386,7 @@ Deno.serve(async (req) => {
     // Find or create conversation
     const { data: existingConv } = await supabase
       .from("conversations")
-      .select("*")
+      .select("*, seller_short_code, buyer_short_code")
       .eq("listing_id", listingId)
       .eq("buyer_id", buyerId)
       .eq("seller_id", listing.seller_id)
@@ -224,6 +394,23 @@ Deno.serve(async (req) => {
 
     let conversation = existingConv;
     if (!conversation) {
+      // Assign short codes at creation
+      const [{ data: sellerExisting }, { data: buyerExisting }] = await Promise.all([
+        supabase
+          .from("conversations")
+          .select("seller_short_code")
+          .eq("seller_id", listing.seller_id)
+          .eq("relay_status", "active"),
+        supabase
+          .from("conversations")
+          .select("buyer_short_code")
+          .eq("buyer_id", buyerId)
+          .eq("relay_status", "active"),
+      ]);
+
+      const sellerCode = nextShortCode((sellerExisting || []).map((c: any) => c.seller_short_code));
+      const buyerCode = nextShortCode((buyerExisting || []).map((c: any) => c.buyer_short_code));
+
       const { data: newConv } = await supabase
         .from("conversations")
         .insert({
@@ -232,8 +419,10 @@ Deno.serve(async (req) => {
           seller_id: listing.seller_id,
           buyer_phone: sender,
           relay_status: "active",
+          seller_short_code: sellerCode,
+          buyer_short_code: buyerCode,
         })
-        .select("*")
+        .select("*, seller_short_code, buyer_short_code")
         .single();
       conversation = newConv;
     } else if (!conversation.buyer_phone) {
@@ -250,6 +439,12 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // Ensure short codes exist (for older conversations)
+    await Promise.all([
+      ensureShortCode(supabase, conversation, "seller_short_code", "seller_id"),
+      ensureShortCode(supabase, conversation, "buyer_short_code", "buyer_id"),
+    ]);
 
     if (conversation.relay_status === "blocked") {
       await sendFonnte(FONNTE_TOKEN, sender, "This conversation has been blocked by Re-Bali moderation.");
@@ -346,7 +541,13 @@ async function handleRelay(
     listingTitle = listing?.title_original || "Unknown";
   }
 
-  // Save original message in DB (untranslated)
+  // Ensure short codes exist
+  await Promise.all([
+    ensureShortCode(supabase, conversation, "seller_short_code", "seller_id"),
+    ensureShortCode(supabase, conversation, "buyer_short_code", "buyer_id"),
+  ]);
+
+  // Save original message in DB
   const senderId = role === "buyer" ? conversation.buyer_id : conversation.seller_id;
   await supabase.from("messages").insert({
     conversation_id: conversation.id,
@@ -368,7 +569,7 @@ async function handleRelay(
 
   await supabase.from("conversations").update(updates).eq("id", conversation.id);
 
-  // Get both profiles to determine languages and phone numbers
+  // Get both profiles
   const [senderProfileRes, recipientProfileRes] = await Promise.all([
     supabase
       .from("profiles")
@@ -406,11 +607,14 @@ async function handleRelay(
     }
   }
 
-  // Translate message if languages differ
+  // Translate message
   const translatedMessage = await translateText(message, recipientLang, senderLang);
 
-  // Relay the message with translated content + localized safety suffix
-  const prefix = `📦 Re-Bali (${listingTitle}):\n`;
+  // Build prefix with short code for the RECIPIENT
+  // If sending to seller, use seller_short_code; if sending to buyer, use buyer_short_code
+  const recipientCode = role === "buyer" ? conversation.seller_short_code : conversation.buyer_short_code;
+  const prefix = `[#${recipientCode}] 📦 Re-Bali (${listingTitle}):\n`;
+
   await sendFonnte(FONNTE_TOKEN, targetPhone, prefix + translatedMessage + getSafetySuffix(recipientLang));
 
   // Check unlock conditions
@@ -424,58 +628,48 @@ async function handleRelay(
     newBuyerCount >= 1 &&
     newSellerCount >= 1
   ) {
-    const sellerProfile = role === "buyer" ? recipientProfile : senderProfile;
-    const buyerProfileCheck = role === "buyer" ? senderProfile : recipientProfile;
+    const { data: sellerCheck } = await supabase
+      .from("profiles")
+      .select("phone_verified, is_banned, phone, whatsapp")
+      .eq("id", conversation.seller_id)
+      .single();
+
+    const { data: buyerCheck } = await supabase
+      .from("profiles")
+      .select("is_banned")
+      .eq("id", conversation.buyer_id)
+      .single();
 
     if (
-      sellerProfile?.phone_verified !== false &&
-      !sellerProfile?.is_banned &&
-      !buyerProfileCheck?.is_banned
+      sellerCheck?.phone_verified &&
+      !sellerCheck?.is_banned &&
+      !buyerCheck?.is_banned
     ) {
-      // Need to re-fetch to check phone_verified and is_banned since we didn't select those
-      const { data: sellerCheck } = await supabase
-        .from("profiles")
-        .select("phone_verified, is_banned, phone, whatsapp")
-        .eq("id", conversation.seller_id)
-        .single();
+      await supabase
+        .from("conversations")
+        .update({ unlocked: true, unlocked_at: new Date().toISOString() })
+        .eq("id", conversation.id);
 
-      const { data: buyerCheck } = await supabase
-        .from("profiles")
-        .select("is_banned")
-        .eq("id", conversation.buyer_id)
-        .single();
+      const sellerRealPhone = sellerCheck.whatsapp || sellerCheck.phone || "";
+      const sellerPhoneClean = sellerRealPhone.replace(/[^\d+]/g, "");
 
-      if (
-        sellerCheck?.phone_verified &&
-        !sellerCheck?.is_banned &&
-        !buyerCheck?.is_banned
-      ) {
-        await supabase
-          .from("conversations")
-          .update({ unlocked: true, unlocked_at: new Date().toISOString() })
-          .eq("id", conversation.id);
+      const unlockMsgBuyer = `🔓 Re-Bali: Conversation unlocked! You can now contact the seller directly: ${sellerRealPhone}`;
+      const unlockMsgSeller = `🔓 Re-Bali: Conversation unlocked! The buyer can now see your phone number. You can continue chatting directly.`;
 
-        const sellerRealPhone = sellerCheck.whatsapp || sellerCheck.phone || "";
-        const sellerPhoneClean = sellerRealPhone.replace(/[^\d+]/g, "");
+      const buyerPhone = conversation.buyer_phone;
+      await Promise.all([
+        sendFonnte(FONNTE_TOKEN, buyerPhone, unlockMsgBuyer),
+        sendFonnte(FONNTE_TOKEN, sellerPhoneClean, unlockMsgSeller),
+      ]);
 
-        const unlockMsgBuyer = `🔓 Re-Bali: Conversation unlocked! You can now contact the seller directly: ${sellerRealPhone}`;
-        const unlockMsgSeller = `🔓 Re-Bali: Conversation unlocked! The buyer can now see your phone number. You can continue chatting directly.`;
-
-        const buyerPhone = conversation.buyer_phone;
-        await Promise.all([
-          sendFonnte(FONNTE_TOKEN, buyerPhone, unlockMsgBuyer),
-          sendFonnte(FONNTE_TOKEN, sellerPhoneClean, unlockMsgSeller),
-        ]);
-
-        await supabase.from("messages").insert([
-          {
-            conversation_id: conversation.id,
-            sender_id: conversation.seller_id,
-            content: unlockMsgBuyer,
-            from_role: "system",
-          },
-        ]);
-      }
+      await supabase.from("messages").insert([
+        {
+          conversation_id: conversation.id,
+          sender_id: conversation.seller_id,
+          content: unlockMsgBuyer,
+          from_role: "system",
+        },
+      ]);
     }
   }
 
