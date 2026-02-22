@@ -6,6 +6,10 @@ import zh from './translations/zh.json';
 import de from './translations/de.json';
 import nl from './translations/nl.json';
 import ru from './translations/ru.json';
+import tr from './translations/tr.json';
+import ar from './translations/ar.json';
+import hi from './translations/hi.json';
+import ja from './translations/ja.json';
 
 export const SUPPORTED_LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -16,11 +20,15 @@ export const SUPPORTED_LANGUAGES = [
   { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
   { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
   { code: 'ru', name: 'Русский', flag: '🇷🇺' },
+  { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
+  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
+  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
+  { code: 'ja', name: '日本語', flag: '🇯🇵' },
 ] as const;
 
 export type LanguageCode = typeof SUPPORTED_LANGUAGES[number]['code'];
 
-const translations: Record<string, any> = { en, id, fr, es, zh, de, nl, ru };
+const translations: Record<string, any> = { en, id, fr, es, zh, de, nl, ru, tr, ar, hi, ja };
 
 export function getTranslation(lang: string, key: string): string {
   const keys = key.split('.');

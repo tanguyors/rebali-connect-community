@@ -6,7 +6,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const TARGET_LANGS = ["en", "id", "fr", "es", "zh", "de", "nl", "ru"];
+const TARGET_LANGS = ["en", "id", "fr", "es", "zh", "de", "nl", "ru", "tr", "ar", "hi", "ja"];
 
 async function translateText(text: string, targetLang: string, sourceLang: string): Promise<string> {
   try {

@@ -10,6 +10,10 @@ const HERO_WORDS: Record<string, string[]> = {
   de: ['-Bali', '-Nutze', '-Verkaufe', '-Finde', '-Entdecke'],
   nl: ['-Bali', '-Gebruik', '-Verkoop', '-Vind', '-Ontdek'],
   ru: ['-Bali', '-Используй', '-Продай', '-Найди', '-Открой'],
+  tr: ['-Bali', '-Kullan', '-Sat', '-Bul', '-Keşfet'],
+  ar: ['-Bali', '-استخدم', '-بِع', '-اكتشف', '-جِد'],
+  hi: ['-Bali', '-उपयोग', '-बेचो', '-खोजो', '-पाओ'],
+  ja: ['-Bali', '-使う', '-売る', '-見つける', '-発見'],
 };
 
 export default function AnimatedHeroText() {
