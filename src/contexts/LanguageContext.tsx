@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { getTranslation, detectBrowserLanguage, type LanguageCode } from '@/i18n';
+import { supabase } from '@/integrations/supabase/client';
 
 interface LanguageContextType {
   language: LanguageCode;
@@ -16,9 +17,14 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     return detectBrowserLanguage();
   });
 
-  const setLanguage = useCallback((lang: LanguageCode) => {
+  const setLanguage = useCallback(async (lang: LanguageCode) => {
     setLanguageState(lang);
     localStorage.setItem('rebali-lang', lang);
+    // Sync to profile preferred_lang if logged in
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from('profiles').update({ preferred_lang: lang }).eq('id', user.id);
+    }
   }, []);
 
   const t = useCallback((key: string) => getTranslation(language, key), [language]);
