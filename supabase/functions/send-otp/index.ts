@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { phone_number, user_id } = await req.json();
+    const { phone_number, user_id, lang } = await req.json();
     if (!phone_number || !user_id) {
       return new Response(JSON.stringify({ error: "phone_number and user_id required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -88,10 +88,27 @@ Deno.serve(async (req) => {
       expires_at: expiresAt,
     });
 
+    // OTP messages per language
+    const otpMessages: Record<string, (code: string) => string> = {
+      en: (c) => `Your Re-Bali verification code: ${c}. Valid for 5 minutes.`,
+      id: (c) => `Kode verifikasi Re-Bali Anda: ${c}. Berlaku selama 5 menit.`,
+      fr: (c) => `Votre code de vérification Re-Bali : ${c}. Valable 5 minutes.`,
+      es: (c) => `Tu código de verificación Re-Bali: ${c}. Válido por 5 minutos.`,
+      zh: (c) => `您的 Re-Bali 验证码：${c}。有效期5分钟。`,
+      de: (c) => `Ihr Re-Bali-Verifizierungscode: ${c}. Gültig für 5 Minuten.`,
+      nl: (c) => `Uw Re-Bali verificatiecode: ${c}. Geldig voor 5 minuten.`,
+      ru: (c) => `Ваш код подтверждения Re-Bali: ${c}. Действителен 5 минут.`,
+      tr: (c) => `Re-Bali doğrulama kodunuz: ${c}. 5 dakika geçerlidir.`,
+      ar: (c) => `رمز التحقق الخاص بك في Re-Bali: ${c}. صالح لمدة 5 دقائق.`,
+      hi: (c) => `आपका Re-Bali सत्यापन कोड: ${c}। 5 मिनट के लिए मान्य।`,
+      ja: (c) => `Re-Bali 認証コード: ${c}。5分間有効です。`,
+    };
+    const msgFn = otpMessages[lang || "en"] || otpMessages.en;
+
     // Send via Fonnte
     const formData = new FormData();
     formData.append("target", phone_number);
-    formData.append("message", `Your Re-Bali verification code: ${otp}. Valid for 5 minutes.`);
+    formData.append("message", msgFn(otp));
     formData.append("countryCode", "62");
 
     const fonntRes = await fetch("https://api.fonnte.com/send", {

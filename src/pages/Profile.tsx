@@ -24,7 +24,7 @@ const profileSchema = z.object({
 });
 
 function WhatsAppVerification({ user, profile, refreshProfile }: { user: any; profile: any; refreshProfile: () => Promise<void> }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [phone, setPhone] = useState('');
   const [otpValue, setOtpValue] = useState('');
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
@@ -54,7 +54,7 @@ function WhatsAppVerification({ user, profile, refreshProfile }: { user: any; pr
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('send-otp', {
-        body: { phone_number: phone, user_id: user.id },
+        body: { phone_number: phone, user_id: user.id, lang: language },
       });
       if (error) throw error;
       if (data?.error) {
