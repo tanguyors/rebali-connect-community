@@ -138,7 +138,8 @@ Deno.serve(async (req) => {
           }
         }
 
-        await sendFonnte(FONNTE_TOKEN, sender, "Please use the Contact button on the Re-Bali listing to start a conversation.");
+        // Silent ignore — don't reply to random messages without a token
+        console.log("Ignoring message from", sender, "— no token, no active conversation");
         return new Response(JSON.stringify({ status: "no_token" }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
