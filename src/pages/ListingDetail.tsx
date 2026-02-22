@@ -158,7 +158,9 @@ export default function ListingDetail() {
 
   useEffect(() => {
     if (id) {
-      supabase.rpc('increment_views', { _listing_id: id });
+      supabase.rpc('increment_views', { _listing_id: id }).then(({ error }) => {
+        if (error) console.error('increment_views error:', error);
+      });
     }
   }, [id]);
 
