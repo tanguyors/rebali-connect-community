@@ -16,6 +16,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from 
 import { Input } from '@/components/ui/input';
 import { useEffect, useState } from 'react';
 import { toast } from '@/hooks/use-toast';
+import { Label } from '@/components/ui/label';
 import { formatDistanceToNow } from 'date-fns';
 import { fr, id as idLocale, es, zhCN, de, nl, ru } from 'date-fns/locale';
 import ListingCard from '@/components/ListingCard';
@@ -51,6 +52,10 @@ export default function ListingDetail() {
   const [reportOpen, setReportOpen] = useState(false);
   const [mobileContactOpen, setMobileContactOpen] = useState(false);
   const [customMessage, setCustomMessage] = useState('');
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
   const { data: listing, isLoading } = useQuery({
     queryKey: ['listing', id],
     queryFn: async () => {
@@ -204,7 +209,6 @@ export default function ListingDetail() {
 
   const handleSendMessage = async () => {
     if (!user || !listing || user.id === listing.seller_id) return;
-    // Check if conversation already exists
     const { data: existing } = await supabase
       .from('conversations')
       .select('id')
@@ -225,6 +229,30 @@ export default function ListingDetail() {
         navigate(`/messages?conv=${newConv.id}`);
       }
     }
+  };
+
+  const handleLoginFromDialog = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password: loginPassword });
+    if (error) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: t('common.login') + ' ✓' });
+      setLoginDialogOpen(false);
+      setLoginEmail('');
+      setLoginPassword('');
+    }
+    setLoginLoading(false);
+  };
+
+  const handleMagicLinkFromDialog = async () => {
+    if (!loginEmail) { toast({ title: t('auth.emailRequired'), variant: 'destructive' }); return; }
+    setLoginLoading(true);
+    const { error } = await supabase.auth.signInWithOtp({ email: loginEmail });
+    if (error) toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    else toast({ title: t('auth.magicLinkSent') });
+    setLoginLoading(false);
   };
 
   return (
@@ -536,7 +564,7 @@ export default function ListingDetail() {
                         </a>
                       </Button>
                     ) : !user ? (
-                      <Button className="w-full gap-2 rounded-full font-bold text-base h-12" onClick={() => toast({ title: t('listing.loginToContact') })}>
+                      <Button className="w-full gap-2 rounded-full font-bold text-base h-12" onClick={() => setLoginDialogOpen(true)}>
                         <MessageCircle className="h-5 w-5" />
                         {t('listing.contactWhatsApp')}
                       </Button>
@@ -590,7 +618,7 @@ export default function ListingDetail() {
         }}>
           <DrawerTrigger asChild>
             <Button className="flex-1 gap-2 rounded-full font-bold text-base h-12" onClick={() => {
-              if (!user) { toast({ title: t('listing.loginToContact') }); return; }
+              if (!user) { setLoginDialogOpen(true); return; }
               if (user.id === listing.seller_id) return;
               setMobileContactOpen(true);
             }}>
@@ -667,6 +695,30 @@ export default function ListingDetail() {
           </DrawerContent>
         </Drawer>
       </div>
+
+      {/* Login Dialog */}
+      <Dialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t('listing.loginToContact')}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleLoginFromDialog} className="space-y-4">
+            <div>
+              <Label>{t('auth.email')}</Label>
+              <Input type="email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} required />
+            </div>
+            <div>
+              <Label>{t('auth.password')}</Label>
+              <Input type="password" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} required />
+            </div>
+            <Button type="submit" className="w-full" disabled={loginLoading}>{t('common.login')}</Button>
+            <div className="flex justify-between text-sm">
+              <button type="button" onClick={handleMagicLinkFromDialog} className="text-primary hover:underline">{t('auth.magicLink')}</button>
+              <button type="button" onClick={() => { setLoginDialogOpen(false); navigate('/auth?tab=signup'); }} className="text-primary hover:underline">{t('common.signup')}</button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
