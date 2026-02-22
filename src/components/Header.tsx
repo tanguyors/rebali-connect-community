@@ -48,7 +48,7 @@ export default function Header() {
           <Link to="/" className="flex items-center gap-2">
             <img src={logo} alt="Re-Bali" className="h-8" />
           </Link>
-          <Button className="gap-1.5 rounded-full px-6" onClick={() => navigate('/create')}>
+          <Button className="gap-1.5 rounded-full px-6" onClick={authGuard('/create')}>
             <Plus className="h-4 w-4" />
             {t('nav.sell')}
           </Button>
