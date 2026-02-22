@@ -89,7 +89,7 @@ export const MAX_ACTIVE_LISTINGS = 5;
 export const MAX_PHOTOS = 10;
 
 // Re-Bali WhatsApp proxy number (set to your actual Re-Bali WhatsApp number)
-export const REBALI_WA_NUMBER = '6281234567890';
+export const REBALI_WA_NUMBER = '33745661257';
 
 // Category-specific extra fields configuration
 // type: 'text' | 'number' | 'select'
