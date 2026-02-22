@@ -49,8 +49,10 @@ function WhatsAppVerification({ user, profile, refreshProfile }: { user: any; pr
     );
   }
 
+  const isValidPhone = /^\+\d{7,15}$/.test(phone);
+
   const handleSendOtp = async () => {
-    if (!phone) return;
+    if (!isValidPhone) return;
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('send-otp', {
@@ -107,9 +109,12 @@ function WhatsAppVerification({ user, profile, refreshProfile }: { user: any; pr
           <>
             <div>
               <Label>{t('security.phoneNumber')}</Label>
-              <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder={t('security.phonePlaceholder')} />
+              <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+62812345678" />
+              {phone && !isValidPhone && (
+                <p className="text-sm text-destructive mt-1">{t('security.invalidPhoneFormat') || 'Format: +[country code][number]'}</p>
+              )}
             </div>
-            <Button onClick={handleSendOtp} disabled={loading || !phone} className="w-full">
+            <Button onClick={handleSendOtp} disabled={loading || !isValidPhone} className="w-full">
               {t('security.sendCode')}
             </Button>
           </>
