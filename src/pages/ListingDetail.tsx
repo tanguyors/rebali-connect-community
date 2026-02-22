@@ -186,7 +186,7 @@ export default function ListingDetail() {
   });
 
   const toggleFavorite = async () => {
-    if (!user) return;
+    if (!user) { setLoginDialogOpen(true); return; }
     if (isFavorited) {
       await supabase.from('favorites').delete().eq('listing_id', id!).eq('user_id', user.id);
     } else {
@@ -588,16 +588,14 @@ export default function ListingDetail() {
               </Card>
 
               {/* Favorite button */}
-              {user && (
-                <Button
-                  variant={isFavorited ? "default" : "outline"}
-                  className="w-full gap-2 rounded-full font-bold h-11"
-                  onClick={toggleFavorite}
-                >
-                  <Heart className={`h-5 w-5 ${isFavorited ? 'fill-current' : ''}`} />
-                  {isFavorited ? t('listing.removeFromFavorites') : t('listing.addToFavorites')}
-                </Button>
-              )}
+              <Button
+                variant={isFavorited ? "default" : "outline"}
+                className="w-full gap-2 rounded-full font-bold h-11"
+                onClick={toggleFavorite}
+              >
+                <Heart className={`h-5 w-5 ${isFavorited ? 'fill-current' : ''}`} />
+                {isFavorited ? t('listing.removeFromFavorites') : t('listing.addToFavorites')}
+              </Button>
             </div>
           </div>
         </div>
