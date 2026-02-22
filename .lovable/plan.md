@@ -1,34 +1,33 @@
 
+# Fix Mobile WhatsApp Contact Drawer
 
-# Floating PWA Install Button (Mobile)
+## Problem
+1. The mobile drawer shows two buttons: "Send via WhatsApp" and "Send a message" (in-app) -- the in-app message button should be removed.
+2. The WhatsApp button uses `asChild` with an `<a>` tag which may not work properly on mobile -- needs to be a direct button with `window.open`.
 
-Add a small floating action button (FAB) in the bottom-right corner on mobile devices that prompts users to install the app as a PWA. The button adapts its behavior based on the device (Android vs iOS).
+## Changes
 
-## How it works
+### File: `src/pages/ListingDetail.tsx`
 
-- **Android**: Uses the native `beforeinstallprompt` event to trigger the browser's install dialog directly. The button disappears once the app is installed.
-- **iOS (Safari)**: Since iOS doesn't support `beforeinstallprompt`, tapping the button shows a small tooltip/modal explaining: "Tap the Share button, then 'Add to Home Screen'".
-- The button only appears on mobile devices and only when the app is NOT already in standalone/installed mode.
-- A dismiss/close option stores the preference in `localStorage` so it doesn't reappear for users who don't want it.
+**1. Remove the in-app message button (lines 669-675)**
+Delete the entire "In-app message" button block from the drawer.
 
-## Visual
+**2. Fix the WhatsApp button (lines 653-667)**
+Replace the `asChild` + `<a>` approach with a regular `<Button>` that uses `window.open()` on click. This ensures the click handler fires reliably on mobile:
 
-- Small circular FAB (40x40px), bottom-right, above the BottomNav bar (~80px from bottom)
-- Uses a `Download` icon from lucide-react
-- Subtle pulse animation on first appearance to draw attention
-- Teal/primary color to match the theme
+```tsx
+<Button 
+  className="w-full gap-2 rounded-full font-bold text-base h-12" 
+  onClick={() => {
+    const waUrl = `https://wa.me/${REBALI_WA_NUMBER}?text=${encodeURIComponent(`RB|L=${listing.id}|B=${user?.id || ''}| ${customMessage}`)}`;
+    window.open(waUrl, '_blank', 'noopener,noreferrer');
+    if (user) supabase.from('whatsapp_click_logs').insert({ listing_id: listing.id, user_id: user.id });
+    setMobileContactOpen(false);
+  }}
+>
+  <MessageCircle className="h-5 w-5" />
+  {t('listing.sendViaWhatsApp')}
+</Button>
+```
 
-## Technical Details
-
-**New file:** `src/components/PwaInstallButton.tsx`
-- Listens for `beforeinstallprompt` event (Android)
-- Detects iOS via user agent
-- Checks `display-mode: standalone` to hide when already installed
-- Stores dismissal in `localStorage` key `rebali-pwa-dismiss`
-- On Android: calls `prompt()` on the deferred event
-- On iOS: shows a small popover with install instructions
-- Only renders on mobile (uses `useIsMobile` hook)
-
-**Modified file:** `src/components/Layout.tsx`
-- Import and render `<PwaInstallButton />` alongside `<BottomNav />`
-
+This keeps only the WhatsApp button and makes the click action work reliably on mobile devices, opening WhatsApp with the proxy message token (`RB|L=...|B=...|`) as previously implemented.
