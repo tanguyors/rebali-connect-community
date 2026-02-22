@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
-import { formatPrice, CATEGORY_ICONS, CATEGORY_PLACEHOLDERS } from '@/lib/constants';
+import { formatPrice, CATEGORY_ICONS, CATEGORY_PLACEHOLDERS, REBALI_WA_NUMBER } from '@/lib/constants';
 import { MapPin, Eye, Phone, MessageCircle, Flag, User, Calendar, Share2, Heart, ChevronRight, ThumbsUp, Star, Briefcase, ArrowRight, ShieldCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from '@/hooks/use-toast';
@@ -518,27 +518,31 @@ export default function ListingDetail() {
                     <ChevronRight className="h-5 w-5 text-muted-foreground" />
                   </Link>
 
-                  {/* CTA Buttons like LeBonCoin */}
+                  {/* CTA Buttons - WhatsApp Proxy */}
                   <div className="space-y-2.5">
-                    {seller?.whatsapp && (
+                    {user && user.id !== listing.seller_id ? (
                       <Button className="w-full gap-2 rounded-full font-bold text-base h-12" asChild>
-                      <a href={`https://wa.me/${seller.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par votre annonce "${title}" à ${formatPrice(listing.price, listing.currency)}. Est-elle toujours disponible ?\n\n${window.location.href}`)}`} target="_blank" rel="noopener noreferrer"
-                        onClick={() => { supabase.from('whatsapp_click_logs').insert({ listing_id: listing.id, user_id: user?.id || null }); }}>
+                        <a
+                          href={`https://wa.me/${REBALI_WA_NUMBER}?text=${encodeURIComponent(`RB|L=${listing.id}|B=${user.id}| Hi, I'm interested in your item "${title}" at ${formatPrice(listing.price, listing.currency)}. Is it still available?`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => { supabase.from('whatsapp_click_logs').insert({ listing_id: listing.id, user_id: user.id }); }}
+                        >
                           <MessageCircle className="h-5 w-5" />
-                          {t('listing.whatsapp')}
+                          {t('listing.contactWhatsApp')}
                         </a>
                       </Button>
-                    )}
-                    {seller?.phone && (
-                      <Button variant="outline" className="w-full gap-2 rounded-full font-bold text-base h-12" asChild>
-                        <a href={`tel:${seller.phone}`}>
-                          <Phone className="h-5 w-5" />
-                          {t('listing.call')}
-                        </a>
+                    ) : !user ? (
+                      <Button className="w-full gap-2 rounded-full font-bold text-base h-12" onClick={() => toast({ title: t('listing.loginToContact') })}>
+                        <MessageCircle className="h-5 w-5" />
+                        {t('listing.contactWhatsApp')}
                       </Button>
-                    )}
-                    {!seller?.whatsapp && !seller?.phone && (
-                      <p className="text-sm text-muted-foreground text-center py-2">{t('listing.noWhatsapp')}</p>
+                    ) : null}
+                    {seller?.phone_verified && (
+                      <div className="flex items-center justify-center gap-1.5 text-sm text-green-600">
+                        <ShieldCheck className="h-4 w-4" />
+                        {t('listing.phoneVerified')}
+                      </div>
                     )}
                     {user && user.id !== listing.seller_id && (
                       <Button variant="secondary" className="w-full gap-2 rounded-full font-bold text-base h-12" onClick={handleSendMessage}>
@@ -574,24 +578,22 @@ export default function ListingDetail() {
         >
           <Heart className={`h-5 w-5 ${isFavorited ? 'text-red-500 fill-red-500' : 'text-foreground'}`} />
         </button>
-        {seller?.whatsapp ? (
+        {user && user.id !== listing.seller_id ? (
           <Button className="flex-1 gap-2 rounded-full font-bold text-base h-12" asChild>
-            <a href={`https://wa.me/${seller.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par votre annonce "${title}" à ${formatPrice(listing.price, listing.currency)}. Est-elle toujours disponible ?\n\n${window.location.href}`)}`} target="_blank" rel="noopener noreferrer"
-              onClick={() => { supabase.from('whatsapp_click_logs').insert({ listing_id: listing.id, user_id: user?.id || null }); }}>
+            <a
+              href={`https://wa.me/${REBALI_WA_NUMBER}?text=${encodeURIComponent(`RB|L=${listing.id}|B=${user.id}| Hi, I'm interested in your item "${title}" at ${formatPrice(listing.price, listing.currency)}. Is it still available?`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => { supabase.from('whatsapp_click_logs').insert({ listing_id: listing.id, user_id: user.id }); }}
+            >
               <MessageCircle className="h-5 w-5" />
-              {t('listing.contactBtn')}
-            </a>
-          </Button>
-        ) : seller?.phone ? (
-          <Button className="flex-1 gap-2 rounded-full font-bold text-base h-12" asChild>
-            <a href={`tel:${seller.phone}`}>
-              <Phone className="h-5 w-5" />
-              {t('listing.call')}
+              {t('listing.contactWhatsApp')}
             </a>
           </Button>
         ) : (
-          <Button className="flex-1 rounded-full font-bold text-base h-12" disabled>
-            {t('listing.contactBtn')}
+          <Button className="flex-1 gap-2 rounded-full font-bold text-base h-12" onClick={() => !user ? toast({ title: t('listing.loginToContact') }) : null} disabled={user?.id === listing.seller_id}>
+            <MessageCircle className="h-5 w-5" />
+            {t('listing.contactWhatsApp')}
           </Button>
         )}
       </div>

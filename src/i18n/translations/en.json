@@ -74,7 +74,7 @@
     "reportListing": "Report this listing", "markSold": "Mark as Sold", "archive": "Archive",
     "reactivate": "Reactivate", "autoTranslate": "Auto-translate", "translatedBy": "Machine translated",
     "originalLang": "Original language", "description": "Description", "details": "Details",
-    "sellerInfo": "Seller Information", "similarListings": "Similar Listings",
+    "sellerInfo": "Seller Information",
     "noPhone": "No phone provided", "noWhatsapp": "No WhatsApp provided", "linkCopied": "Link copied to clipboard!",
     "keyInfo": "Key Information", "category": "Category", "seePhotos": "See all photos",
     "soldBy": "Sold by", "contactBtn": "Contact", "sellerListings": "Listings from this seller", "seeMoreListings": "See more listings",
@@ -82,7 +82,10 @@
     "edit": "Edit",
     "editListing": "Edit Listing",
     "update": "Update Listing",
-    "updated": "Listing updated!"
+    "updated": "Listing updated!",
+    "contactWhatsApp": "Contact on WhatsApp",
+    "phoneVerified": "Phone verified",
+    "loginToContact": "Log in to contact the seller"
   },
   "createListing": {
     "title": "Create a Listing", "stepCategory": "Category", "stepDetails": "Details", "stepPhotos": "Photos",
@@ -152,7 +155,20 @@
     "viewListings": "View Listings", "listingDetails": "Listing Details", "viewListing": "View Listing",
     "reactivate": "Reactivate", "listingReactivated": "Listing reactivated", "views": "Views",
     "language": "Language", "lastUpdated": "Last Updated", "description": "Description", "listingSaved": "Listing updated",
-    "colSubcategory": "Subcategory"
+    "colSubcategory": "Subcategory",
+    "waRelay": "WhatsApp Relay",
+    "relayConversations": "Relay Conversations",
+    "riskEvents": "Risk Events",
+    "blockConversation": "Block",
+    "unblockConversation": "Unblock",
+    "unlocked": "Unlocked",
+    "locked": "Locked",
+    "noConversations": "No relay conversations",
+    "noRiskEvents": "No risk events",
+    "buyer": "Buyer",
+    "sellerLabel": "Seller",
+    "msgCount": "Messages",
+    "relayStatus": "Status"
   },
   "about": {
     "title": "About Re-Bali",

@@ -143,21 +143,11 @@ export default function SellerProfile() {
               </div>
             </div>
             <div className="flex gap-2">
-              {seller.whatsapp && (
-                <Button size="sm" className="gap-1" asChild>
-                  <a href={`https://wa.me/${seller.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer">
-                    <MessageCircle className="h-4 w-4" />
-                    WhatsApp
-                  </a>
-                </Button>
-              )}
-              {seller.phone && (
-                <Button size="sm" variant="outline" className="gap-1" asChild>
-                  <a href={`tel:${seller.phone}`}>
-                    <Phone className="h-4 w-4" />
-                    {t('listing.call')}
-                  </a>
-                </Button>
+              {seller.phone_verified && (
+                <Badge className="bg-green-500/10 text-green-600 border-green-500/20 gap-1">
+                  <ShieldCheck className="h-3 w-3" />
+                  {t('listing.phoneVerified')}
+                </Badge>
               )}
             </div>
           </div>

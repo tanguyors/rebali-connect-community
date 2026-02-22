@@ -44,26 +44,47 @@ export type Database = {
       conversations: {
         Row: {
           buyer_id: string
+          buyer_msg_count: number
+          buyer_phone: string | null
           created_at: string
           id: string
           listing_id: string
+          relay_status: string
           seller_id: string
+          seller_msg_count: number
+          total_msg_count: number
+          unlocked: boolean
+          unlocked_at: string | null
           updated_at: string
         }
         Insert: {
           buyer_id: string
+          buyer_msg_count?: number
+          buyer_phone?: string | null
           created_at?: string
           id?: string
           listing_id: string
+          relay_status?: string
           seller_id: string
+          seller_msg_count?: number
+          total_msg_count?: number
+          unlocked?: boolean
+          unlocked_at?: string | null
           updated_at?: string
         }
         Update: {
           buyer_id?: string
+          buyer_msg_count?: number
+          buyer_phone?: string | null
           created_at?: string
           id?: string
           listing_id?: string
+          relay_status?: string
           seller_id?: string
+          seller_msg_count?: number
+          total_msg_count?: number
+          unlocked?: boolean
+          unlocked_at?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -305,6 +326,7 @@ export type Database = {
           content: string
           conversation_id: string
           created_at: string
+          from_role: string | null
           id: string
           read: boolean
           sender_id: string
@@ -313,6 +335,7 @@ export type Database = {
           content: string
           conversation_id: string
           created_at?: string
+          from_role?: string | null
           id?: string
           read?: boolean
           sender_id: string
@@ -321,6 +344,7 @@ export type Database = {
           content?: string
           conversation_id?: string
           created_at?: string
+          from_role?: string | null
           id?: string
           read?: boolean
           sender_id?: string
@@ -516,6 +540,33 @@ export type Database = {
           },
         ]
       }
+      risk_events: {
+        Row: {
+          created_at: string
+          details: Json | null
+          event_type: string
+          id: string
+          phone: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: Json | null
+          event_type: string
+          id?: string
+          phone?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: Json | null
+          event_type?: string
+          id?: string
+          phone?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       trust_scores: {
         Row: {
           factors: Json | null
@@ -597,6 +648,33 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      wa_relay_tokens: {
+        Row: {
+          buyer_id: string
+          conversation_id: string | null
+          created_at: string
+          id: string
+          listing_id: string
+          token: string
+        }
+        Insert: {
+          buyer_id: string
+          conversation_id?: string | null
+          created_at?: string
+          id?: string
+          listing_id: string
+          token: string
+        }
+        Update: {
+          buyer_id?: string
+          conversation_id?: string | null
+          created_at?: string
+          id?: string
+          listing_id?: string
+          token?: string
         }
         Relationships: []
       }
