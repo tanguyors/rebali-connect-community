@@ -1,45 +1,47 @@
 
-# Traduction automatique des messages WhatsApp relaye
+# Correction du code pays OTP WhatsApp
 
-## Probleme
-Quand un acheteur envoie un message en francais a un vendeur indonesien, le vendeur recoit le message en francais. Le message devrait etre traduit dans la langue preferee du destinataire.
+## Probleme identifie
+
+Dans `supabase/functions/send-otp/index.ts` (ligne 112), le code pays est fixe a `"62"` (Indonesie). Fonnte utilise ce parametre pour reformater le numero, ce qui ecrase le prefixe international saisi par l'utilisateur.
+
+Resultat : un numero `+33775855440` devient `+6233775855440`.
 
 ## Solution
-Modifier la fonction `wa-webhook` (edge function) pour :
-1. Recuperer la langue preferee (`preferred_lang`) du destinataire depuis son profil
-2. Detecter la langue du message envoye (via la langue preferee de l'expediteur)
-3. Si les langues different, traduire le message avant de le relayer via Fonnte
 
-## Modifications
+Deux changements necessaires :
 
-### `supabase/functions/wa-webhook/index.ts`
+### 1. Edge Function `send-otp/index.ts`
 
-**Ajouter une fonction `translateText`** -- La meme que celle deja utilisee dans `translate-listing/index.ts`, qui utilise l'API gratuite Google Translate :
+- Extraire dynamiquement le code pays depuis le numero de telephone fourni (qui commence par `+`)
+- Si le numero commence par `+`, extraire le code pays automatiquement et envoyer le numero sans le `+` a Fonnte
+- Ne plus coder en dur `"62"`
+
+Logique :
+```text
++33775855440  -> countryCode = "33", target = "775855440"
++6281234567   -> countryCode = "62", target = "81234567"
++1234567890   -> countryCode = "1",  target = "234567890"
 ```
-async function translateText(text, targetLang, sourceLang): Promise<string>
-```
 
-**Modifier `handleRelay`** pour :
-- Recuperer le profil du destinataire (deja fait partiellement) et en extraire `preferred_lang`
-- Recuperer le `preferred_lang` de l'expediteur aussi
-- Si les deux langues sont differentes, appeler `translateText(message, recipientLang, senderLang)` avant d'envoyer
-- Le message original est toujours sauvegarde tel quel dans la table `messages`
-- Seul le message envoye via Fonnte est traduit
+Concretement, on utilisera une liste des prefixes pays connus (1, 7, 20-69, etc.) pour determiner la bonne coupure, ou plus simplement, on enverra le numero complet avec le `+` a Fonnte et on supprimera le parametre `countryCode` (Fonnte accepte les numeros au format international complet).
 
-**Traduire aussi le suffixe anti-arnaque** -- Le `SAFETY_SUFFIX` sera traduit dans la langue du destinataire. On ajoutera un objet avec les traductions pre-definies du disclaimer dans les 12 langues.
+**Approche retenue** : envoyer le numero tel quel au format international (avec `+`) dans `target` et retirer le parametre `countryCode`. C'est la methode la plus fiable et recommandee par Fonnte pour les numeros internationaux.
 
-### Pas de changement cote frontend
-Tout se passe dans l'edge function. Le selecteur de langue de l'app influence deja `preferred_lang` dans le profil utilisateur.
+### 2. Verification du format cote client
 
-## Details techniques
+- Verifier dans la page Profil que le champ WhatsApp exige bien un format commencant par `+` suivi du code pays (ex: `+33`, `+62`, `+1`)
+- Ajouter une validation basique si elle n'existe pas deja
 
-Dans la fonction `handleRelay`, les profils de l'acheteur et du vendeur sont deja recuperes pour obtenir le numero de telephone. On va simplement ajouter `preferred_lang` aux champs selectionnes.
+## Fichiers modifies
 
-Le flux sera :
-1. L'acheteur envoie "Bonjour, cet article est-il disponible ?" (preferred_lang = fr)
-2. Le webhook recupere le profil du vendeur (preferred_lang = id)
-3. Le message est traduit en indonesien via Google Translate
-4. Le vendeur recoit : "Halo, apakah barang ini tersedia?" + disclaimer en indonesien
-5. Le message original en francais est sauvegarde dans la base de donnees
+| Fichier | Modification |
+|---|---|
+| `supabase/functions/send-otp/index.ts` | Supprimer `countryCode: "62"`, envoyer le numero au format international complet |
+| `src/pages/Profile.tsx` | Verifier que la validation du champ WhatsApp impose le format `+XX...` |
 
-Le `SAFETY_SUFFIX` sera remplace par un objet `SAFETY_SUFFIXES` contenant les 12 traductions pre-ecrites pour eviter un appel API supplementaire a chaque message.
+## Impact
+
+- Zero risque de regression : les numeros indonesiens `+62...` continueront de fonctionner
+- Tous les numeros internationaux seront desormais supportes
+- Aucun cout supplementaire
