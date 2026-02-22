@@ -10,6 +10,7 @@ import { CATEGORIES, CATEGORY_ICONS } from '@/lib/constants';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
 
@@ -33,6 +34,7 @@ export default function Home() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  const { user } = useAuth();
 
   const { data: listings, isLoading } = useQuery({
     queryKey: ['latest-listings'],
@@ -92,11 +94,9 @@ export default function Home() {
           <div className="relative z-10 text-center">
             <h2 className="text-2xl md:text-3xl font-extrabold mb-3 text-primary-foreground">{t('home.freePlatform')}</h2>
             <p className="text-primary-foreground/80 max-w-md mx-auto mb-6 font-medium">{t('home.freeDesc')}</p>
-            <Button size="lg" variant="secondary" className="rounded-full gap-2 px-8 font-bold shadow-md" asChild>
-              <Link to="/create">
+            <Button size="lg" variant="secondary" className="rounded-full gap-2 px-8 font-bold shadow-md" onClick={() => navigate(user ? '/create' : '/auth')}>
                 <Plus className="h-5 w-5" />
                 {t('nav.sell')}
-              </Link>
             </Button>
           </div>
         </div>
