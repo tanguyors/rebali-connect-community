@@ -114,10 +114,11 @@ Deno.serve(async (req) => {
 
       if (!existingConv) {
         // Also check if sender is a seller in any active relay conversation
+        const senderWithPlus = `+${sender}`;
         const { data: sellerProfile } = await supabase
           .from("profiles")
           .select("id, phone, whatsapp")
-          .or(`phone.eq.${sender},whatsapp.eq.${sender}`)
+          .or(`phone.eq.${sender},whatsapp.eq.${sender},phone.eq.${senderWithPlus},whatsapp.eq.${senderWithPlus}`)
           .limit(1)
           .maybeSingle();
 
