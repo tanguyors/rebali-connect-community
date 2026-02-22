@@ -56,13 +56,15 @@ async function translateText(text: string, targetLang: string, sourceLang: strin
 }
 
 async function sendFonnte(token: string, target: string, message: string) {
+  // Strip '+' and non-digit chars; set countryCode to "0" to disable Fonnte's auto-prefix
+  const cleanTarget = target.replace(/[^0-9]/g, "");
   const res = await fetch("https://api.fonnte.com/send", {
     method: "POST",
     headers: {
       Authorization: token,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ target, message }),
+    body: JSON.stringify({ target: cleanTarget, message, countryCode: "0" }),
   });
   return res.json();
 }
