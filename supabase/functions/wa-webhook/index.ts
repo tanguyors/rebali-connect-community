@@ -385,7 +385,7 @@ async function handleRelay(
   // Determine target phone
   let targetPhone: string;
   if (role === "buyer") {
-    targetPhone = (recipientProfile?.whatsapp || recipientProfile?.phone || "").replace(/[^0-9]/g, "");
+    targetPhone = (recipientProfile?.whatsapp || recipientProfile?.phone || "").replace(/[^\d+]/g, "");
     if (!targetPhone) {
       return new Response(JSON.stringify({ status: "no_seller_phone" }), {
         headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
@@ -450,7 +450,7 @@ async function handleRelay(
           .eq("id", conversation.id);
 
         const sellerRealPhone = sellerCheck.whatsapp || sellerCheck.phone || "";
-        const sellerPhoneClean = sellerRealPhone.replace(/[^0-9]/g, "");
+        const sellerPhoneClean = sellerRealPhone.replace(/[^\d+]/g, "");
 
         const unlockMsgBuyer = `🔓 Re-Bali: Conversation unlocked! You can now contact the seller directly: ${sellerRealPhone}`;
         const unlockMsgSeller = `🔓 Re-Bali: Conversation unlocked! The buyer can now see your phone number. You can continue chatting directly.`;
