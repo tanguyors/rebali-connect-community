@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 // Anti-scam disclaimer appended to relayed messages only
-const SAFETY_SUFFIX = `\n---\n⚠️ Re-Bali is a listing platform only — no transactions are managed. Buyer & seller are solely responsible. Never pay before seeing the item. Meet in a public place.`;
+const SAFETY_SUFFIX = `\n---\n⚠️ Re-Bali is a listing platform only — no transactions are managed. Buyer & seller are solely responsible. Re-Bali does not guarantee the authenticity or quality of any item. Never pay before seeing the item. Meet in a public place.`;
 
 // Anti-scam patterns
 const BLOCKED_PATTERNS = [
