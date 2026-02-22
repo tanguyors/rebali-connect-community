@@ -237,6 +237,36 @@ Deno.serve(async (req) => {
         { onConflict: "token" }
       );
 
+    // Check if buyer's WhatsApp matches their profile
+    const { data: buyerProfile } = await supabase
+      .from("profiles")
+      .select("phone, whatsapp, display_name")
+      .eq("id", buyerId)
+      .single();
+
+    if (buyerProfile) {
+      const profilePhones = [buyerProfile.phone, buyerProfile.whatsapp]
+        .filter(Boolean)
+        .map((p: string) => p.replace(/[^0-9]/g, ""));
+
+      if (profilePhones.length > 0 && !profilePhones.includes(sender)) {
+        // Phone mismatch — warn the buyer but still relay
+        await sendFonnte(
+          FONNTE_TOKEN,
+          sender,
+          "⚠️ Re-Bali: The WhatsApp number you're messaging from doesn't match your profile. Please update your WhatsApp number in your Re-Bali profile settings to avoid issues."
+        );
+
+        // Log risk event
+        await supabase.from("risk_events").insert({
+          user_id: buyerId,
+          phone: sender,
+          event_type: "phone_mismatch",
+          details: { profile_phones: profilePhones, actual_sender: sender, conversation_id: conversation.id },
+        });
+      }
+    }
+
     return await handleRelay(supabase, FONNTE_TOKEN, conversation, sender, cleanMessage, "buyer", listing.title_original);
   } catch (err) {
     console.error("wa-webhook error:", err);
