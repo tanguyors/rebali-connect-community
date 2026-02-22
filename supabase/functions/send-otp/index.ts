@@ -105,10 +105,12 @@ Deno.serve(async (req) => {
     };
     const msgFn = otpMessages[lang || "en"] || otpMessages.en;
 
-    // Send via Fonnte
+    // Send via Fonnte — strip '+' and disable auto country code prefix
+    const cleanTarget = phone_number.replace(/[^0-9]/g, "");
     const formData = new FormData();
-    formData.append("target", phone_number);
+    formData.append("target", cleanTarget);
     formData.append("message", msgFn(otp));
+    formData.append("countryCode", "0");
 
     const fonntRes = await fetch("https://api.fonnte.com/send", {
       method: "POST",
