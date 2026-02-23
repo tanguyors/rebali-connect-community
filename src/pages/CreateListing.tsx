@@ -20,7 +20,7 @@ import { useQuery } from '@tanstack/react-query';
 const STEPS = ['stepCategory', 'stepDetails', 'stepPhotos', 'stepPreview'] as const;
 
 export default function CreateListing() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -219,6 +219,7 @@ export default function CreateListing() {
           subcategory: form.subcategory,
           title_original: form.title,
           description_original: form.description,
+          lang_original: language,
           price: parseFloat(form.price) || 0,
           currency: form.currency,
           location_area: form.location,
@@ -243,13 +244,13 @@ export default function CreateListing() {
           });
         }
 
-        // Create translation placeholders
+        // Create translation placeholders - set the user's language as the original text
         const translations = SUPPORTED_LANGUAGES.map(lang => ({
           listing_id: listing.id,
           lang: lang.code,
-          title: lang.code === 'en' ? form.title : 'Pending translation',
-          description: lang.code === 'en' ? form.description : 'Pending translation',
-          is_machine: true,
+          title: lang.code === language ? form.title : 'Pending translation',
+          description: lang.code === language ? form.description : 'Pending translation',
+          is_machine: lang.code !== language,
         }));
         await supabase.from('listing_translations').insert(translations);
 
