@@ -134,7 +134,7 @@ Deno.serve(async (req) => {
       ? `${supabaseUrl}/storage/v1/object/public/listings/${listingImage.storage_path}`
       : "";
 
-    // Link to conversation (clickable), image is attached separately via Fonnte's url param
+    // Conversation link for replying
     const convLink = `https://re-bali.com/messages?conv=${conversation_id}`;
 
     const waMessage = `📩 ${tmpl.newMsg} "${listingTitle}"
