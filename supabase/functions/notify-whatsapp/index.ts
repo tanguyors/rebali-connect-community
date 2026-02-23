@@ -143,27 +143,27 @@ ${senderName}: ${preview}
 
 ${tmpl.reply}: ${convLink}`;
 
-    // Send via Fonnte as image message with caption (prevents link preview taking over)
+    // Send via Fonnte using FormData for proper image attachment
     const cleanTarget = recipient.whatsapp.replace(/[^0-9]/g, "");
-    const sendBody: Record<string, string> = {
-      target: cleanTarget,
-      message: waMessage,
-      countryCode: "0",
-    };
+    const formData = new FormData();
+    formData.append("target", cleanTarget);
+    formData.append("message", waMessage);
+    formData.append("countryCode", "0");
     if (imageUrl) {
-      sendBody.url = imageUrl;
+      formData.append("url", imageUrl);
     }
+
+    console.log("Sending to Fonnte with imageUrl:", imageUrl, "target:", cleanTarget);
 
     const fonnteRes = await fetch("https://api.fonnte.com/send", {
       method: "POST",
       headers: {
         Authorization: fonnte,
-        "Content-Type": "application/json",
       },
-      body: JSON.stringify(sendBody),
+      body: formData,
     });
     const fonnteResult = await fonnteRes.json();
-    console.log("Fonnte response:", JSON.stringify(fonnteResult), "imageUrl:", imageUrl);
+    console.log("Fonnte response:", JSON.stringify(fonnteResult));
 
     return new Response(JSON.stringify({ ok: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
