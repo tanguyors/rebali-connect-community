@@ -321,7 +321,7 @@ export default function ListingDetail() {
                   <DropdownMenuContent align="end" className="w-48">
                     {(() => {
                       const shareUrl = `https://re-bali.com/listing/${id}`;
-                      const ogUrl = `https://eddrshyqlrpxgvyxpjee.supabase.co/functions/v1/oglisting?id=${id}`;
+                      const ogUrl = `https://eddrshyqlrpxgvyxpjee.supabase.co/functions/v1/og-listing?id=${id}`;
                       return (
                         <>
                           <DropdownMenuItem onClick={() => { navigator.clipboard.writeText(shareUrl); toast({ title: t('listing.linkCopied') }); }}>
