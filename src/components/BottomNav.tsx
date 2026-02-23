@@ -1,25 +1,27 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { Home, Search, Plus, Heart, User } from 'lucide-react';
+import { Home, Search, Plus, MessageCircle, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-const NAV_ITEMS = [
-  { icon: Home, labelKey: 'nav.home', path: '/' },
-  { icon: Search, labelKey: 'nav.browse', path: '/browse' },
-  { icon: Plus, labelKey: 'nav.sell', path: '/create', accent: true },
-  { icon: Heart, labelKey: 'nav.favorites', path: '/favorites' },
-  { icon: User, labelKey: 'nav.profile', path: '/profile' },
-];
 
 export default function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useLanguage();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+
+  const NAV_ITEMS = [
+    { icon: Home, labelKey: 'nav.home', path: '/' },
+    { icon: Search, labelKey: 'nav.browse', path: '/browse' },
+    { icon: Plus, labelKey: 'nav.sell', path: '/create', accent: true },
+    ...(user && profile?.phone_verified
+      ? [{ icon: MessageCircle, labelKey: 'nav.messages', path: '/messages' }]
+      : []),
+    { icon: User, labelKey: 'nav.profile', path: '/profile' },
+  ];
 
   const handleNav = (path: string) => {
-    if (!user && ['/favorites', '/profile', '/create'].includes(path)) {
+    if (!user && ['/favorites', '/profile', '/create', '/messages'].includes(path)) {
       navigate('/auth');
     } else {
       navigate(path);

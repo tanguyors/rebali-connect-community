@@ -4,7 +4,7 @@ import logo from '@/assets/logo.png';
 import { useAuth } from '@/contexts/AuthContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import { Button } from '@/components/ui/button';
-import { Plus, User, LogOut, Shield, Search, Heart, Bell, Sun, Moon } from 'lucide-react';
+import { Plus, User, LogOut, Shield, Search, Heart, Bell, Sun, Moon, MessageCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
@@ -86,6 +86,12 @@ export default function Header() {
             <Heart className="h-5 w-5" strokeWidth={1.5} />
             <span className="text-[10px]">{t('nav.favorites')}</span>
           </Button>
+          {user && profile?.phone_verified && (
+            <Button variant="ghost" size="sm" className="flex-col items-center gap-0.5 h-auto py-1.5 px-3" onClick={() => navigate('/messages')}>
+              <MessageCircle className="h-5 w-5" strokeWidth={1.5} />
+              <span className="text-[10px]">{t('nav.messages')}</span>
+            </Button>
+          )}
 
           {user ? (
             <DropdownMenu>
