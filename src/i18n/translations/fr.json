@@ -270,5 +270,6 @@
     "privacySecurityText": "Nous mettons en œuvre plusieurs mesures de sécurité : stockage chiffré, empreinte digitale des appareils pour la détection de fraude, filtrage du contenu, score de confiance automatisé, détection VPN et filigrane des photos. Malgré ces mesures, aucun système n'est sûr à 100%.",
     "privacyContact": "Nous contacter",
     "privacyContactText": "Pour toute question relative à la confidentialité ou pour exercer vos droits, contactez-nous via notre plateforme ou visitez la page À propos."
-  }
+  },
+  "share": { "copyLink": "Copier le lien", "facebook": "Publier sur Facebook", "instagramStory": "Story Instagram" }
 }
