@@ -48,6 +48,9 @@ export type Database = {
           buyer_phone: string | null
           buyer_short_code: string | null
           created_at: string
+          deal_closed: boolean
+          deal_closed_at: string | null
+          deal_closed_by: string | null
           id: string
           listing_id: string
           relay_status: string
@@ -65,6 +68,9 @@ export type Database = {
           buyer_phone?: string | null
           buyer_short_code?: string | null
           created_at?: string
+          deal_closed?: boolean
+          deal_closed_at?: string | null
+          deal_closed_by?: string | null
           id?: string
           listing_id: string
           relay_status?: string
@@ -82,6 +88,9 @@ export type Database = {
           buyer_phone?: string | null
           buyer_short_code?: string | null
           created_at?: string
+          deal_closed?: boolean
+          deal_closed_at?: string | null
+          deal_closed_by?: string | null
           id?: string
           listing_id?: string
           relay_status?: string
@@ -497,8 +506,10 @@ export type Database = {
       reviews: {
         Row: {
           comment: string | null
+          conversation_id: string | null
           created_at: string
           id: string
+          is_verified_purchase: boolean
           listing_id: string | null
           rating: number
           reviewer_id: string
@@ -506,8 +517,10 @@ export type Database = {
         }
         Insert: {
           comment?: string | null
+          conversation_id?: string | null
           created_at?: string
           id?: string
+          is_verified_purchase?: boolean
           listing_id?: string | null
           rating: number
           reviewer_id: string
@@ -515,14 +528,23 @@ export type Database = {
         }
         Update: {
           comment?: string | null
+          conversation_id?: string | null
           created_at?: string
           id?: string
+          is_verified_purchase?: boolean
           listing_id?: string | null
           rating?: number
           reviewer_id?: string
           seller_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "reviews_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: true
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "reviews_listing_id_fkey"
             columns: ["listing_id"]

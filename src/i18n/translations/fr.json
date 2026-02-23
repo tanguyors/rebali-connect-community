@@ -70,7 +70,7 @@
   "notFound": { "title": "Page non trouvée", "description": "La page que vous recherchez n'existe pas.", "backHome": "Retour à l'accueil" },
   "notifications": { "newListing": "Nouvelle annonce !", "listingActive": "Annonce réactivée", "listingSold": "Annonce marquée vendue", "listingArchived": "Annonce archivée", "vipNotify": "Vous serez notifié du lancement VIP !" },
   "adminLabels": { "accessDenied": "Accès refusé", "listing": "Annonce", "reporter": "Signaleur", "deleted": "Supprimé", "unknown": "Inconnu" },
-  "seller": { "activeListings": "annonces actives", "reviews": "avis", "reviewsTitle": "Avis clients", "leaveReview": "Laisser un avis", "reviewPlaceholder": "Partagez votre expérience avec ce vendeur...", "reviewSubmitted": "Avis envoyé !", "noReviews": "Aucun avis pour le moment", "allListings": "Annonces" },
+  "seller": { "activeListings": "annonces actives", "reviews": "avis", "reviewsTitle": "Avis clients", "leaveReview": "Laisser un avis", "reviewPlaceholder": "Partagez votre expérience avec ce vendeur...", "reviewSubmitted": "Avis envoyé !", "noReviews": "Aucun avis pour le moment", "allListings": "Annonces", "verifiedPurchase": "Acheteur vérifié", "reviewRequiresDeal": "Le vendeur doit confirmer le deal avant que vous puissiez laisser un avis.", "accountTooNew": "Votre compte ou celui du vendeur doit avoir au moins 7 jours pour laisser un avis.", "noExchangeYet": "Une vraie conversation avec des messages des deux côtés est nécessaire.", "alreadyReviewed": "Vous avez déjà laissé un avis pour cette transaction." },
   "security": {
     "verifyWhatsapp": "Vérifier votre WhatsApp",
     "verifyWhatsappDesc": "Vérifiez votre numéro WhatsApp pour renforcer la confiance des acheteurs",
@@ -140,7 +140,13 @@
     "shareInfoBullet2": "Re-Bali ne peut être tenu responsable des échanges ayant lieu en dehors de la plateforme.",
     "shareInfoBullet3": "Méfiez-vous des arnaques. N'envoyez jamais d'argent avant de vous rencontrer en personne.",
     "shareInfoConfirm": "Je comprends, partager mes infos",
-    "shareInfoSent": "Vos coordonnées ont été partagées."
+    "shareInfoSent": "Vos coordonnées ont été partagées.",
+    "dealClosed": "Deal conclu",
+    "dealClosedConfirm": "Confirmer que vous avez conclu le deal avec {buyer} pour \"{listing}\" ? L'annonce sera marquée comme vendue.",
+    "dealClosedSuccess": "Deal conclu ! L'annonce a été marquée comme vendue.",
+    "dealClosedBanner": "Deal conclu le {date}",
+    "productSold": "Ce produit a été vendu par le vendeur.",
+    "conversationClosed": "Cette conversation est fermée."
   },
   "extraFields": {
     "contractType": "Type de contrat", "jobSector": "Secteur d'activité", "workTime": "Temps de travail",

@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Send, ArrowLeft, MessageCircle, User, Languages, Share2, AlertTriangle } from 'lucide-react';
+import { Send, ArrowLeft, MessageCircle, User, Languages, Share2, AlertTriangle, Handshake, CheckCircle2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr, id as idLocale, es, zhCN, de, nl, ru } from 'date-fns/locale';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -27,6 +27,7 @@ export default function Messages() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
+  const [dealClosedDialogOpen, setDealClosedDialogOpen] = useState(false);
 
   // Fetch conversations
   const { data: conversations, isLoading: convsLoading } = useQuery({
@@ -406,13 +407,115 @@ export default function Messages() {
                        </AlertDialogFooter>
                      </AlertDialogContent>
                    </AlertDialog>
+                   {/* Deal Closed Button - only for seller when deal not yet closed */}
+                   {activeConv.seller_id === user.id && !(activeConv as any).deal_closed && (
+                     <AlertDialog open={dealClosedDialogOpen} onOpenChange={setDealClosedDialogOpen}>
+                       <AlertDialogTrigger asChild>
+                         <Button variant="outline" size="sm" className="gap-1.5 text-xs flex-shrink-0 border-green-500/50 text-green-600 hover:bg-green-500/10">
+                           <Handshake className="h-3.5 w-3.5" />
+                           <span className="hidden sm:inline">{t('messages.dealClosed')}</span>
+                         </Button>
+                       </AlertDialogTrigger>
+                       <AlertDialogContent>
+                         <AlertDialogHeader>
+                           <AlertDialogTitle className="flex items-center gap-2">
+                             <Handshake className="h-5 w-5 text-green-600" />
+                             {t('messages.dealClosed')}
+                           </AlertDialogTitle>
+                           <AlertDialogDescription>
+                             {t('messages.dealClosedConfirm')
+                               .replace('{buyer}', otherUser?.display_name || 'User')
+                               .replace('{listing}', activeConv.listings?.title_original || '')}
+                           </AlertDialogDescription>
+                         </AlertDialogHeader>
+                         <AlertDialogFooter>
+                           <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                           <AlertDialogAction
+                             className="bg-green-600 text-white hover:bg-green-700"
+                             onClick={async () => {
+                               try {
+                                 // 1. Mark conversation as deal closed
+                                 await supabase.from('conversations').update({
+                                   deal_closed: true,
+                                   deal_closed_at: new Date().toISOString(),
+                                   deal_closed_by: user.id,
+                                 } as any).eq('id', activeConvId!);
+                                 // 2. Mark listing as sold
+                                 await supabase.from('listings').update({ status: 'sold' as any }).eq('id', activeConv.listing_id);
+                                 // 3. Close other conversations for this listing
+                                 const { data: otherConvs } = await supabase
+                                   .from('conversations')
+                                   .select('id')
+                                   .eq('listing_id', activeConv.listing_id)
+                                   .neq('id', activeConvId!);
+                                 if (otherConvs && otherConvs.length > 0) {
+                                   for (const oc of otherConvs) {
+                                     await supabase.from('conversations').update({ relay_status: 'closed' }).eq('id', oc.id);
+                                     // Insert system message in closed conversations
+                                     await supabase.from('messages').insert({
+                                       conversation_id: oc.id,
+                                       sender_id: user.id,
+                                       content: t('messages.productSold'),
+                                       from_role: 'system',
+                                     });
+                                   }
+                                 }
+                                 // 4. Insert system message in current conversation
+                                 await supabase.from('messages').insert({
+                                   conversation_id: activeConvId!,
+                                   sender_id: user.id,
+                                   content: `🤝 ${t('messages.dealClosed')}`,
+                                   from_role: 'system',
+                                 });
+                                 // 5. Invalidate queries
+                                 queryClient.invalidateQueries({ queryKey: ['conversations'] });
+                                 queryClient.invalidateQueries({ queryKey: ['messages', activeConvId] });
+                                 queryClient.invalidateQueries({ queryKey: ['last-messages'] });
+                                 toast({ title: t('messages.dealClosedSuccess') });
+                               } catch (err) {
+                                 toast({ title: 'Error', variant: 'destructive' });
+                               }
+                             }}
+                           >
+                             {t('common.confirm')}
+                           </AlertDialogAction>
+                         </AlertDialogFooter>
+                       </AlertDialogContent>
+                     </AlertDialog>
+                   )}
                 </div>
+
+                {/* Deal closed banner */}
+                {(activeConv as any).deal_closed && (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-green-500/10 border-b border-green-500/20 text-green-700 text-sm flex-shrink-0">
+                    <CheckCircle2 className="h-4 w-4" />
+                    {t('messages.dealClosedBanner').replace('{date}', new Date((activeConv as any).deal_closed_at).toLocaleDateString())}
+                  </div>
+                )}
+                {/* Product sold banner (for other conversations closed) */}
+                {activeConv.relay_status === 'closed' && !(activeConv as any).deal_closed && (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-muted border-b border-border text-muted-foreground text-sm flex-shrink-0">
+                    {t('messages.productSold')}
+                  </div>
+                )}
 
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0 messages-scroll-area">
                   {convMessages?.map((msg: any) => {
                     const isMine = msg.sender_id === user.id;
-                    const translated = !isMine && translations?.[msg.id];
+                    const isSystem = msg.from_role === 'system';
+                    const translated = !isMine && !isSystem && translations?.[msg.id];
+
+                    if (isSystem) {
+                      return (
+                        <div key={msg.id} className="flex justify-center">
+                          <div className="bg-muted/50 border border-border rounded-full px-4 py-1.5 text-xs text-muted-foreground">
+                            {msg.content}
+                          </div>
+                        </div>
+                      );
+                    }
+
                     return (
                       <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
                         <div className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${isMine ? 'bg-primary text-primary-foreground rounded-br-md' : 'bg-muted rounded-bl-md'}`}>
@@ -434,7 +537,20 @@ export default function Messages() {
                 </div>
 
                 {/* Input */}
-                {!profile?.phone_verified ? (
+                {activeConv.relay_status === 'closed' || (activeConv as any).deal_closed ? (
+                  (activeConv as any).deal_closed && activeConv.buyer_id === user.id ? (
+                    <div className="p-3 border-t border-border flex-shrink-0 text-center">
+                      <p className="text-sm text-muted-foreground mb-2">{t('messages.conversationClosed')}</p>
+                      <Button size="sm" variant="outline" onClick={() => navigate(`/seller/${activeConv.seller_id}`)}>
+                        {t('seller.leaveReview')}
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="p-3 border-t border-border flex-shrink-0 text-center">
+                      <p className="text-sm text-muted-foreground">{t('messages.conversationClosed')}</p>
+                    </div>
+                  )
+                ) : !profile?.phone_verified ? (
                   <div className="p-3 border-t border-border flex-shrink-0">
                     <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/profile')}>
                       <User className="h-4 w-4" />

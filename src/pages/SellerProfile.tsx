@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import ListingCard from '@/components/ListingCard';
-import { User, Briefcase, Star, Calendar, MessageCircle, Phone, Package, ShieldCheck } from 'lucide-react';
+import { User, Briefcase, Star, Calendar, MessageCircle, Phone, Package, ShieldCheck, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 import UserBadges from '@/components/UserBadges';
@@ -64,20 +64,73 @@ export default function SellerProfile() {
     enabled: !!id,
   });
 
+  // Check if current user has a qualifying deal conversation with this seller
+  const { data: dealConversation } = useQuery({
+    queryKey: ['deal-conversation', id, user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('conversations')
+        .select('*')
+        .eq('seller_id', id!)
+        .eq('buyer_id', user!.id)
+        .eq('deal_closed', true)
+        .limit(1)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!id && !!user && user.id !== id,
+  });
+
+  // Check if user already reviewed this deal conversation
+  const { data: existingReview } = useQuery({
+    queryKey: ['existing-review', dealConversation?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('reviews')
+        .select('id')
+        .eq('conversation_id', dealConversation!.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!dealConversation?.id,
+  });
+
   const avgRating = reviews && reviews.length > 0
     ? reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviews.length
     : 0;
 
+  // Determine review eligibility
+  const canReview = user && user.id !== id && dealConversation && !existingReview;
+  const getReviewMessage = () => {
+    if (!user || user.id === id) return null;
+    if (!dealConversation) return t('seller.reviewRequiresDeal');
+    if (existingReview) return t('seller.alreadyReviewed');
+    // Account age checks are enforced by RLS, but show a client-side hint
+    if (seller) {
+      const sellerAge = Date.now() - new Date(seller.created_at).getTime();
+      if (sellerAge < 7 * 24 * 60 * 60 * 1000) return t('seller.accountTooNew');
+    }
+    return null;
+  };
+
   const handleSubmitReview = async () => {
-    if (!user || !id) return;
+    if (!user || !id || !dealConversation) return;
     const { error } = await supabase.from('reviews').insert({
       seller_id: id,
       reviewer_id: user.id,
       rating,
       comment: comment || null,
-    });
+      conversation_id: dealConversation.id,
+      is_verified_purchase: true,
+    } as any);
     if (error) {
-      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+      // Parse RLS error for user-friendly message
+      if (error.message?.includes('row-level security')) {
+        const reviewMsg = getReviewMessage();
+        toast({ title: reviewMsg || t('seller.reviewRequiresDeal'), variant: 'destructive' });
+      } else {
+        toast({ title: 'Error', description: error.message, variant: 'destructive' });
+      }
     } else {
       toast({ title: t('seller.reviewSubmitted') });
       setReviewOpen(false);
@@ -88,6 +141,7 @@ export default function SellerProfile() {
   };
 
   const isPro = seller?.user_type === 'business';
+  const reviewMessage = getReviewMessage();
 
   if (!seller) return <div className="container mx-auto px-4 py-20 text-center text-muted-foreground">{t('common.loading')}</div>;
 
@@ -158,7 +212,7 @@ export default function SellerProfile() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">{t('seller.reviewsTitle')} ({reviews?.length || 0})</h2>
-          {user && user.id !== id && (
+          {canReview ? (
             <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
               <DialogTrigger asChild>
                 <Button size="sm">{t('seller.leaveReview')}</Button>
@@ -194,7 +248,9 @@ export default function SellerProfile() {
                 </div>
               </DialogContent>
             </Dialog>
-          )}
+          ) : user && user.id !== id && reviewMessage ? (
+            <p className="text-xs text-muted-foreground max-w-[200px] text-right">{reviewMessage}</p>
+          ) : null}
         </div>
         {reviews && reviews.length > 0 ? (
           <div className="space-y-3">
@@ -207,6 +263,12 @@ export default function SellerProfile() {
                         <User className="h-4 w-4" />
                       </div>
                       <span className="font-medium text-sm">{review.profiles?.display_name || 'User'}</span>
+                      {review.is_verified_purchase && (
+                        <Badge variant="secondary" className="gap-1 text-[10px] bg-green-500/10 text-green-600 border-green-500/20">
+                          <CheckCircle className="h-3 w-3" />
+                          {t('seller.verifiedPurchase')}
+                        </Badge>
+                      )}
                     </div>
                     <div className="flex items-center gap-1">
                       {[1, 2, 3, 4, 5].map(star => (

@@ -220,7 +220,7 @@
   "notFound": { "title": "Page not found", "description": "Oops! The page you're looking for doesn't exist.", "backHome": "Return to Home" },
   "notifications": { "newListing": "New listing!", "listingActive": "Listing reactivated", "listingSold": "Listing marked as sold", "listingArchived": "Listing archived", "vipNotify": "You'll be notified when VIP launches!" },
   "adminLabels": { "accessDenied": "Access denied", "listing": "Listing", "reporter": "Reporter", "deleted": "Deleted", "unknown": "Unknown" },
-  "seller": { "activeListings": "active listings", "reviews": "reviews", "reviewsTitle": "Reviews", "leaveReview": "Leave a review", "reviewPlaceholder": "Share your experience with this seller...", "reviewSubmitted": "Review submitted!", "noReviews": "No reviews yet", "allListings": "Listings" },
+  "seller": { "activeListings": "active listings", "reviews": "reviews", "reviewsTitle": "Reviews", "leaveReview": "Leave a review", "reviewPlaceholder": "Share your experience with this seller...", "reviewSubmitted": "Review submitted!", "noReviews": "No reviews yet", "allListings": "Listings", "verifiedPurchase": "Verified Buyer", "reviewRequiresDeal": "The seller must confirm the deal before you can leave a review.", "accountTooNew": "Your account or the seller's account must be at least 7 days old to leave a review.", "noExchangeYet": "A real conversation with messages from both sides is needed before leaving a review.", "alreadyReviewed": "You have already reviewed this transaction." },
   "security": {
     "verifyWhatsapp": "Verify your WhatsApp",
     "verifyWhatsappDesc": "Verify your WhatsApp number to build trust with buyers",
@@ -290,7 +290,13 @@
     "shareInfoBullet2": "Re-Bali cannot be held responsible for any interactions that occur outside the platform.",
     "shareInfoBullet3": "Be cautious of potential scams. Never send money before meeting in person.",
     "shareInfoConfirm": "I understand, share my info",
-    "shareInfoSent": "Your contact info has been shared."
+    "shareInfoSent": "Your contact info has been shared.",
+    "dealClosed": "Deal concluded",
+    "dealClosedConfirm": "Confirm that you concluded the deal with {buyer} for \"{listing}\"? The listing will be marked as sold.",
+    "dealClosedSuccess": "Deal concluded! The listing has been marked as sold.",
+    "dealClosedBanner": "Deal concluded on {date}",
+    "productSold": "This product has been sold by the seller.",
+    "conversationClosed": "This conversation is closed."
   },
   "extraFields": {
     "contractType": "Contract Type", "jobSector": "Industry Sector", "workTime": "Work Schedule",
