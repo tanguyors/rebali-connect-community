@@ -27,18 +27,6 @@ export default function NewListingNotification() {
     }, 3000);
   };
 
-  // Demo notifications on mount (remove after testing)
-  useEffect(() => {
-    const demos: ListingNotification[] = [
-      { id: 'demo-1', title_original: 'Villa 3BR avec piscine à Canggu', category: 'immobilier', price: 120000000, currency: 'IDR', location_area: 'canggu' },
-      { id: 'demo-2', title_original: 'Yamaha NMAX 155 - Comme neuf', category: 'vehicules', price: 22000000, currency: 'IDR', location_area: 'seminyak' },
-      { id: 'demo-3', title_original: 'Machine à café professionnelle', category: 'materiel_pro', price: 3500, currency: 'USD', location_area: 'denpasar' },
-    ];
-    const timers = demos.map((demo, i) =>
-      setTimeout(() => addNotification(demo), 1000 + i * 2000)
-    );
-    return () => timers.forEach(clearTimeout);
-  }, []);
 
   useEffect(() => {
     const channel = supabase
