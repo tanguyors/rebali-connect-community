@@ -300,7 +300,14 @@ export default function Messages() {
     } as any);
     if (error) {
       if (error.message?.includes('row-level security')) {
-        toast({ title: t('seller.reviewRequiresDeal'), variant: 'destructive' });
+        // Try to determine specific reason
+        const reviewerProfile = profile;
+        const reviewerAge = reviewerProfile ? Math.floor((Date.now() - new Date(reviewerProfile.created_at).getTime()) / (1000 * 60 * 60 * 24)) : 0;
+        if (reviewerAge < 7) {
+          toast({ title: t('seller.accountTooNew'), variant: 'destructive' });
+        } else {
+          toast({ title: t('seller.accountTooNew'), description: t('seller.noExchangeYet'), variant: 'destructive' });
+        }
       } else {
         toast({ title: 'Error', description: error.message, variant: 'destructive' });
       }
