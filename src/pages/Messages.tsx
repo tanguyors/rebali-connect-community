@@ -226,9 +226,9 @@ export default function Messages() {
   const showChat = !isMobile || !!activeConvId;
 
   return (
-    <div className="container mx-auto px-4 py-4 md:py-8">
+    <div className={`container mx-auto px-4 ${isMobile ? 'py-0 h-[100dvh] flex flex-col' : 'py-8'}`}>
       {!isMobile && <h1 className="text-2xl font-extrabold mb-4">{t('messages.title')}</h1>}
-      <div className="flex gap-4 h-[calc(100vh-10rem)] md:h-[calc(100vh-12rem)]">
+      <div className={`flex gap-4 ${isMobile ? 'flex-1 min-h-0' : 'h-[calc(100vh-12rem)]'}`}>
         {/* Conversation List */}
         {showConvList && (
           <div className={`${isMobile ? 'w-full' : 'w-80 flex-shrink-0'} flex flex-col border border-border rounded-lg overflow-hidden`}>
@@ -395,13 +395,13 @@ export default function Messages() {
                     </Button>
                   </div>
                 ) : (
-                  <div className="p-3 border-t border-border flex gap-2">
+                  <div className="p-2 border-t border-border flex gap-2">
                     <Input
                       value={message}
                       onChange={e => setMessage(e.target.value)}
                       placeholder={t('messages.placeholder')}
                       onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-                      className="flex-1"
+                      className="flex-1 h-9 text-sm"
                     />
                     <Button onClick={sendMessage} size="icon" disabled={!message.trim()}>
                       <Send className="h-4 w-4" />

@@ -134,8 +134,8 @@ Deno.serve(async (req) => {
       ? `${supabaseUrl}/storage/v1/object/public/listings/${listingImage.storage_path}`
       : "";
 
-    // Use published URL
-    const convLink = `https://re-bali.com/messages?conv=${conversation_id}`;
+    // Link to the listing page so WhatsApp OG preview shows listing image
+    const convLink = `https://re-bali.com/listing/${conv.listing_id}`;
 
     const waMessage = `📩 ${tmpl.newMsg} "${listingTitle}"
 
