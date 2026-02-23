@@ -321,17 +321,18 @@ export default function ListingDetail() {
                   <DropdownMenuContent align="end" className="w-48">
                     {(() => {
                       const shareUrl = `https://re-bali.com/listing/${id}`;
+                      const ogUrl = `https://eddrshyqlrpxgvyxpjee.supabase.co/functions/v1/oglisting?id=${id}`;
                       return (
                         <>
                           <DropdownMenuItem onClick={() => { navigator.clipboard.writeText(shareUrl); toast({ title: t('listing.linkCopied') }); }}>
                             <Link2 className="h-4 w-4 mr-2" />
                             {t('share.copyLink')}
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank', 'width=600,height=400')}>
+                          <DropdownMenuItem onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(ogUrl)}`, '_blank', 'width=600,height=400')}>
                             <Facebook className="h-4 w-4 mr-2" />
                             {t('share.facebook')}
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => window.open(`https://www.instagram.com/stories/create/?url=${encodeURIComponent(shareUrl)}`, '_blank')}>
+                          <DropdownMenuItem onClick={() => window.open(`https://www.instagram.com/stories/create/?url=${encodeURIComponent(ogUrl)}`, '_blank')}>
                             <Instagram className="h-4 w-4 mr-2" />
                             {t('share.instagramStory')}
                           </DropdownMenuItem>
