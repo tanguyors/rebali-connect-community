@@ -86,9 +86,11 @@ ${senderName}: ${preview}
 Reply here: ${convLink}`;
 
     // Send via Fonnte
+    const cleanTarget = recipient.whatsapp.replace(/[^0-9]/g, "");
     const formData = new FormData();
-    formData.append("target", recipient.whatsapp);
+    formData.append("target", cleanTarget);
     formData.append("message", waMessage);
+    formData.append("countryCode", "0");
 
     await fetch("https://api.fonnte.com/send", {
       method: "POST",
