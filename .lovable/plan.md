@@ -1,115 +1,116 @@
 
 
-# Systeme "Deal Conclu" + Avis Verifies
+# Evolution du systeme "Deal Conclu" -- Rating bidirectionnel dans la conversation
 
-## Resume
+## Ce qui change par rapport a l'implementation actuelle
 
-Quand un vendeur clique sur "Deal conclu" dans une conversation, l'annonce passe en statut "sold" (vendu), toutes les autres conversations pour cette annonce sont fermees, et seul l'acheteur concerne peut laisser un avis -- sous conditions strictes.
+L'implementation actuelle ferme immediatement la conversation du deal et redirige l'acheteur vers SellerProfile pour noter. Le nouveau flux garde la conversation ouverte pour permettre un echange de notes bidirectionnel directement dans la conversation.
 
-## Flux utilisateur
+## Nouveau flux complet
 
 ```text
-Conversation active entre vendeur et acheteur
-  -> Vendeur clique "Deal conclu" (toujours visible)
-  -> Confirmation dialog
-  -> L'annonce passe en statut "sold"
-  -> L'annonce disparait des resultats de recherche
-  -> Toutes les autres conversations pour cette annonce sont marquees "closed"
-  -> Un message systeme apparait dans chaque conversation fermee
-  -> L'acheteur peut laisser un avis SI :
-     1. Les deux comptes (vendeur + acheteur) ont plus de 7 jours
-     2. La conversation contient des vrais messages texte des deux cotes (pas juste le premier message auto)
-     3. La conversation a un deal_closed = true avec cet acheteur
+1. Vendeur clique "Deal conclu" + confirme via popup
+2. L'annonce passe en statut "sold" (disparait des recherches)
+3. Toutes les AUTRES conversations pour cette annonce sont fermees immediatement
+4. La conversation du deal RESTE OUVERTE (deal_closed = true)
+5. L'acheteur voit un bandeau + bouton "Confirmer le deal"
+6. L'acheteur confirme -> buyer_confirmed = true
+7. Les deux parties peuvent se noter mutuellement (etoiles + commentaire) directement dans la conversation
+8. Quand les deux ont note -> la conversation se ferme definitivement
+9. Si l'acheteur ne confirme pas sous 7 jours -> fermeture automatique (cron job)
 ```
-
-## Conditions pour le rating
-
-| Condition | Raison |
-|-----------|--------|
-| `deal_closed = true` sur la conversation | Preuve que le vendeur confirme la transaction |
-| Compte acheteur > 7 jours | Empeche les comptes jetables crees pour fake rating |
-| Compte vendeur > 7 jours | Empeche un nouveau vendeur de se fake-noter via un complice |
-| Messages texte des deux cotes | Un vrai echange a eu lieu (pas juste un contact initial sans reponse) |
 
 ## Plan technique
 
 ### 1. Migration base de donnees
 
-**Nouveau statut listing** : Ajouter `'sold'` au type enum `listing_status` pour distinguer "vendu" de "archive".
+**Table `conversations`** -- ajouter 2 nouvelles colonnes (en plus des 3 existantes) :
+- `buyer_confirmed` (boolean, default false)
+- `buyer_confirmed_at` (timestamptz, nullable)
 
-**Table `conversations`** -- 3 nouvelles colonnes :
-- `deal_closed` (boolean, default false)
-- `deal_closed_at` (timestamptz, nullable)
-- `deal_closed_by` (uuid, nullable)
+**Table `reviews`** -- modifier pour supporter le rating bidirectionnel :
+- Supprimer la contrainte UNIQUE sur `conversation_id` (car 2 reviews par conversation : acheteur -> vendeur ET vendeur -> acheteur)
+- Ajouter une contrainte UNIQUE sur `(conversation_id, reviewer_id)` (un seul avis par personne par conversation)
+- Ajouter une colonne `reviewed_user_id` (uuid) pour savoir qui est note (remplace `seller_id` dans la logique -- on garde `seller_id` pour la retrocompatibilite mais `reviewed_user_id` sera le vrai destinataire)
 
-**Table `reviews`** -- 2 nouvelles colonnes :
-- `conversation_id` (uuid, nullable, UNIQUE) -- lie l'avis a une conversation, empeche les doublons
-- `is_verified_purchase` (boolean, default false)
+**Mettre a jour la politique RLS INSERT de `reviews`** pour permettre aussi au vendeur de noter l'acheteur :
+- Le reviewer peut etre le buyer OU le seller de la conversation
+- `reviewed_user_id` doit etre l'autre partie
+- `buyer_confirmed = true` obligatoire (les deux ont confirme)
+- Les conditions existantes restent (comptes > 7 jours, messages des deux cotes)
 
-**RLS `reviews` INSERT** -- remplacer la politique actuelle par une qui verifie :
-- `auth.uid() = reviewer_id AND reviewer_id != seller_id`
-- Il existe une conversation qualifiante :
-  - `deal_closed = true`
-  - `buyer_id = auth.uid()`
-  - Les deux profils (acheteur et vendeur) ont `created_at < now() - 7 days`
-  - Il existe au moins 1 message du buyer ET 1 message du seller dans cette conversation
+### 2. Modifications dans Messages.tsx
 
-### 2. Bouton "Deal conclu" dans Messages.tsx
+**Etape vendeur -- "Deal conclu" (deja en place, a ajuster)** :
+- Le bouton reste comme aujourd'hui
+- A la confirmation : ne plus fermer la conversation courante (retirer le blocage input quand deal_closed est true sur la conversation du deal)
 
-- Visible uniquement par le **vendeur** (`activeConv.seller_id === user.id`)
-- Toujours visible tant que `deal_closed` est false
-- Au clic, dialog de confirmation avec nom de l'acheteur et annonce
-- Actions a la confirmation :
-  1. Update conversation : `deal_closed = true, deal_closed_at = now(), deal_closed_by = user.id`
-  2. Update listing : `status = 'sold'`
-  3. Fermer toutes les AUTRES conversations pour ce listing (update `relay_status = 'closed'`)
-  4. Inserer un message systeme dans la conversation active ("Deal conclu")
-  5. Inserer un message systeme dans les conversations fermees ("Ce produit a ete vendu")
-  6. Invalider les queries
+**Etape acheteur -- "Confirmer le deal"** :
+- Quand `deal_closed = true` et `buyer_confirmed = false` et l'utilisateur est l'acheteur :
+  - Afficher un bandeau jaune "Le vendeur a marque ce deal comme conclu. Confirmez-vous ?"
+  - Bouton "Confirmer le deal" + bouton "Contester"
+- Au clic "Confirmer" : update `buyer_confirmed = true, buyer_confirmed_at = now()`
 
-### 3. Affichage dans la conversation
+**Etape notation -- Formulaire inline** :
+- Quand `buyer_confirmed = true` :
+  - Afficher une section de notation au-dessus de l'input (etoiles 1-5 + commentaire + bouton "Envoyer ma note")
+  - Visible pour chaque partie tant qu'elle n'a pas note
+  - Quand un utilisateur soumet sa note : inserer dans `reviews` + inserer un message systeme ("X a laisse un avis")
+  - Quand les DEUX ont note : fermer la conversation (`relay_status = 'closed'`) + message systeme "Transaction terminee"
 
-- Si `deal_closed = true` : bandeau vert "Deal conclu le [date]"
-- Si `relay_status = 'closed'` et pas deal_closed : bandeau gris "Ce produit a ete vendu par le vendeur"
-- Conversation fermee : input desactive, message explicatif
+**Zone input** :
+- Conversation ouverte normalement si `deal_closed = false`
+- Conversation ouverte si `deal_closed = true` mais `buyer_confirmed = false` (pour permettre la discussion avant confirmation)
+- Input desactive une fois que l'utilisateur a note (seule la section notation reste active pour l'autre partie)
+- Conversation fermee definitivement quand les deux ont note
 
-### 4. SellerProfile.tsx -- Avis conditionnes
+### 3. Cron job -- Auto-fermeture a 7 jours
 
-- Le bouton "Laisser un avis" apparait uniquement si :
-  - L'utilisateur est connecte et n'est pas le vendeur
-  - Une conversation avec `deal_closed = true` existe ou il est buyer
-  - Son compte a plus de 7 jours
-  - Le compte vendeur a plus de 7 jours
-  - Des messages des deux cotes existent
-  - Pas encore d'avis pour cette conversation
-- Messages explicatifs selon la condition non remplie
-- Badge "Acheteur verifie" (CheckCircle vert) sur les avis avec `is_verified_purchase = true`
+Creer une Edge Function `close-expired-deals` :
+- Chercher les conversations ou `deal_closed = true` ET `buyer_confirmed = false` ET `deal_closed_at < now() - 7 jours`
+- Les fermer automatiquement (`relay_status = 'closed'`)
+- Inserer un message systeme "Cette conversation a ete fermee automatiquement apres 7 jours sans confirmation"
+- Planifier via pg_cron (quotidien a minuit, comme l'expiration des annonces)
+
+### 4. Suppression du rating depuis SellerProfile
+
+Retirer la logique de review depuis SellerProfile.tsx :
+- Supprimer le bouton "Laisser un avis" et le dialog
+- Supprimer les queries `dealConversation` et `existingReview`
+- Garder l'affichage des avis existants (lecture seule) avec le badge "Acheteur verifie"
+- Le rating se fait desormais exclusivement dans la conversation
 
 ### 5. Traductions
 
-Nouvelles cles en.json / fr.json :
-- `messages.dealClosed`, `messages.dealClosedConfirm`, `messages.dealClosedSuccess`
-- `messages.dealClosedBanner`, `messages.productSold`
-- `messages.conversationClosed`
-- `seller.verifiedPurchase`, `seller.reviewRequiresDeal`
-- `seller.accountTooNew`, `seller.noExchangeYet`, `seller.alreadyReviewed`
+Nouvelles cles :
+- `messages.buyerConfirmDeal` : "Confirm the deal"
+- `messages.buyerConfirmBanner` : "The seller marked this deal as concluded. Do you confirm?"
+- `messages.contest` : "Contest"
+- `messages.rateUser` : "Rate this transaction"
+- `messages.ratingSubmitted` : "Your rating has been submitted"
+- `messages.transactionComplete` : "Transaction completed. Both parties have rated."
+- `messages.autoClosedExpired` : "Automatically closed after 7 days"
+- `messages.waitingBuyerConfirm` : "Waiting for buyer confirmation..."
+- `messages.waitingRatings` : "Rate this transaction to close the deal"
 
 ## Fichiers concernes
 
 | Fichier | Action |
 |---------|--------|
-| Migration SQL | Enum `listing_status` + colonnes conversations/reviews + RLS |
-| `src/pages/Messages.tsx` | Bouton "Deal conclu", bandeau statut, blocage input conversations fermees |
-| `src/pages/SellerProfile.tsx` | Logique avis conditionnes + badge "Acheteur verifie" |
+| Migration SQL | Colonnes `buyer_confirmed`, `buyer_confirmed_at` + contrainte UNIQUE reviews + RLS |
+| `src/pages/Messages.tsx` | Bandeau confirmation acheteur + formulaire notation inline + logique fermeture |
+| `src/pages/SellerProfile.tsx` | Retirer le bouton "Laisser un avis" (garder l'affichage) |
 | `src/i18n/translations/en.json` | Nouvelles cles |
 | `src/i18n/translations/fr.json` | Traductions |
+| `supabase/functions/close-expired-deals/index.ts` | Nouvelle Edge Function pour fermeture auto a 7 jours |
 
 ## Securite
 
-- Le vendeur seul peut marquer un deal (verifie client + RLS serveur)
-- Seul l'acheteur du deal peut noter (RLS enforce via `buyer_id = auth.uid()`)
-- Comptes < 7 jours bloques au niveau RLS (impossible de contourner cote client)
-- Echange reel requis (messages des deux cotes verifie en RLS)
-- Un seul avis par conversation (contrainte UNIQUE)
-- Les politiques UPDATE/DELETE sur reviews restent inchangees
+- Le vendeur seul peut initier le deal (verifie client + RLS)
+- L'acheteur seul peut confirmer (verifie client + RLS)
+- Chaque partie ne peut noter que l'AUTRE partie (RLS enforce)
+- Un seul avis par personne par conversation (contrainte UNIQUE)
+- Comptes < 7 jours bloques (RLS)
+- Messages reels requis des deux cotes (RLS)
+- Fermeture automatique apres 7 jours sans confirmation (cron)
 
