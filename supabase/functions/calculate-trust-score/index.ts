@@ -48,6 +48,21 @@ Deno.serve(async (req) => {
       .eq("status", "active");
     factors.active_listings = Math.min((activeCount || 0) * 5, 20);
 
+    // Messages sent: +1 per 10 messages, max 10
+    const { count: msgCount } = await supabase
+      .from("messages")
+      .select("*", { count: "exact", head: true })
+      .eq("sender_id", user_id);
+    factors.messages_sent = Math.min(Math.floor((msgCount || 0) / 10), 10);
+
+    // Positive reviews (>= 4 stars): +2 each, max 15
+    const { data: goodReviews } = await supabase
+      .from("reviews")
+      .select("id")
+      .eq("seller_id", user_id)
+      .gte("rating", 4);
+    factors.positive_reviews = Math.min((goodReviews?.length || 0) * 2, 15);
+
     // WhatsApp verified: +15
     factors.whatsapp_verified = profile.phone_verified ? 15 : 0;
 

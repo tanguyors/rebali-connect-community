@@ -12,6 +12,8 @@ import ListingCard from '@/components/ListingCard';
 import { User, Briefcase, Star, Calendar, MessageCircle, Phone, Package, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
+import UserBadges from '@/components/UserBadges';
+import TrustIndicator from '@/components/TrustIndicator';
 
 export default function SellerProfile() {
   const { id } = useParams<{ id: string }>();
@@ -142,13 +144,11 @@ export default function SellerProfile() {
                 <span className="text-sm text-muted-foreground">({reviews?.length || 0} {t('seller.reviews')})</span>
               </div>
             </div>
-            <div className="flex gap-2">
-              {seller.phone_verified && (
-                <Badge className="bg-green-500/10 text-green-600 border-green-500/20 gap-1">
-                  <ShieldCheck className="h-3 w-3" />
-                  {t('listing.phoneVerified')}
-                </Badge>
-              )}
+
+            {/* Badges & Trust */}
+            <div className="mt-3 space-y-3 border-t pt-3 w-full">
+              <UserBadges userId={id!} profile={seller} />
+              <TrustIndicator score={seller.trust_score} riskLevel={seller.risk_level as 'low' | 'medium' | 'high'} />
             </div>
           </div>
         </CardContent>

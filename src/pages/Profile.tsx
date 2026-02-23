@@ -17,6 +17,8 @@ import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { User, Camera, Shield, Star, BarChart3, Eye, ShoppingBag, Package, Mail, Lock, Trash2, ExternalLink, MessageCircle, CheckCircle, ShieldCheck, Clock, Upload, LogOut } from 'lucide-react';
+import UserBadges from '@/components/UserBadges';
+import TrustIndicator from '@/components/TrustIndicator';
 
 const profileSchema = z.object({
   display_name: z.string().trim().min(2, 'Min 2 characters').max(50, 'Max 50 characters'),
@@ -507,6 +509,14 @@ export default function Profile() {
               </Button>
             </div>
           </div>
+
+          {/* Badges & Trust */}
+          {profile && (
+            <div className="mt-4 space-y-3 border-t pt-4">
+              <UserBadges userId={user.id} profile={profile} />
+              <TrustIndicator score={profile.trust_score} riskLevel={profile.risk_level as 'low' | 'medium' | 'high'} />
+            </div>
+          )}
         </CardContent>
       </Card>
 
