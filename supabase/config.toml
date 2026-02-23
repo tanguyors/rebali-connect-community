@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.og-listing]
 verify_jwt = false
+
+[functions.oglisting]
+verify_jwt = false
