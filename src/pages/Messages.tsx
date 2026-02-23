@@ -306,18 +306,27 @@ export default function Messages() {
                 </div>
 
                 {/* Input */}
-                <div className="p-3 border-t border-border flex gap-2">
-                  <Input
-                    value={message}
-                    onChange={e => setMessage(e.target.value)}
-                    placeholder={t('messages.placeholder')}
-                    onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-                    className="flex-1"
-                  />
-                  <Button onClick={sendMessage} size="icon" disabled={!message.trim()}>
-                    <Send className="h-4 w-4" />
-                  </Button>
-                </div>
+                {!profile?.phone_verified ? (
+                  <div className="p-3 border-t border-border">
+                    <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/profile')}>
+                      <User className="h-4 w-4" />
+                      {t('messages.whatsappRequired')}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="p-3 border-t border-border flex gap-2">
+                    <Input
+                      value={message}
+                      onChange={e => setMessage(e.target.value)}
+                      placeholder={t('messages.placeholder')}
+                      onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendMessage()}
+                      className="flex-1"
+                    />
+                    <Button onClick={sendMessage} size="icon" disabled={!message.trim()}>
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
               </>
             ) : (
               <div className="flex-1 flex items-center justify-center text-muted-foreground">
