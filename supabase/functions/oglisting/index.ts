@@ -58,6 +58,10 @@ Deno.serve(async (req) => {
       ? `${new Intl.NumberFormat(listing.currency === "IDR" ? "id-ID" : "en-US", { style: "currency", currency: listing.currency, maximumFractionDigits: listing.currency === "IDR" ? 0 : 2 }).format(listing.price)}`
       : "Free";
 
+  // Detect bots/crawlers — serve OG tags without redirect
+  const ua = (req.headers.get("user-agent") || "").toLowerCase();
+  const isBot = /facebookexternalhit|facebot|twitterbot|linkedinbot|whatsapp|telegrambot|slackbot|discordbot|googlebot|bingbot|bot|crawl|spider/i.test(ua);
+
   const html = `<!DOCTYPE html>
 <html>
 <head>
@@ -81,8 +85,7 @@ Deno.serve(async (req) => {
   <meta name="twitter:description" content="${escapeHtml(description)}" />
   <meta name="twitter:image" content="${imageUrl}" />
 
-  <!-- Redirect real users to the SPA -->
-  <meta http-equiv="refresh" content="0;url=${canonicalUrl}" />
+  ${isBot ? "" : `<!-- Redirect real users to the SPA -->\n  <meta http-equiv="refresh" content="0;url=${canonicalUrl}" />`}
 </head>
 <body>
   <p>Redirecting to <a href="${canonicalUrl}">${escapeHtml(title)}</a>...</p>
