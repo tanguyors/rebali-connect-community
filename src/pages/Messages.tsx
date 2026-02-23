@@ -226,7 +226,7 @@ export default function Messages() {
   const showChat = !isMobile || !!activeConvId;
 
   return (
-    <div className={`container mx-auto px-4 ${isMobile ? 'h-[calc(100dvh-8rem)] flex flex-col' : 'py-8'}`}>
+    <div className={`container mx-auto px-4 ${isMobile ? 'h-[calc(100dvh-8rem)] flex flex-col overflow-hidden' : 'py-8'}`}>
       {!isMobile && <h1 className="text-2xl font-extrabold mb-4">{t('messages.title')}</h1>}
       <div className={`flex gap-4 ${isMobile ? 'flex-1 min-h-0' : 'h-[calc(100vh-12rem)]'}`}>
         {/* Conversation List */}
