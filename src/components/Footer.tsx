@@ -28,6 +28,7 @@ export default function Footer({ className }: { className?: string }) {
               <Link to="/about" className="hover:text-foreground transition-colors">{t('nav.about')}</Link>
               <Link to="/safety" className="hover:text-foreground transition-colors">{t('nav.safety')}</Link>
               <Link to="/rules" className="hover:text-foreground transition-colors">{t('nav.rules')}</Link>
+              <Link to="/trust-badges" className="hover:text-foreground transition-colors">{t('trustPage.title')}</Link>
             </div>
           </div>
           <div>

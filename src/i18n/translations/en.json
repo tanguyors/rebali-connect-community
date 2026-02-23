@@ -343,6 +343,28 @@
     "trustMedium": "Medium risk",
     "trustHigh": "High risk"
   },
+  "trustPage": {
+    "title": "Trust & Badges",
+    "subtitle": "Learn how we calculate trust scores and award badges to build a safer community.",
+    "howScoreWorks": "How the Trust Score works",
+    "scoreExplanation": "Every user receives a trust score from 0 to 100, calculated automatically based on their activity and verifications. A higher score means the user is more trustworthy.",
+    "factor": {
+      "accountAge": "Account age (1pt/day)",
+      "activeListings": "Active listings (5pts each)",
+      "messagesSent": "Messages sent (1pt/10 msgs)",
+      "positiveReviews": "Positive reviews (2pts each)",
+      "whatsappVerifiedFactor": "WhatsApp verified",
+      "idVerified": "Identity verified"
+    },
+    "penalties": "Penalties that reduce the score:",
+    "penalty": {
+      "reports": "Unresolved reports against listings (-10 each)",
+      "vpn": "VPN detected (-15)",
+      "multiAccount": "Multiple accounts on same device (-10)"
+    },
+    "badgesTitle": "Badges",
+    "badgesExplanation": "Badges are awarded automatically based on your activity. They appear on your profile and seller page to help buyers trust you."
+  },
   "legal": {
     "termsTitle": "Terms of Use",
     "privacyTitle": "Privacy Policy",

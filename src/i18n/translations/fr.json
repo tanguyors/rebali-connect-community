@@ -193,6 +193,28 @@
     "trustMedium": "Risque moyen",
     "trustHigh": "Risque élevé"
   },
+  "trustPage": {
+    "title": "Confiance & Badges",
+    "subtitle": "Découvrez comment nous calculons les scores de confiance et attribuons les badges pour une communauté plus sûre.",
+    "howScoreWorks": "Comment fonctionne le score de confiance",
+    "scoreExplanation": "Chaque utilisateur reçoit un score de confiance de 0 à 100, calculé automatiquement selon son activité et ses vérifications. Plus le score est élevé, plus l'utilisateur est fiable.",
+    "factor": {
+      "accountAge": "Ancienneté du compte (1pt/jour)",
+      "activeListings": "Annonces actives (5pts chacune)",
+      "messagesSent": "Messages envoyés (1pt/10 msgs)",
+      "positiveReviews": "Avis positifs (2pts chacun)",
+      "whatsappVerifiedFactor": "WhatsApp vérifié",
+      "idVerified": "Identité vérifiée"
+    },
+    "penalties": "Pénalités qui réduisent le score :",
+    "penalty": {
+      "reports": "Signalements non résolus (-10 chacun)",
+      "vpn": "VPN détecté (-15)",
+      "multiAccount": "Comptes multiples sur le même appareil (-10)"
+    },
+    "badgesTitle": "Badges",
+    "badgesExplanation": "Les badges sont attribués automatiquement selon votre activité. Ils apparaissent sur votre profil et votre page vendeur pour rassurer les acheteurs."
+  },
   "legal": {
     "termsTitle": "Conditions d'utilisation",
     "privacyTitle": "Politique de confidentialité",
