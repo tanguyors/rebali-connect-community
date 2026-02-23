@@ -43,6 +43,8 @@ export type Database = {
       }
       conversations: {
         Row: {
+          buyer_confirmed: boolean
+          buyer_confirmed_at: string | null
           buyer_id: string
           buyer_msg_count: number
           buyer_phone: string | null
@@ -63,6 +65,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          buyer_confirmed?: boolean
+          buyer_confirmed_at?: string | null
           buyer_id: string
           buyer_msg_count?: number
           buyer_phone?: string | null
@@ -83,6 +87,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          buyer_confirmed?: boolean
+          buyer_confirmed_at?: string | null
           buyer_id?: string
           buyer_msg_count?: number
           buyer_phone?: string | null
@@ -512,6 +518,7 @@ export type Database = {
           is_verified_purchase: boolean
           listing_id: string | null
           rating: number
+          reviewed_user_id: string | null
           reviewer_id: string
           seller_id: string
         }
@@ -523,6 +530,7 @@ export type Database = {
           is_verified_purchase?: boolean
           listing_id?: string | null
           rating: number
+          reviewed_user_id?: string | null
           reviewer_id: string
           seller_id: string
         }
@@ -534,6 +542,7 @@ export type Database = {
           is_verified_purchase?: boolean
           listing_id?: string | null
           rating?: number
+          reviewed_user_id?: string | null
           reviewer_id?: string
           seller_id?: string
         }

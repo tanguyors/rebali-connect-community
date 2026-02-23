@@ -5,13 +5,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import ListingCard from '@/components/ListingCard';
-import { User, Briefcase, Star, Calendar, MessageCircle, Phone, Package, ShieldCheck, CheckCircle } from 'lucide-react';
-import { useState } from 'react';
-import { toast } from '@/hooks/use-toast';
+import { User, Briefcase, Star, Calendar, Package, ShieldCheck, CheckCircle } from 'lucide-react';
 import UserBadges from '@/components/UserBadges';
 import TrustIndicator from '@/components/TrustIndicator';
 
@@ -19,10 +14,6 @@ export default function SellerProfile() {
   const { id } = useParams<{ id: string }>();
   const { t, language } = useLanguage();
   const { user } = useAuth();
-  const [reviewOpen, setReviewOpen] = useState(false);
-  const [rating, setRating] = useState(5);
-  const [comment, setComment] = useState('');
-  const [hoverRating, setHoverRating] = useState(0);
 
   const { data: seller } = useQuery({
     queryKey: ['seller', id],
@@ -51,7 +42,7 @@ export default function SellerProfile() {
     enabled: !!id,
   });
 
-  const { data: reviews, refetch: refetchReviews } = useQuery({
+  const { data: reviews } = useQuery({
     queryKey: ['seller-reviews', id],
     queryFn: async () => {
       const { data } = await supabase
@@ -64,84 +55,11 @@ export default function SellerProfile() {
     enabled: !!id,
   });
 
-  // Check if current user has a qualifying deal conversation with this seller
-  const { data: dealConversation } = useQuery({
-    queryKey: ['deal-conversation', id, user?.id],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('conversations')
-        .select('*')
-        .eq('seller_id', id!)
-        .eq('buyer_id', user!.id)
-        .eq('deal_closed', true)
-        .limit(1)
-        .maybeSingle();
-      return data;
-    },
-    enabled: !!id && !!user && user.id !== id,
-  });
-
-  // Check if user already reviewed this deal conversation
-  const { data: existingReview } = useQuery({
-    queryKey: ['existing-review', dealConversation?.id],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('reviews')
-        .select('id')
-        .eq('conversation_id', dealConversation!.id)
-        .maybeSingle();
-      return data;
-    },
-    enabled: !!dealConversation?.id,
-  });
-
   const avgRating = reviews && reviews.length > 0
     ? reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviews.length
     : 0;
 
-  // Determine review eligibility
-  const canReview = user && user.id !== id && dealConversation && !existingReview;
-  const getReviewMessage = () => {
-    if (!user || user.id === id) return null;
-    if (!dealConversation) return t('seller.reviewRequiresDeal');
-    if (existingReview) return t('seller.alreadyReviewed');
-    // Account age checks are enforced by RLS, but show a client-side hint
-    if (seller) {
-      const sellerAge = Date.now() - new Date(seller.created_at).getTime();
-      if (sellerAge < 7 * 24 * 60 * 60 * 1000) return t('seller.accountTooNew');
-    }
-    return null;
-  };
-
-  const handleSubmitReview = async () => {
-    if (!user || !id || !dealConversation) return;
-    const { error } = await supabase.from('reviews').insert({
-      seller_id: id,
-      reviewer_id: user.id,
-      rating,
-      comment: comment || null,
-      conversation_id: dealConversation.id,
-      is_verified_purchase: true,
-    } as any);
-    if (error) {
-      // Parse RLS error for user-friendly message
-      if (error.message?.includes('row-level security')) {
-        const reviewMsg = getReviewMessage();
-        toast({ title: reviewMsg || t('seller.reviewRequiresDeal'), variant: 'destructive' });
-      } else {
-        toast({ title: 'Error', description: error.message, variant: 'destructive' });
-      }
-    } else {
-      toast({ title: t('seller.reviewSubmitted') });
-      setReviewOpen(false);
-      setComment('');
-      setRating(5);
-      refetchReviews();
-    }
-  };
-
   const isPro = seller?.user_type === 'business';
-  const reviewMessage = getReviewMessage();
 
   if (!seller) return <div className="container mx-auto px-4 py-20 text-center text-muted-foreground">{t('common.loading')}</div>;
 
@@ -208,50 +126,9 @@ export default function SellerProfile() {
         </CardContent>
       </Card>
 
-      {/* Reviews section */}
+      {/* Reviews section - read only */}
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold">{t('seller.reviewsTitle')} ({reviews?.length || 0})</h2>
-          {canReview ? (
-            <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
-              <DialogTrigger asChild>
-                <Button size="sm">{t('seller.leaveReview')}</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>{t('seller.leaveReview')}</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-1 justify-center">
-                    {[1, 2, 3, 4, 5].map(star => (
-                      <button
-                        key={star}
-                        type="button"
-                        onMouseEnter={() => setHoverRating(star)}
-                        onMouseLeave={() => setHoverRating(0)}
-                        onClick={() => setRating(star)}
-                      >
-                        <Star
-                          className={`h-8 w-8 transition-colors cursor-pointer ${
-                            star <= (hoverRating || rating) ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground/30'
-                          }`}
-                        />
-                      </button>
-                    ))}
-                  </div>
-                  <Textarea
-                    placeholder={t('seller.reviewPlaceholder')}
-                    value={comment}
-                    onChange={e => setComment(e.target.value)}
-                  />
-                  <Button onClick={handleSubmitReview} className="w-full">{t('common.submit')}</Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          ) : user && user.id !== id && reviewMessage ? (
-            <p className="text-xs text-muted-foreground max-w-[200px] text-right">{reviewMessage}</p>
-          ) : null}
-        </div>
+        <h2 className="text-xl font-bold mb-4">{t('seller.reviewsTitle')} ({reviews?.length || 0})</h2>
         {reviews && reviews.length > 0 ? (
           <div className="space-y-3">
             {reviews.map((review: any) => (

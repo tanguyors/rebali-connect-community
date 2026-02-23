@@ -146,7 +146,20 @@
     "dealClosedSuccess": "Deal conclu ! L'annonce a été marquée comme vendue.",
     "dealClosedBanner": "Deal conclu le {date}",
     "productSold": "Ce produit a été vendu par le vendeur.",
-    "conversationClosed": "Cette conversation est fermée."
+    "conversationClosed": "Cette conversation est fermée.",
+    "buyerConfirmDeal": "Confirmer le deal",
+    "buyerConfirmBanner": "Le vendeur a marqué ce deal comme conclu. Confirmez-vous ?",
+    "contest": "Contester",
+    "rateUser": "Noter cette transaction",
+    "ratingPlaceholder": "Partagez votre expérience...",
+    "ratingSubmitted": "Votre note a été envoyée",
+    "transactionComplete": "Transaction terminée. Les deux parties ont noté.",
+    "autoClosedExpired": "Fermée automatiquement après 7 jours",
+    "waitingBuyerConfirm": "En attente de confirmation de l'acheteur...",
+    "waitingRatings": "Notez cette transaction pour clôturer le deal",
+    "submitRating": "Envoyer ma note",
+    "youRated": "Vous avez noté cette transaction",
+    "ratedBySystem": "{name} a laissé un avis"
   },
   "extraFields": {
     "contractType": "Type de contrat", "jobSector": "Secteur d'activité", "workTime": "Temps de travail",

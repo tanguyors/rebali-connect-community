@@ -6,10 +6,11 @@ import { Navigate, useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Send, ArrowLeft, MessageCircle, User, Languages, Share2, AlertTriangle, Handshake, CheckCircle2 } from 'lucide-react';
+import { Send, ArrowLeft, MessageCircle, User, Languages, Share2, AlertTriangle, Handshake, CheckCircle2, Star } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr, id as idLocale, es, zhCN, de, nl, ru } from 'date-fns/locale';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -28,6 +29,9 @@ export default function Messages() {
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
   const [dealClosedDialogOpen, setDealClosedDialogOpen] = useState(false);
+  const [inlineRating, setInlineRating] = useState(5);
+  const [inlineHoverRating, setInlineHoverRating] = useState(0);
+  const [inlineComment, setInlineComment] = useState('');
 
   // Fetch conversations
   const { data: conversations, isLoading: convsLoading } = useQuery({
@@ -81,7 +85,39 @@ export default function Messages() {
       return result;
     },
     enabled: otherMessages.length > 0,
-    staleTime: 1000 * 60 * 10, // cache translations for 10 min
+    staleTime: 1000 * 60 * 10,
+  });
+
+  // Check if current user already rated this conversation
+  const activeConv = conversations?.find((c: any) => c.id === activeConvId);
+  const { data: myReview } = useQuery({
+    queryKey: ['my-review', activeConvId, user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('reviews')
+        .select('id')
+        .eq('conversation_id', activeConvId!)
+        .eq('reviewer_id', user!.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!activeConvId && !!user && !!(activeConv as any)?.buyer_confirmed,
+  });
+
+  // Check if the other party already rated
+  const { data: otherReview } = useQuery({
+    queryKey: ['other-review', activeConvId, user?.id],
+    queryFn: async () => {
+      const otherUserId = activeConv?.buyer_id === user!.id ? activeConv?.seller_id : activeConv?.buyer_id;
+      const { data } = await supabase
+        .from('reviews')
+        .select('id')
+        .eq('conversation_id', activeConvId!)
+        .eq('reviewer_id', otherUserId!)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!activeConvId && !!user && !!activeConv && !!(activeConv as any)?.buyer_confirmed,
   });
 
   // Realtime subscription for messages
@@ -179,48 +215,31 @@ export default function Messages() {
     }
   }, [activeConvId, user, convMessages]);
 
-  // Lock body scroll on mobile to prevent iOS rubber-band scrolling (Safari + Chrome)
+  // Lock body scroll on mobile
   useEffect(() => {
     if (isMobile) {
       const html = document.documentElement;
       const body = document.body;
       const origStyles = {
-        bodyOverflow: body.style.overflow,
-        bodyPosition: body.style.position,
-        bodyWidth: body.style.width,
-        bodyHeight: body.style.height,
-        bodyTouchAction: body.style.touchAction,
-        bodyOverscroll: body.style.overscrollBehavior,
-        htmlOverflow: html.style.overflow,
-        htmlOverscroll: html.style.overscrollBehavior,
+        bodyOverflow: body.style.overflow, bodyPosition: body.style.position,
+        bodyWidth: body.style.width, bodyHeight: body.style.height,
+        bodyTouchAction: body.style.touchAction, bodyOverscroll: body.style.overscrollBehavior,
+        htmlOverflow: html.style.overflow, htmlOverscroll: html.style.overscrollBehavior,
       };
-      body.style.overflow = 'hidden';
-      body.style.position = 'fixed';
-      body.style.width = '100%';
-      body.style.height = '100%';
-      body.style.touchAction = 'none';
-      body.style.overscrollBehavior = 'none';
-      html.style.overflow = 'hidden';
-      html.style.overscrollBehavior = 'none';
-
-      // Block touchmove on body for Chrome iOS
+      body.style.overflow = 'hidden'; body.style.position = 'fixed';
+      body.style.width = '100%'; body.style.height = '100%';
+      body.style.touchAction = 'none'; body.style.overscrollBehavior = 'none';
+      html.style.overflow = 'hidden'; html.style.overscrollBehavior = 'none';
       const preventScroll = (e: TouchEvent) => {
         const target = e.target as HTMLElement;
-        if (!target.closest('.messages-scroll-area')) {
-          e.preventDefault();
-        }
+        if (!target.closest('.messages-scroll-area')) e.preventDefault();
       };
       document.addEventListener('touchmove', preventScroll, { passive: false });
-
       return () => {
-        body.style.overflow = origStyles.bodyOverflow;
-        body.style.position = origStyles.bodyPosition;
-        body.style.width = origStyles.bodyWidth;
-        body.style.height = origStyles.bodyHeight;
-        body.style.touchAction = origStyles.bodyTouchAction;
-        body.style.overscrollBehavior = origStyles.bodyOverscroll;
-        html.style.overflow = origStyles.htmlOverflow;
-        html.style.overscrollBehavior = origStyles.htmlOverscroll;
+        body.style.overflow = origStyles.bodyOverflow; body.style.position = origStyles.bodyPosition;
+        body.style.width = origStyles.bodyWidth; body.style.height = origStyles.bodyHeight;
+        body.style.touchAction = origStyles.bodyTouchAction; body.style.overscrollBehavior = origStyles.bodyOverscroll;
+        html.style.overflow = origStyles.htmlOverflow; html.style.overscrollBehavior = origStyles.htmlOverscroll;
         document.removeEventListener('touchmove', preventScroll);
       };
     }
@@ -233,7 +252,6 @@ export default function Messages() {
 
   const sendMessage = async () => {
     if (!message.trim() || !activeConvId || !user) return;
-    // Check WhatsApp verification
     if (!profile?.phone_verified) {
       toast({ title: t('messages.whatsappRequired'), variant: 'destructive' });
       navigate('/profile');
@@ -242,36 +260,107 @@ export default function Messages() {
     const content = message.trim();
     setMessage('');
     await supabase.from('messages').insert({
-      conversation_id: activeConvId,
-      sender_id: user.id,
-      content,
+      conversation_id: activeConvId, sender_id: user.id, content,
     });
-    // Update conversation timestamp
     await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', activeConvId);
     queryClient.invalidateQueries({ queryKey: ['messages', activeConvId] });
     queryClient.invalidateQueries({ queryKey: ['last-messages'] });
     queryClient.invalidateQueries({ queryKey: ['conversations'] });
-
-    // Send WhatsApp notification to recipient (fire and forget)
     supabase.functions.invoke('notify-whatsapp', {
-      body: {
-        conversation_id: activeConvId,
-        sender_id: user.id,
-        message_preview: content,
-      },
-    }).catch(() => {}); // silent fail
+      body: { conversation_id: activeConvId, sender_id: user.id, message_preview: content },
+    }).catch(() => {});
+  };
+
+  const handleBuyerConfirm = async () => {
+    if (!activeConvId || !user) return;
+    await supabase.from('conversations').update({
+      buyer_confirmed: true,
+      buyer_confirmed_at: new Date().toISOString(),
+    } as any).eq('id', activeConvId);
+    await supabase.from('messages').insert({
+      conversation_id: activeConvId, sender_id: user.id,
+      content: `✅ ${t('messages.buyerConfirmDeal')}`, from_role: 'system',
+    });
+    queryClient.invalidateQueries({ queryKey: ['conversations'] });
+    queryClient.invalidateQueries({ queryKey: ['messages', activeConvId] });
+    toast({ title: t('messages.buyerConfirmDeal') });
+  };
+
+  const handleSubmitRating = async () => {
+    if (!activeConvId || !user || !activeConv) return;
+    const reviewedUserId = activeConv.buyer_id === user.id ? activeConv.seller_id : activeConv.buyer_id;
+    const { error } = await supabase.from('reviews').insert({
+      seller_id: reviewedUserId,
+      reviewer_id: user.id,
+      reviewed_user_id: reviewedUserId,
+      rating: inlineRating,
+      comment: inlineComment || null,
+      conversation_id: activeConvId,
+      is_verified_purchase: true,
+    } as any);
+    if (error) {
+      if (error.message?.includes('row-level security')) {
+        toast({ title: t('seller.reviewRequiresDeal'), variant: 'destructive' });
+      } else {
+        toast({ title: 'Error', description: error.message, variant: 'destructive' });
+      }
+      return;
+    }
+    // System message
+    await supabase.from('messages').insert({
+      conversation_id: activeConvId, sender_id: user.id,
+      content: `⭐ ${t('messages.ratedBySystem').replace('{name}', profile?.display_name || 'User')}`,
+      from_role: 'system',
+    });
+    toast({ title: t('messages.ratingSubmitted') });
+    setInlineComment('');
+    setInlineRating(5);
+    queryClient.invalidateQueries({ queryKey: ['my-review', activeConvId] });
+    queryClient.invalidateQueries({ queryKey: ['other-review', activeConvId] });
+    queryClient.invalidateQueries({ queryKey: ['messages', activeConvId] });
+
+    // Check if both rated -> close conversation
+    const otherUserId = activeConv.buyer_id === user.id ? activeConv.seller_id : activeConv.buyer_id;
+    const { data: otherRev } = await supabase
+      .from('reviews')
+      .select('id')
+      .eq('conversation_id', activeConvId)
+      .eq('reviewer_id', otherUserId)
+      .maybeSingle();
+    if (otherRev) {
+      await supabase.from('conversations').update({ relay_status: 'closed' }).eq('id', activeConvId);
+      await supabase.from('messages').insert({
+        conversation_id: activeConvId, sender_id: user.id,
+        content: `🎉 ${t('messages.transactionComplete')}`, from_role: 'system',
+      });
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      queryClient.invalidateQueries({ queryKey: ['messages', activeConvId] });
+    }
   };
 
   if (loading) return <div className="container mx-auto px-4 py-20 text-center text-muted-foreground">{t('common.loading')}</div>;
   if (!user) return <Navigate to="/auth" replace />;
 
-  const activeConv = conversations?.find((c: any) => c.id === activeConvId);
   const otherUser = activeConv
     ? (activeConv.buyer_id === user.id ? activeConv.seller : activeConv.buyer)
     : null;
 
   const showConvList = !isMobile || !activeConvId;
   const showChat = !isMobile || !!activeConvId;
+
+  // Determine conversation state
+  const isDealClosed = !!(activeConv as any)?.deal_closed;
+  const isBuyerConfirmed = !!(activeConv as any)?.buyer_confirmed;
+  const isClosed = activeConv?.relay_status === 'closed';
+  const isBuyer = activeConv?.buyer_id === user.id;
+  const isSeller = activeConv?.seller_id === user.id;
+  const hasRated = !!myReview;
+
+  // Input zone logic
+  const canSendMessages = activeConv && !isClosed && (
+    !isDealClosed || // normal conversation
+    (isDealClosed && !isBuyerConfirmed) // deal closed but buyer hasn't confirmed yet, allow discussion
+  ) && !hasRated; // once you rated, no more messages
 
   return (
     <div className={`container mx-auto px-4 ${isMobile ? 'h-[calc(100dvh-8rem)] flex flex-col overflow-hidden' : 'py-8'}`}>
@@ -293,8 +382,6 @@ export default function Messages() {
                   const last = lastMessages?.[conv.id];
                   const unread = unreadCounts?.[conv.id] || 0;
                   const isActive = conv.id === activeConvId;
-                  const listingImg = conv.listings?.listing_images?.[0]?.storage_path;
-
                   return (
                     <button
                       key={conv.id}
@@ -393,9 +480,7 @@ export default function Messages() {
                              if (!user || !activeConvId || !profile?.whatsapp) return;
                              const shareMsg = `📞 ${profile.display_name || 'User'}\nWhatsApp: ${profile.whatsapp}`;
                              await supabase.from('messages').insert({
-                               conversation_id: activeConvId,
-                               sender_id: user.id,
-                               content: shareMsg,
+                               conversation_id: activeConvId, sender_id: user.id, content: shareMsg,
                              });
                              await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', activeConvId);
                              queryClient.invalidateQueries({ queryKey: ['messages', activeConvId] });
@@ -408,7 +493,7 @@ export default function Messages() {
                      </AlertDialogContent>
                    </AlertDialog>
                    {/* Deal Closed Button - only for seller when deal not yet closed */}
-                   {activeConv.seller_id === user.id && !(activeConv as any).deal_closed && (
+                   {isSeller && !isDealClosed && (
                      <AlertDialog open={dealClosedDialogOpen} onOpenChange={setDealClosedDialogOpen}>
                        <AlertDialogTrigger asChild>
                          <Button variant="outline" size="sm" className="gap-1.5 text-xs flex-shrink-0 border-green-500/50 text-green-600 hover:bg-green-500/10">
@@ -434,40 +519,26 @@ export default function Messages() {
                              className="bg-green-600 text-white hover:bg-green-700"
                              onClick={async () => {
                                try {
-                                 // 1. Mark conversation as deal closed
                                  await supabase.from('conversations').update({
-                                   deal_closed: true,
-                                   deal_closed_at: new Date().toISOString(),
-                                   deal_closed_by: user.id,
+                                   deal_closed: true, deal_closed_at: new Date().toISOString(), deal_closed_by: user.id,
                                  } as any).eq('id', activeConvId!);
-                                 // 2. Mark listing as sold
                                  await supabase.from('listings').update({ status: 'sold' as any }).eq('id', activeConv.listing_id);
-                                 // 3. Close other conversations for this listing
                                  const { data: otherConvs } = await supabase
-                                   .from('conversations')
-                                   .select('id')
-                                   .eq('listing_id', activeConv.listing_id)
-                                   .neq('id', activeConvId!);
+                                   .from('conversations').select('id')
+                                   .eq('listing_id', activeConv.listing_id).neq('id', activeConvId!);
                                  if (otherConvs && otherConvs.length > 0) {
                                    for (const oc of otherConvs) {
                                      await supabase.from('conversations').update({ relay_status: 'closed' }).eq('id', oc.id);
-                                     // Insert system message in closed conversations
                                      await supabase.from('messages').insert({
-                                       conversation_id: oc.id,
-                                       sender_id: user.id,
-                                       content: t('messages.productSold'),
-                                       from_role: 'system',
+                                       conversation_id: oc.id, sender_id: user.id,
+                                       content: t('messages.productSold'), from_role: 'system',
                                      });
                                    }
                                  }
-                                 // 4. Insert system message in current conversation
                                  await supabase.from('messages').insert({
-                                   conversation_id: activeConvId!,
-                                   sender_id: user.id,
-                                   content: `🤝 ${t('messages.dealClosed')}`,
-                                   from_role: 'system',
+                                   conversation_id: activeConvId!, sender_id: user.id,
+                                   content: `🤝 ${t('messages.dealClosed')}`, from_role: 'system',
                                  });
-                                 // 5. Invalidate queries
                                  queryClient.invalidateQueries({ queryKey: ['conversations'] });
                                  queryClient.invalidateQueries({ queryKey: ['messages', activeConvId] });
                                  queryClient.invalidateQueries({ queryKey: ['last-messages'] });
@@ -486,14 +557,34 @@ export default function Messages() {
                 </div>
 
                 {/* Deal closed banner */}
-                {(activeConv as any).deal_closed && (
+                {isDealClosed && (
                   <div className="flex items-center gap-2 px-4 py-2 bg-green-500/10 border-b border-green-500/20 text-green-700 text-sm flex-shrink-0">
                     <CheckCircle2 className="h-4 w-4" />
                     {t('messages.dealClosedBanner').replace('{date}', new Date((activeConv as any).deal_closed_at).toLocaleDateString())}
                   </div>
                 )}
+
+                {/* Buyer confirmation banner */}
+                {isDealClosed && !isBuyerConfirmed && isBuyer && !isClosed && (
+                  <div className="flex items-center gap-2 px-4 py-2.5 bg-yellow-500/10 border-b border-yellow-500/20 text-yellow-800 text-sm flex-shrink-0">
+                    <Handshake className="h-4 w-4 flex-shrink-0" />
+                    <span className="flex-1">{t('messages.buyerConfirmBanner')}</span>
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white gap-1" onClick={handleBuyerConfirm}>
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      {t('messages.buyerConfirmDeal')}
+                    </Button>
+                  </div>
+                )}
+
+                {/* Seller waiting for buyer confirmation */}
+                {isDealClosed && !isBuyerConfirmed && isSeller && !isClosed && (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-muted border-b border-border text-muted-foreground text-sm flex-shrink-0">
+                    {t('messages.waitingBuyerConfirm')}
+                  </div>
+                )}
+
                 {/* Product sold banner (for other conversations closed) */}
-                {activeConv.relay_status === 'closed' && !(activeConv as any).deal_closed && (
+                {isClosed && !isDealClosed && (
                   <div className="flex items-center gap-2 px-4 py-2 bg-muted border-b border-border text-muted-foreground text-sm flex-shrink-0">
                     {t('messages.productSold')}
                   </div>
@@ -536,41 +627,74 @@ export default function Messages() {
                   <div ref={messagesEndRef} />
                 </div>
 
-                {/* Input */}
-                {activeConv.relay_status === 'closed' || (activeConv as any).deal_closed ? (
-                  (activeConv as any).deal_closed && activeConv.buyer_id === user.id ? (
-                    <div className="p-3 border-t border-border flex-shrink-0 text-center">
-                      <p className="text-sm text-muted-foreground mb-2">{t('messages.conversationClosed')}</p>
-                      <Button size="sm" variant="outline" onClick={() => navigate(`/seller/${activeConv.seller_id}`)}>
-                        {t('seller.leaveReview')}
-                      </Button>
+                {/* Inline rating form - when buyer confirmed and user hasn't rated yet */}
+                {isDealClosed && isBuyerConfirmed && !hasRated && !isClosed && (
+                  <div className="p-3 border-t border-border flex-shrink-0 bg-yellow-500/5">
+                    <p className="text-sm font-medium mb-2">{t('messages.rateUser')}</p>
+                    <div className="flex items-center gap-1 mb-2">
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <button
+                          key={star}
+                          type="button"
+                          onMouseEnter={() => setInlineHoverRating(star)}
+                          onMouseLeave={() => setInlineHoverRating(0)}
+                          onClick={() => setInlineRating(star)}
+                        >
+                          <Star
+                            className={`h-6 w-6 transition-colors cursor-pointer ${
+                              star <= (inlineHoverRating || inlineRating) ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground/30'
+                            }`}
+                          />
+                        </button>
+                      ))}
                     </div>
-                  ) : (
-                    <div className="p-3 border-t border-border flex-shrink-0 text-center">
-                      <p className="text-sm text-muted-foreground">{t('messages.conversationClosed')}</p>
-                    </div>
-                  )
-                ) : !profile?.phone_verified ? (
-                  <div className="p-3 border-t border-border flex-shrink-0">
-                    <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/profile')}>
-                      <User className="h-4 w-4" />
-                      {t('messages.whatsappRequired')}
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="p-2 border-t border-border flex gap-2 flex-shrink-0">
-                    <Input
-                      value={message}
-                      onChange={e => setMessage(e.target.value)}
-                      placeholder={t('messages.placeholder')}
-                      onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-                      className="flex-1 h-9 text-sm"
+                    <Textarea
+                      placeholder={t('messages.ratingPlaceholder')}
+                      value={inlineComment}
+                      onChange={e => setInlineComment(e.target.value)}
+                      className="mb-2 text-sm h-16"
                     />
-                    <Button onClick={sendMessage} size="icon" disabled={!message.trim()}>
-                      <Send className="h-4 w-4" />
+                    <Button size="sm" onClick={handleSubmitRating} className="w-full">
+                      {t('messages.submitRating')}
                     </Button>
                   </div>
                 )}
+
+                {/* User already rated, waiting for other */}
+                {isDealClosed && isBuyerConfirmed && hasRated && !isClosed && (
+                  <div className="p-3 border-t border-border flex-shrink-0 text-center">
+                    <p className="text-sm text-muted-foreground">{t('messages.youRated')}</p>
+                  </div>
+                )}
+
+                {/* Input */}
+                {isClosed ? (
+                  <div className="p-3 border-t border-border flex-shrink-0 text-center">
+                    <p className="text-sm text-muted-foreground">{t('messages.conversationClosed')}</p>
+                  </div>
+                ) : canSendMessages ? (
+                  !profile?.phone_verified ? (
+                    <div className="p-3 border-t border-border flex-shrink-0">
+                      <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/profile')}>
+                        <User className="h-4 w-4" />
+                        {t('messages.whatsappRequired')}
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="p-2 border-t border-border flex gap-2 flex-shrink-0">
+                      <Input
+                        value={message}
+                        onChange={e => setMessage(e.target.value)}
+                        placeholder={t('messages.placeholder')}
+                        onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendMessage()}
+                        className="flex-1 h-9 text-sm"
+                      />
+                      <Button onClick={sendMessage} size="icon" disabled={!message.trim()}>
+                        <Send className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )
+                ) : null}
               </>
             ) : (
               <div className="flex-1 flex items-center justify-center text-muted-foreground">

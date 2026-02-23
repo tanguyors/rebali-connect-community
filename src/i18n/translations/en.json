@@ -296,7 +296,20 @@
     "dealClosedSuccess": "Deal concluded! The listing has been marked as sold.",
     "dealClosedBanner": "Deal concluded on {date}",
     "productSold": "This product has been sold by the seller.",
-    "conversationClosed": "This conversation is closed."
+    "conversationClosed": "This conversation is closed.",
+    "buyerConfirmDeal": "Confirm the deal",
+    "buyerConfirmBanner": "The seller marked this deal as concluded. Do you confirm?",
+    "contest": "Contest",
+    "rateUser": "Rate this transaction",
+    "ratingPlaceholder": "Share your experience...",
+    "ratingSubmitted": "Your rating has been submitted",
+    "transactionComplete": "Transaction completed. Both parties have rated.",
+    "autoClosedExpired": "Automatically closed after 7 days",
+    "waitingBuyerConfirm": "Waiting for buyer confirmation...",
+    "waitingRatings": "Rate this transaction to close the deal",
+    "submitRating": "Submit my rating",
+    "youRated": "You have rated this transaction",
+    "ratedBySystem": "{name} left a review"
   },
   "extraFields": {
     "contractType": "Contract Type", "jobSector": "Industry Sector", "workTime": "Work Schedule",
