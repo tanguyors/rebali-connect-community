@@ -62,6 +62,19 @@ Deno.serve(async (req) => {
   const ua = (req.headers.get("user-agent") || "").toLowerCase();
   const isBot = /facebookexternalhit|facebot|twitterbot|linkedinbot|whatsapp|telegrambot|slackbot|discordbot|googlebot|bingbot|bot|crawl|spider/i.test(ua);
 
+  // Real users get an immediate HTTP 302 redirect
+  if (!isBot) {
+    return new Response(null, {
+      status: 302,
+      headers: {
+        ...corsHeaders,
+        "Location": canonicalUrl,
+        "Cache-Control": "no-cache",
+      },
+    });
+  }
+
+  // Bots get the OG meta tags
   const html = `<!DOCTYPE html>
 <html>
 <head>
@@ -84,11 +97,9 @@ Deno.serve(async (req) => {
   <meta name="twitter:title" content="${escapeHtml(title)} — ${priceText}" />
   <meta name="twitter:description" content="${escapeHtml(description)}" />
   <meta name="twitter:image" content="${imageUrl}" />
-
-  ${isBot ? "" : `<!-- Redirect real users to the SPA -->\n  <meta http-equiv="refresh" content="0;url=${canonicalUrl}" />`}
 </head>
 <body>
-  <p>Redirecting to <a href="${canonicalUrl}">${escapeHtml(title)}</a>...</p>
+  <p>${escapeHtml(title)} - Re-Bali</p>
 </body>
 </html>`;
 
