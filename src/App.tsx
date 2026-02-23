@@ -25,6 +25,7 @@ import SellerProfile from "./pages/SellerProfile";
 import Favorites from "./pages/Favorites";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
+import Messages from "./pages/Messages";
 
 
 const queryClient = new QueryClient({});
@@ -56,6 +57,7 @@ const App = () => (
                   <Route path="/favorites" element={<Favorites />} />
                   <Route path="/terms" element={<Terms />} />
                   <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/messages" element={<Messages />} />
                   
                   <Route path="/seller/:id" element={<SellerProfile />} />
                   <Route path="*" element={<NotFound />} />
