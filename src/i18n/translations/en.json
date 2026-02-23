@@ -421,5 +421,6 @@
     "privacySecurityText": "We implement multiple security measures including: encrypted data storage, device fingerprinting for fraud detection, content filtering, automated trust scoring, VPN detection, and watermarking of listing photos. Despite these measures, no system is 100% secure.",
     "privacyContact": "Contact Us",
     "privacyContactText": "For privacy-related questions or to exercise your data rights, please contact us through our platform or visit the About page."
-  }
+  },
+  "share": { "copyLink": "Copy link", "facebook": "Post on Facebook", "instagramStory": "Instagram Story" }
 }

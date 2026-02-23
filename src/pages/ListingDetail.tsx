@@ -13,7 +13,8 @@ import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
 import { formatPrice, CATEGORY_ICONS, CATEGORY_PLACEHOLDERS, REBALI_WA_NUMBER } from '@/lib/constants';
 import TrustIndicator from '@/components/TrustIndicator';
-import { MapPin, Eye, Phone, MessageCircle, Flag, User, Calendar, Share2, Heart, ChevronRight, ThumbsUp, Star, Briefcase, ArrowRight, ShieldCheck } from 'lucide-react';
+import { MapPin, Eye, Phone, MessageCircle, Flag, User, Calendar, Share2, Heart, ChevronRight, ThumbsUp, Star, Briefcase, ArrowRight, ShieldCheck, Facebook, Instagram, Copy, Link2 } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { useEffect, useState } from 'react';
@@ -311,12 +312,27 @@ export default function ListingDetail() {
               </div>
               {/* Share & Fav floating buttons */}
               <div className="absolute top-3 right-3 flex gap-2">
-                <button
-                  onClick={() => { navigator.clipboard.writeText(window.location.href); toast({ title: t('listing.linkCopied') }); }}
-                  className="w-10 h-10 rounded-full bg-card/90 backdrop-blur flex items-center justify-center hover:bg-card transition-colors shadow-md"
-                >
-                  <Share2 className="h-5 w-5 text-foreground" />
-                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="w-10 h-10 rounded-full bg-card/90 backdrop-blur flex items-center justify-center hover:bg-card transition-colors shadow-md">
+                      <Share2 className="h-5 w-5 text-foreground" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onClick={() => { navigator.clipboard.writeText(window.location.href); toast({ title: t('listing.linkCopied') }); }}>
+                      <Link2 className="h-4 w-4 mr-2" />
+                      {t('share.copyLink')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank', 'width=600,height=400')}>
+                      <Facebook className="h-4 w-4 mr-2" />
+                      {t('share.facebook')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => window.open(`https://www.instagram.com/stories/create/?url=${encodeURIComponent(window.location.href)}`, '_blank')}>
+                      <Instagram className="h-4 w-4 mr-2" />
+                      {t('share.instagramStory')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <button
                   onClick={toggleFavorite}
                   className="w-10 h-10 rounded-full bg-card/90 backdrop-blur flex items-center justify-center hover:bg-card transition-colors shadow-md"
