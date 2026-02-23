@@ -10,7 +10,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
+import { Progress } from '@/components/ui/progress';
 import { formatPrice, CATEGORY_ICONS, CATEGORY_PLACEHOLDERS, REBALI_WA_NUMBER } from '@/lib/constants';
+import TrustIndicator from '@/components/TrustIndicator';
 import { MapPin, Eye, Phone, MessageCircle, Flag, User, Calendar, Share2, Heart, ChevronRight, ThumbsUp, Star, Briefcase, ArrowRight, ShieldCheck } from 'lucide-react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
@@ -20,6 +22,7 @@ import { Label } from '@/components/ui/label';
 import { formatDistanceToNow } from 'date-fns';
 import { fr, id as idLocale, es, zhCN, de, nl, ru } from 'date-fns/locale';
 import ListingCard from '@/components/ListingCard';
+import UserBadges from '@/components/UserBadges';
 
 const DATE_LOCALES: Record<string, any> = { fr, id: idLocale, es, zh: zhCN, de, nl, ru };
 
@@ -61,7 +64,7 @@ export default function ListingDetail() {
     queryFn: async () => {
       const { data } = await supabase
         .from('listings')
-        .select('*, listing_images(id, storage_path, sort_order), listing_translations(lang, title, description, is_machine), profiles!seller_id(id, display_name, whatsapp, phone, user_type, avatar_url, created_at, is_verified_seller)')
+        .select('*, listing_images(id, storage_path, sort_order), listing_translations(lang, title, description, is_machine), profiles!seller_id(id, display_name, whatsapp, phone, user_type, avatar_url, created_at, is_verified_seller, phone_verified, trust_score, risk_level)')
         .eq('id', id!)
         .single();
       return data;
@@ -135,6 +138,19 @@ export default function ListingDetail() {
         .eq('seller_id', seller.id)
         .eq('status', 'active');
       return count || 0;
+    },
+    enabled: !!seller?.id,
+  });
+
+  const { data: sellerTrustScore } = useQuery({
+    queryKey: ['seller-trust-score', seller?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('trust_scores')
+        .select('score, risk_level')
+        .eq('user_id', seller.id)
+        .maybeSingle();
+      return data;
     },
     enabled: !!seller?.id,
   });
@@ -452,6 +468,12 @@ export default function ListingDetail() {
                   </Badge>
                 )}
               </div>
+              {seller && (
+                <div className="mt-3 space-y-2">
+                  <UserBadges userId={seller.id} profile={seller} compact />
+                  <TrustIndicator score={seller.trust_score ?? 50} riskLevel={(seller.risk_level as 'low' | 'medium' | 'high') || 'low'} />
+                </div>
+              )}
             </div>
 
             {/* Seller's other listings */}
@@ -563,6 +585,13 @@ export default function ListingDetail() {
                     </div>
                     <ChevronRight className="h-5 w-5 text-muted-foreground" />
                   </Link>
+
+                  {seller && (
+                    <div className="mb-3 space-y-2">
+                      <UserBadges userId={seller.id} profile={seller} compact />
+                      <TrustIndicator score={seller.trust_score ?? 50} riskLevel={(seller.risk_level as 'low' | 'medium' | 'high') || 'low'} />
+                    </div>
+                  )}
 
                   {/* CTA Buttons - In-app chat primary */}
                   <div className="space-y-2.5">
