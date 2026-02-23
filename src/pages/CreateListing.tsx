@@ -357,8 +357,8 @@ export default function CreateListing() {
             <Textarea placeholder={t('createListing.descriptionPlaceholder')} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={5} />
           </div>
           <div>
-            <Label>{t('createListing.priceLabel')} * <span className="text-muted-foreground font-normal text-xs">IDR</span></Label>
-            <Input type="number" min="0" placeholder={t('createListing.pricePlaceholder')} value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} />
+            <Label>{form.category === 'emploi' ? t('createListing.salaryLabel') : t('createListing.priceLabel')} * <span className="text-muted-foreground font-normal text-xs">IDR</span></Label>
+            <Input type="number" min="0" placeholder={form.category === 'emploi' ? t('createListing.salaryPlaceholder') : t('createListing.pricePlaceholder')} value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} />
           </div>
           <div>
             <Label>{t('createListing.locationLabel')} *</Label>

@@ -404,7 +404,7 @@ export default function ListingDetail() {
 
             <Separator className="my-6" />
             <div>
-              <h2 className="text-xl font-extrabold mb-4">{t('listing.soldBy')}</h2>
+              <h2 className="text-xl font-extrabold mb-4">{listing.category === 'emploi' ? t('listing.offeredBy') : t('listing.soldBy')}</h2>
               <Link to={`/seller/${seller?.id}`} className="flex items-center gap-4 group">
                 <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                   {seller?.avatar_url ? (
