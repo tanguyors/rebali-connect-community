@@ -131,7 +131,8 @@
     "placeholder": "Écrire un message...",
     "you": "Vous",
     "sendMessage": "Envoyer un message",
-    "conversationStarted": "Conversation démarrée !"
+    "conversationStarted": "Conversation démarrée !",
+    "whatsappRequired": "Veuillez valider votre numéro WhatsApp avant d'envoyer des messages."
   },
   "extraFields": {
     "contractType": "Type de contrat", "jobSector": "Secteur d'activité", "workTime": "Temps de travail",

@@ -44,7 +44,7 @@ const BALI_COORDS: Record<string, { lat: string; lng: string; bbox: string }> = 
 export default function ListingDetail() {
   const { id } = useParams<{ id: string }>();
   const { t, language } = useLanguage();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [currentImage, setCurrentImage] = useState(0);
   const [reportReason, setReportReason] = useState('');
@@ -211,6 +211,12 @@ export default function ListingDetail() {
 
   const handleSendMessage = async () => {
     if (!user || !listing || user.id === listing.seller_id) return;
+    // Check WhatsApp verification
+    if (!profile?.phone_verified) {
+      toast({ title: t('messages.whatsappRequired'), variant: 'destructive' });
+      navigate('/profile');
+      return;
+    }
     const { data: existing } = await supabase
       .from('conversations')
       .select('id')

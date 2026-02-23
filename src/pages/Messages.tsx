@@ -2,7 +2,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Navigate, useSearchParams, Link } from 'react-router-dom';
+import { Navigate, useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,12 +12,14 @@ import { Send, ArrowLeft, MessageCircle, User } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr, id as idLocale, es, zhCN, de, nl, ru } from 'date-fns/locale';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { toast } from '@/hooks/use-toast';
 
 const DATE_LOCALES: Record<string, any> = { fr, id: idLocale, es, zh: zhCN, de, nl, ru };
 
 export default function Messages() {
   const { t, language } = useLanguage();
-  const { user, loading } = useAuth();
+  const { user, loading, profile } = useAuth();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeConvId = searchParams.get('conv');
   const [message, setMessage] = useState('');
@@ -155,6 +157,12 @@ export default function Messages() {
 
   const sendMessage = async () => {
     if (!message.trim() || !activeConvId || !user) return;
+    // Check WhatsApp verification
+    if (!profile?.phone_verified) {
+      toast({ title: t('messages.whatsappRequired'), variant: 'destructive' });
+      navigate('/profile');
+      return;
+    }
     const content = message.trim();
     setMessage('');
     await supabase.from('messages').insert({

@@ -281,7 +281,8 @@
     "placeholder": "Type a message...",
     "you": "You",
     "sendMessage": "Send a message",
-    "conversationStarted": "Conversation started!"
+    "conversationStarted": "Conversation started!",
+    "whatsappRequired": "Please verify your WhatsApp number before sending messages."
   },
   "extraFields": {
     "contractType": "Contract Type", "jobSector": "Industry Sector", "workTime": "Work Schedule",
