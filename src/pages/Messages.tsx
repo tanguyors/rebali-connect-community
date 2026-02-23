@@ -3,12 +3,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Navigate, useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Send, ArrowLeft, MessageCircle, User } from 'lucide-react';
+import { Send, ArrowLeft, MessageCircle, User, Languages } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr, id as idLocale, es, zhCN, de, nl, ru } from 'date-fns/locale';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -53,6 +53,33 @@ export default function Messages() {
       return data || [];
     },
     enabled: !!activeConvId,
+  });
+
+  // Translate received messages to user's preferred language
+  const otherMessages = useMemo(() => {
+    if (!convMessages || !user) return [];
+    return convMessages.filter((m: any) => m.sender_id !== user.id);
+  }, [convMessages, user]);
+
+  const { data: translations } = useQuery({
+    queryKey: ['msg-translations', activeConvId, language, otherMessages.map((m: any) => m.id).join(',')],
+    queryFn: async () => {
+      if (otherMessages.length === 0) return {};
+      const texts = otherMessages.map((m: any) => m.content);
+      const { data, error } = await supabase.functions.invoke('translate-text', {
+        body: { texts, target_lang: language },
+      });
+      if (error || !data?.translated) return {};
+      const result: Record<string, string> = {};
+      otherMessages.forEach((m: any, i: number) => {
+        if (data.translated[i] && data.translated[i] !== m.content) {
+          result[m.id] = data.translated[i];
+        }
+      });
+      return result;
+    },
+    enabled: otherMessages.length > 0,
+    staleTime: 1000 * 60 * 10, // cache translations for 10 min
   });
 
   // Realtime subscription for messages
@@ -291,10 +318,17 @@ export default function Messages() {
                 <div className="flex-1 overflow-y-auto p-4 space-y-3">
                   {convMessages?.map((msg: any) => {
                     const isMine = msg.sender_id === user.id;
+                    const translated = !isMine && translations?.[msg.id];
                     return (
                       <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
                         <div className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${isMine ? 'bg-primary text-primary-foreground rounded-br-md' : 'bg-muted rounded-bl-md'}`}>
-                          <p className="text-sm whitespace-pre-line">{msg.content}</p>
+                          <p className="text-sm whitespace-pre-line">{translated || msg.content}</p>
+                          {translated && (
+                            <p className="text-[10px] mt-1 text-muted-foreground/70 italic flex items-center gap-1">
+                              <Languages className="h-3 w-3 inline" />
+                              {msg.content}
+                            </p>
+                          )}
                           <p className={`text-[10px] mt-1 ${isMine ? 'text-primary-foreground/60' : 'text-muted-foreground'}`}>
                             {formatDistanceToNow(new Date(msg.created_at), { addSuffix: true, locale: DATE_LOCALES[language] })}
                           </p>

@@ -6,6 +6,42 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const LANG_MAP: Record<string, string> = {
+  en: "en", id: "id", fr: "fr", es: "es", zh: "zh-CN", de: "de",
+  nl: "nl", ru: "ru", tr: "tr", ar: "ar", hi: "hi", ja: "ja",
+};
+
+async function translateText(text: string, targetLang: string, sourceLang = "auto"): Promise<string> {
+  if (sourceLang === targetLang) return text;
+  try {
+    const tl = LANG_MAP[targetLang] || targetLang;
+    const sl = sourceLang === "auto" ? "auto" : (LANG_MAP[sourceLang] || sourceLang);
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(text)}`;
+    const res = await fetch(url);
+    if (!res.ok) return text;
+    const data = await res.json();
+    return data?.[0]?.map((s: any) => s[0]).join("") || text;
+  } catch {
+    return text;
+  }
+}
+
+// Pre-translated notification templates
+const NOTIF_TEMPLATES: Record<string, { newMsg: string; from: string; reply: string }> = {
+  en: { newMsg: "New message on Re-Bali for", from: "", reply: "Reply here" },
+  fr: { newMsg: "Nouveau message sur Re-Bali pour", from: "", reply: "Répondre ici" },
+  id: { newMsg: "Pesan baru di Re-Bali untuk", from: "", reply: "Balas di sini" },
+  es: { newMsg: "Nuevo mensaje en Re-Bali para", from: "", reply: "Responder aquí" },
+  de: { newMsg: "Neue Nachricht auf Re-Bali für", from: "", reply: "Hier antworten" },
+  nl: { newMsg: "Nieuw bericht op Re-Bali voor", from: "", reply: "Antwoord hier" },
+  ru: { newMsg: "Новое сообщение на Re-Bali для", from: "", reply: "Ответить здесь" },
+  zh: { newMsg: "Re-Bali上的新消息，关于", from: "", reply: "在此回复" },
+  tr: { newMsg: "Re-Bali'de yeni mesaj:", from: "", reply: "Buradan yanıtlayın" },
+  ar: { newMsg: "رسالة جديدة على Re-Bali بخصوص", from: "", reply: "الرد هنا" },
+  hi: { newMsg: "Re-Bali पर नया संदेश:", from: "", reply: "यहाँ उत्तर दें" },
+  ja: { newMsg: "Re-Baliの新着メッセージ：", from: "", reply: "ここで返信" },
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -51,15 +87,14 @@ Deno.serve(async (req) => {
     // Determine recipient
     const recipientId = conv.buyer_id === sender_id ? conv.seller_id : conv.buyer_id;
 
-    // Get recipient's WhatsApp number
+    // Get recipient's WhatsApp number AND preferred language
     const { data: recipient } = await supabase
       .from("profiles")
-      .select("whatsapp, display_name")
+      .select("whatsapp, display_name, preferred_lang")
       .eq("id", recipientId)
       .single();
 
     if (!recipient?.whatsapp || !fonnte) {
-      // No WhatsApp number or no Fonnte token — skip silently
       return new Response(JSON.stringify({ ok: true, skipped: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -72,18 +107,28 @@ Deno.serve(async (req) => {
       .eq("id", sender_id)
       .single();
 
+    const recipientLang = recipient.preferred_lang || "en";
+    const tmpl = NOTIF_TEMPLATES[recipientLang] || NOTIF_TEMPLATES.en;
+
     const listingTitle = (conv as any).listings?.title_original || "an item";
-    const preview = message_preview
-      ? `"${message_preview.substring(0, 100)}${message_preview.length > 100 ? "..." : ""}"`
-      : "";
     const senderName = sender?.display_name || "Someone";
+
+    // Translate message preview to recipient's language
+    let preview = "";
+    if (message_preview) {
+      const translatedPreview = await translateText(message_preview, recipientLang);
+      const truncated = translatedPreview.substring(0, 100) + (translatedPreview.length > 100 ? "..." : "");
+      preview = `"${truncated}"`;
+    }
+
+    // Use published URL
     const convLink = `https://rebali-connect-community.lovable.app/messages?conv=${conversation_id}`;
 
-    const waMessage = `📩 New message on Re-Bali for "${listingTitle}"
+    const waMessage = `📩 ${tmpl.newMsg} "${listingTitle}"
 
 ${senderName}: ${preview}
 
-Reply here: ${convLink}`;
+${tmpl.reply}: ${convLink}`;
 
     // Send via Fonnte
     const cleanTarget = recipient.whatsapp.replace(/[^0-9]/g, "");
