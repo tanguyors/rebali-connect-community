@@ -23,6 +23,7 @@ interface ListingCardProps {
     views_count: number;
     created_at: string;
     seller_id: string;
+    extra_fields?: any;
     listing_images?: { storage_path: string }[];
     listing_translations?: { lang: string; title: string }[];
     profiles?: { user_type: string; is_verified_seller: boolean } | null;
@@ -123,7 +124,9 @@ export default function ListingCard({ listing, sellerProfile: sellerProfileProp,
             {title}
           </h3>
           <p className="text-lg font-bold text-primary">
-            {formatPrice(listing.price, listing.currency)}
+            {listing.category === 'emploi' && listing.extra_fields?.salary_negotiable === 'true'
+              ? t('createListing.salaryNegotiable')
+              : formatPrice(listing.price, listing.currency)}
           </p>
           <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">

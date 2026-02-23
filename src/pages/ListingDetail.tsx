@@ -331,7 +331,11 @@ export default function ListingDetail() {
             {/* Title & Price */}
             <div className="mt-6">
               <h1 className="text-2xl md:text-3xl font-extrabold mb-2">{title}</h1>
-              <p className="text-3xl font-extrabold text-primary mb-1">{formatPrice(listing.price, listing.currency)}</p>
+              <p className="text-3xl font-extrabold text-primary mb-1">
+                {listing.category === 'emploi' && (listing.extra_fields as any)?.salary_negotiable === 'true'
+                  ? t('createListing.salaryNegotiable')
+                  : formatPrice(listing.price, listing.currency)}
+              </p>
               <div className="flex items-center gap-3 text-sm text-muted-foreground mt-2">
                 <span>{timeAgo}</span>
                 <span className="flex items-center gap-1"><Eye className="h-4 w-4" />{listing.views_count}</span>

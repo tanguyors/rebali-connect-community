@@ -80,7 +80,7 @@
     "stepPreview": "पूर्वावलोकन", "selectCategory": "श्रेणी चुनें", "selectSubcategory": "उप-श्रेणी चुनें",
     "titleLabel": "शीर्षक", "titlePlaceholder": "आप क्या बेच रहे हैं?",
     "descriptionLabel": "विवरण", "descriptionPlaceholder": "अपने उत्पाद का विस्तार से वर्णन करें...",
-    "priceLabel": "मूल्य", "pricePlaceholder": "मूल्य दर्ज करें", "salaryLabel": "मासिक वेतन", "salaryPlaceholder": "मासिक वेतन दर्ज करें", "currencyLabel": "मुद्रा",
+    "priceLabel": "मूल्य", "pricePlaceholder": "मूल्य दर्ज करें", "salaryLabel": "मासिक वेतन", "salaryPlaceholder": "मासिक वेतन दर्ज करें", "salaryNegotiable": "वेतन परक्राम्य", "currencyLabel": "मुद्रा",
     "locationLabel": "स्थान", "selectLocation": "क्षेत्र चुनें", "conditionLabel": "स्थिति",
     "selectCondition": "स्थिति चुनें", "uploadPhotos": "फ़ोटो अपलोड करें",
     "dragOrClick": "खींचें या अपलोड करने के लिए क्लिक करें", "maxPhotos": "अधिकतम 10 फ़ोटो",

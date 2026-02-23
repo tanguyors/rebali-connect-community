@@ -80,7 +80,7 @@
     "stepPreview": "プレビュー", "selectCategory": "カテゴリーを選択", "selectSubcategory": "サブカテゴリーを選択",
     "titleLabel": "タイトル", "titlePlaceholder": "何を売りますか？",
     "descriptionLabel": "説明", "descriptionPlaceholder": "商品を詳しく説明してください...",
-    "priceLabel": "価格", "pricePlaceholder": "価格を入力", "salaryLabel": "月給", "salaryPlaceholder": "月給を入力", "currencyLabel": "通貨",
+    "priceLabel": "価格", "pricePlaceholder": "価格を入力", "salaryLabel": "月給", "salaryPlaceholder": "月給を入力", "salaryNegotiable": "給与応相談", "currencyLabel": "通貨",
     "locationLabel": "場所", "selectLocation": "エリアを選択", "conditionLabel": "状態",
     "selectCondition": "状態を選択", "uploadPhotos": "写真をアップロード",
     "dragOrClick": "ドラッグまたはクリックしてアップロード", "maxPhotos": "最大10枚",

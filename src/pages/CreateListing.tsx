@@ -111,7 +111,10 @@ export default function CreateListing() {
 
   const canProceed = () => {
     if (step === 0) return !!form.category && !!form.subcategory;
-    if (step === 1) return form.title && form.description && form.price !== '' && form.location;
+    if (step === 1) {
+      const isNegotiable = form.category === 'emploi' && extraFields.salary_negotiable === 'true';
+      return form.title && form.description && (isNegotiable || form.price !== '') && form.location;
+    }
     if (step === 2) return photos.length > 0 || existingImageUrls.length > 0;
     return true;
   };
@@ -356,10 +359,27 @@ export default function CreateListing() {
             <Label>{t('createListing.descriptionLabel')} *</Label>
             <Textarea placeholder={t('createListing.descriptionPlaceholder')} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={5} />
           </div>
-          <div>
-            <Label>{form.category === 'emploi' ? t('createListing.salaryLabel') : t('createListing.priceLabel')} * <span className="text-muted-foreground font-normal text-xs">IDR</span></Label>
-            <Input type="number" min="0" placeholder={form.category === 'emploi' ? t('createListing.salaryPlaceholder') : t('createListing.pricePlaceholder')} value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} />
-          </div>
+          {form.category === 'emploi' && (
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="salary_negotiable"
+                checked={extraFields.salary_negotiable === 'true'}
+                onChange={e => {
+                  setExtraFields(prev => ({ ...prev, salary_negotiable: e.target.checked ? 'true' : 'false' }));
+                  if (e.target.checked) setForm(f => ({ ...f, price: '0' }));
+                }}
+                className="h-4 w-4 rounded border-border"
+              />
+              <Label htmlFor="salary_negotiable" className="cursor-pointer">{t('createListing.salaryNegotiable')}</Label>
+            </div>
+          )}
+          {!(form.category === 'emploi' && extraFields.salary_negotiable === 'true') && (
+            <div>
+              <Label>{form.category === 'emploi' ? t('createListing.salaryLabel') : t('createListing.priceLabel')} * <span className="text-muted-foreground font-normal text-xs">IDR</span></Label>
+              <Input type="number" min="0" placeholder={form.category === 'emploi' ? t('createListing.salaryPlaceholder') : t('createListing.pricePlaceholder')} value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} />
+            </div>
+          )}
           <div>
             <Label>{t('createListing.locationLabel')} *</Label>
             <div className="flex gap-2">
@@ -514,7 +534,11 @@ export default function CreateListing() {
             {(existingImageUrls[0] || previews[0]) && <img src={existingImageUrls[0]?.url || previews[0]} alt="" className="w-full aspect-[4/3] object-cover rounded-lg" />}
             <Badge>{CATEGORY_ICONS[form.category]} {t(`categories.${form.category}`)} — {t(`subcategories.${form.subcategory}`)}</Badge>
             <h2 className="text-xl font-bold">{form.title}</h2>
-            <p className="text-2xl font-bold text-primary">{formatPrice(parseFloat(form.price) || 0, form.currency)}</p>
+            <p className="text-2xl font-bold text-primary">
+              {form.category === 'emploi' && extraFields.salary_negotiable === 'true'
+                ? t('createListing.salaryNegotiable')
+                : formatPrice(parseFloat(form.price) || 0, form.currency)}
+            </p>
             <p className="text-sm text-muted-foreground">{t(`locations.${form.location}`)} · {t(`conditions.${form.condition}`)}</p>
             <p className="text-muted-foreground">{form.description}</p>
           </CardContent>

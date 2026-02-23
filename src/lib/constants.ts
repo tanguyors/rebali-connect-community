@@ -386,7 +386,6 @@ export const CATEGORY_FIELDS: Record<string, ExtraFieldDef[]> = {
     },
     { key: "job_sector", labelKey: "extraFields.jobSector", type: "select", options: JOB_SECTORS },
     { key: "work_time", labelKey: "extraFields.workTime", type: "select", options: WORK_TIMES },
-    { key: "salary", labelKey: "extraFields.salary", type: "text", placeholder: "ex: 5-10M IDR/month" },
     { key: "company_name", labelKey: "extraFields.companyName", type: "text" },
   ],
   vehicules: [

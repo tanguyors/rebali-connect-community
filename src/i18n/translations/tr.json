@@ -80,7 +80,7 @@
     "stepPreview": "Önizleme", "selectCategory": "Kategori seçin", "selectSubcategory": "Alt kategori seçin",
     "titleLabel": "Başlık", "titlePlaceholder": "Ne satıyorsunuz?",
     "descriptionLabel": "Açıklama", "descriptionPlaceholder": "Ürününüzü detaylı olarak tanımlayın...",
-    "priceLabel": "Fiyat", "pricePlaceholder": "Fiyat girin", "salaryLabel": "Aylık maaş", "salaryPlaceholder": "Aylık maaş girin", "currencyLabel": "Para birimi",
+    "priceLabel": "Fiyat", "pricePlaceholder": "Fiyat girin", "salaryLabel": "Aylık maaş", "salaryPlaceholder": "Aylık maaş girin", "salaryNegotiable": "Maaş pazarlığa açık", "currencyLabel": "Para birimi",
     "locationLabel": "Konum", "selectLocation": "Bölge seçin", "conditionLabel": "Durum",
     "selectCondition": "Durum seçin", "uploadPhotos": "Fotoğraf Yükle",
     "dragOrClick": "Sürükleyin veya tıklayarak yükleyin", "maxPhotos": "Maksimum 10 fotoğraf",

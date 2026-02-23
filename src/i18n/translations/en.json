@@ -95,7 +95,7 @@
     "titleLabel": "Title", "titlePlaceholder": "What are you selling?",
     "descriptionLabel": "Description", "descriptionPlaceholder": "Describe your item in detail...",
     "priceLabel": "Price", "pricePlaceholder": "Enter price", "currencyLabel": "Currency",
-    "salaryLabel": "Monthly salary", "salaryPlaceholder": "Enter monthly salary",
+    "salaryLabel": "Monthly salary", "salaryPlaceholder": "Enter monthly salary", "salaryNegotiable": "Salary negotiable",
     "locationLabel": "Location", "selectLocation": "Select area", "conditionLabel": "Condition",
     "selectCondition": "Select condition", "uploadPhotos": "Upload Photos",
     "dragOrClick": "Drag and drop or click to upload", "maxPhotos": "Maximum 10 photos",
