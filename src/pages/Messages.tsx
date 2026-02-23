@@ -297,7 +297,7 @@ export default function Messages() {
             {activeConv ? (
               <>
                 {/* Header */}
-                <div className="flex items-center gap-3 p-3 border-b border-border bg-muted/30">
+                <div className="flex items-center gap-3 p-3 border-b border-border bg-muted/30 flex-shrink-0">
                   {isMobile && (
                     <button onClick={() => setSearchParams({})} className="mr-1">
                       <ArrowLeft className="h-5 w-5" />
@@ -362,7 +362,7 @@ export default function Messages() {
                 </div>
 
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
                   {convMessages?.map((msg: any) => {
                     const isMine = msg.sender_id === user.id;
                     const translated = !isMine && translations?.[msg.id];
@@ -388,14 +388,14 @@ export default function Messages() {
 
                 {/* Input */}
                 {!profile?.phone_verified ? (
-                  <div className="p-3 border-t border-border">
+                  <div className="p-3 border-t border-border flex-shrink-0">
                     <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/profile')}>
                       <User className="h-4 w-4" />
                       {t('messages.whatsappRequired')}
                     </Button>
                   </div>
                 ) : (
-                  <div className="p-2 border-t border-border flex gap-2">
+                  <div className="p-2 border-t border-border flex gap-2 flex-shrink-0">
                     <Input
                       value={message}
                       onChange={e => setMessage(e.target.value)}
