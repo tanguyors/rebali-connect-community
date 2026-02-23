@@ -122,7 +122,7 @@ Deno.serve(async (req) => {
     }
 
     // Use published URL
-    const convLink = `https://rebali-connect-community.lovable.app/messages?conv=${conversation_id}`;
+    const convLink = `https://re-bali.com/messages?conv=${conversation_id}`;
 
     const waMessage = `📩 ${tmpl.newMsg} "${listingTitle}"
 
