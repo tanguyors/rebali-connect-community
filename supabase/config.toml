@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.notify-whatsapp]
 verify_jwt = false
+
+[functions.oglisting]
+verify_jwt = false
