@@ -121,6 +121,19 @@ Deno.serve(async (req) => {
       preview = `"${truncated}"`;
     }
 
+    // Get the first image of the listing
+    const { data: listingImage } = await supabase
+      .from("listing_images")
+      .select("storage_path")
+      .eq("listing_id", conv.listing_id)
+      .order("sort_order", { ascending: true })
+      .limit(1)
+      .single();
+
+    const imageUrl = listingImage
+      ? `${supabaseUrl}/storage/v1/object/public/listings/${listingImage.storage_path}`
+      : "";
+
     // Use published URL
     const convLink = `https://re-bali.com/messages?conv=${conversation_id}`;
 
@@ -130,12 +143,15 @@ ${senderName}: ${preview}
 
 ${tmpl.reply}: ${convLink}`;
 
-    // Send via Fonnte
+    // Send via Fonnte (with image if available)
     const cleanTarget = recipient.whatsapp.replace(/[^0-9]/g, "");
     const formData = new FormData();
     formData.append("target", cleanTarget);
     formData.append("message", waMessage);
     formData.append("countryCode", "0");
+    if (imageUrl) {
+      formData.append("url", imageUrl);
+    }
 
     await fetch("https://api.fonnte.com/send", {
       method: "POST",

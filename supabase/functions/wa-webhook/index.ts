@@ -57,20 +57,7 @@ Deno.serve(async (req) => {
 
     sender = sender.replace(/[^0-9]/g, "");
 
-    // Check if sender is banned
-    const { data: bannedCheck } = await supabase
-      .from("banned_devices")
-      .select("id")
-      .eq("phone_number", sender)
-      .limit(1);
-
-    if (bannedCheck && bannedCheck.length > 0) {
-      return new Response(JSON.stringify({ status: "banned" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Find the sender's profile by phone/whatsapp
+    // Find the sender's profile to get their language
     const { data: allProfiles } = await supabase
       .from("profiles")
       .select("id, phone, whatsapp, preferred_lang")
@@ -82,68 +69,12 @@ Deno.serve(async (req) => {
       return normPhone === sender || normWa === sender;
     }) || null;
 
-    // Also check buyer_phone on conversations
-    const { data: buyerConvs } = await supabase
-      .from("conversations")
-      .select("id, buyer_id, seller_id, listing_id")
-      .eq("buyer_phone", sender)
-      .eq("relay_status", "active")
-      .order("updated_at", { ascending: false })
-      .limit(1);
-
-    // Find most recent conversation for this sender
-    let conversation: any = null;
-    let senderId: string | null = null;
-
-    if (senderProfile) {
-      // Check conversations where sender is buyer or seller
-      const { data: convs } = await supabase
-        .from("conversations")
-        .select("id, buyer_id, seller_id, listing_id")
-        .or(`buyer_id.eq.${senderProfile.id},seller_id.eq.${senderProfile.id}`)
-        .eq("relay_status", "active")
-        .order("updated_at", { ascending: false })
-        .limit(1);
-
-      if (convs && convs.length > 0) {
-        conversation = convs[0];
-        senderId = senderProfile.id;
-      }
-    }
-
-    // Fallback: check by buyer_phone
-    if (!conversation && buyerConvs && buyerConvs.length > 0) {
-      conversation = buyerConvs[0];
-      senderId = buyerConvs[0].buyer_id;
-    }
-
-    if (!conversation || !senderId) {
-      console.log("Ignoring message from", sender, "— no active conversation found");
-      return new Response(JSON.stringify({ status: "no_conversation" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Insert the message into the in-app chat
-    await supabase.from("messages").insert({
-      conversation_id: conversation.id,
-      sender_id: senderId,
-      content: messageBody,
-      from_role: "whatsapp",
-    });
-
-    // Update conversation timestamp
-    await supabase
-      .from("conversations")
-      .update({ updated_at: new Date().toISOString() })
-      .eq("id", conversation.id);
-
-    // Reply telling them to use the app
+    // Send a message telling them to use the app — do NOT insert into conversations
     const lang = senderProfile?.preferred_lang || "en";
-    const replyMsg = getRedirectMessage(lang, conversation.id);
+    const replyMsg = getUseAppMessage(lang);
     await sendFonnte(FONNTE_TOKEN, sender, replyMsg);
 
-    return new Response(JSON.stringify({ status: "relayed_to_app" }), {
+    return new Response(JSON.stringify({ status: "redirected_to_app" }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
@@ -155,21 +86,20 @@ Deno.serve(async (req) => {
   }
 });
 
-function getRedirectMessage(lang: string, convId: string): string {
-  const link = `${APP_URL}/messages?conv=${convId}`;
+function getUseAppMessage(lang: string): string {
   const messages: Record<string, string> = {
-    en: `✅ Your message has been received and added to your conversation on Re-Bali.\n\n💬 Reply directly in the app for a better experience:\n${link}`,
-    fr: `✅ Votre message a été reçu et ajouté à votre conversation sur Re-Bali.\n\n💬 Répondez directement dans l'app pour une meilleure expérience :\n${link}`,
-    id: `✅ Pesan Anda telah diterima dan ditambahkan ke percakapan Anda di Re-Bali.\n\n💬 Balas langsung di aplikasi untuk pengalaman yang lebih baik:\n${link}`,
-    es: `✅ Su mensaje ha sido recibido y añadido a su conversación en Re-Bali.\n\n💬 Responda directamente en la app para una mejor experiencia:\n${link}`,
-    zh: `✅ 您的消息已收到并添加到您在 Re-Bali 上的对话中。\n\n💬 直接在应用中回复以获得更好的体验：\n${link}`,
-    de: `✅ Ihre Nachricht wurde empfangen und zu Ihrer Unterhaltung auf Re-Bali hinzugefügt.\n\n💬 Antworten Sie direkt in der App für ein besseres Erlebnis:\n${link}`,
-    nl: `✅ Uw bericht is ontvangen en toegevoegd aan uw gesprek op Re-Bali.\n\n💬 Antwoord direct in de app voor een betere ervaring:\n${link}`,
-    ru: `✅ Ваше сообщение получено и добавлено в ваш разговор на Re-Bali.\n\n💬 Отвечайте прямо в приложении для лучшего опыта:\n${link}`,
-    tr: `✅ Mesajınız alındı ve Re-Bali'deki sohbetinize eklendi.\n\n💬 Daha iyi bir deneyim için doğrudan uygulamada yanıtlayın:\n${link}`,
-    ar: `✅ تم استلام رسالتك وإضافتها إلى محادثتك على Re-Bali.\n\n💬 قم بالرد مباشرة في التطبيق لتجربة أفضل:\n${link}`,
-    hi: `✅ आपका संदेश प्राप्त हुआ और Re-Bali पर आपकी बातचीत में जोड़ा गया।\n\n💬 बेहतर अनुभव के लिए सीधे ऐप में जवाब दें:\n${link}`,
-    ja: `✅ メッセージを受信し、Re-Baliの会話に追加しました。\n\n💬 より良い体験のためにアプリで直接返信してください：\n${link}`,
+    en: `⚠️ Replies via WhatsApp are not supported.\n\n💬 Please use the Re-Bali app to read and reply to your messages:\n${APP_URL}/messages`,
+    fr: `⚠️ Les réponses via WhatsApp ne sont pas prises en charge.\n\n💬 Utilisez l'application Re-Bali pour lire et répondre à vos messages :\n${APP_URL}/messages`,
+    id: `⚠️ Balasan melalui WhatsApp tidak didukung.\n\n💬 Gunakan aplikasi Re-Bali untuk membaca dan membalas pesan Anda:\n${APP_URL}/messages`,
+    es: `⚠️ Las respuestas por WhatsApp no son compatibles.\n\n💬 Use la app Re-Bali para leer y responder sus mensajes:\n${APP_URL}/messages`,
+    zh: `⚠️ 不支持通过WhatsApp回复。\n\n💬 请使用Re-Bali应用阅读和回复消息：\n${APP_URL}/messages`,
+    de: `⚠️ Antworten über WhatsApp werden nicht unterstützt.\n\n💬 Nutzen Sie die Re-Bali-App zum Lesen und Beantworten:\n${APP_URL}/messages`,
+    nl: `⚠️ Antwoorden via WhatsApp worden niet ondersteund.\n\n💬 Gebruik de Re-Bali-app om berichten te lezen en beantwoorden:\n${APP_URL}/messages`,
+    ru: `⚠️ Ответы через WhatsApp не поддерживаются.\n\n💬 Используйте приложение Re-Bali для чтения и ответа:\n${APP_URL}/messages`,
+    tr: `⚠️ WhatsApp üzerinden yanıtlar desteklenmiyor.\n\n💬 Mesajlarınızı okumak ve yanıtlamak için Re-Bali uygulamasını kullanın:\n${APP_URL}/messages`,
+    ar: `⚠️ الردود عبر واتساب غير مدعومة.\n\n💬 استخدم تطبيق Re-Bali لقراءة الرسائل والرد عليها:\n${APP_URL}/messages`,
+    hi: `⚠️ WhatsApp के जरिए जवाब समर्थित नहीं हैं।\n\n💬 संदेश पढ़ने और जवाब देने के लिए Re-Bali ऐप का उपयोग करें:\n${APP_URL}/messages`,
+    ja: `⚠️ WhatsAppでの返信はサポートされていません。\n\n💬 メッセージの閲覧と返信にはRe-Baliアプリをご利用ください：\n${APP_URL}/messages`,
   };
   return messages[lang] || messages.en;
 }
