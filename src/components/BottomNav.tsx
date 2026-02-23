@@ -1,6 +1,8 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Home, Search, Plus, MessageCircle, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -9,6 +11,33 @@ export default function BottomNav() {
   const location = useLocation();
   const { t } = useLanguage();
   const { user, profile } = useAuth();
+
+  // Fetch total unread message count
+  const { data: totalUnread = 0 } = useQuery({
+    queryKey: ['total-unread', user?.id],
+    queryFn: async () => {
+      // Get all conversations for this user
+      const { data: convs } = await supabase
+        .from('conversations')
+        .select('id')
+        .or(`buyer_id.eq.${user!.id},seller_id.eq.${user!.id}`);
+      if (!convs || convs.length === 0) return 0;
+
+      let total = 0;
+      for (const conv of convs) {
+        const { count } = await supabase
+          .from('messages')
+          .select('*', { count: 'exact', head: true })
+          .eq('conversation_id', conv.id)
+          .eq('read', false)
+          .neq('sender_id', user!.id);
+        total += count || 0;
+      }
+      return total;
+    },
+    enabled: !!user && !!profile?.phone_verified,
+    refetchInterval: 15000, // poll every 15s
+  });
 
   const NAV_ITEMS = [
     { icon: Home, labelKey: 'nav.home', path: '/' },
@@ -55,11 +84,18 @@ export default function BottomNav() {
               key={item.path}
               onClick={() => handleNav(item.path)}
               className={cn(
-                "flex flex-col items-center justify-center gap-0.5 py-1 px-3 transition-colors",
+                "flex flex-col items-center justify-center gap-0.5 py-1 px-3 transition-colors relative",
                 isActive ? "text-primary" : "text-muted-foreground"
               )}
             >
-              <Icon className="h-5 w-5" strokeWidth={isActive ? 2.5 : 1.5} />
+              <div className="relative">
+                <Icon className="h-5 w-5" strokeWidth={isActive ? 2.5 : 1.5} />
+                {item.path === '/messages' && totalUnread > 0 && (
+                  <span className="absolute -top-1.5 -right-2.5 bg-destructive text-destructive-foreground text-[9px] font-bold rounded-full h-4 min-w-[16px] flex items-center justify-center px-1">
+                    {totalUnread > 99 ? '99+' : totalUnread}
+                  </span>
+                )}
+              </div>
               <span className={cn("text-[10px]", isActive && "font-bold")}>{t(item.labelKey)}</span>
             </button>
           );
