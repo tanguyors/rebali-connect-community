@@ -328,24 +328,20 @@ export default function ListingDetail() {
                             <Link2 className="h-4 w-4 mr-2" />
                             {t('share.copyLink')}
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={async () => {
-                            const webShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(ogUrl)}`;
+                          <DropdownMenuItem onClick={() => {
                             const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-                            if (isMobile && navigator.share) {
-                              try {
-                                await navigator.share({
-                                  title: listing?.title_original || 'Re-Bali',
-                                  text: listing?.title_original || '',
-                                  url: ogUrl,
-                                });
-                                return;
-                              } catch {
-                                // User cancelled or app unavailable, fallback below
-                              }
+                            if (isMobile) {
+                              // Deep link opens Facebook app's share composer with OG preview
+                              window.location.href = `fb://share/?link=${encodeURIComponent(ogUrl)}`;
+                              // Fallback to web if app not installed
+                              setTimeout(() => {
+                                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(ogUrl)}`, '_blank');
+                              }, 1200);
+                              return;
                             }
 
-                            window.open(webShareUrl, '_blank', 'noopener,noreferrer');
+                            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(ogUrl)}`, '_blank');
                           }}>
                             <Facebook className="h-4 w-4 mr-2" />
                             {t('share.facebook')}
