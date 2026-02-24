@@ -130,32 +130,50 @@ export default function CreateListing() {
     return SUSPICIOUS_PATTERNS.some(p => p.test(text));
   };
 
-  // Watermark function
+  // Watermark function — diagonal repeating pattern for uniform coverage
   const addWatermark = async (file: File, username: string): Promise<File> => {
     return new Promise((resolve) => {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
+        const w = img.width;
+        const h = img.height;
+        canvas.width = w;
+        canvas.height = h;
         const ctx = canvas.getContext('2d')!;
         ctx.drawImage(img, 0, 0);
 
-        // Watermark text
+        // Consistent font size relative to the shorter side
+        const shortSide = Math.min(w, h);
+        const fontSize = Math.max(16, Math.round(shortSide / 28));
         const date = new Date().toLocaleDateString('fr-FR');
-        const text = `Re-Bali - @${username} - ${date}`;
-        const fontSize = Math.max(14, Math.floor(img.width / 40));
-        ctx.font = `${fontSize}px Arial`;
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-        ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
-        ctx.lineWidth = 2;
+        const text = `Re-Bali • @${username} • ${date}`;
 
+        ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+        ctx.lineWidth = Math.max(1, fontSize / 12);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        // Rotate -30° and tile the watermark across the entire image
+        const angle = -30 * (Math.PI / 180);
         const metrics = ctx.measureText(text);
-        const x = img.width - metrics.width - 15;
-        const y = img.height - 15;
+        const textW = metrics.width + fontSize * 3;
+        const textH = fontSize * 4;
+        const diagonal = Math.sqrt(w * w + h * h);
 
-        ctx.strokeText(text, x, y);
-        ctx.fillText(text, x, y);
+        ctx.save();
+        ctx.translate(w / 2, h / 2);
+        ctx.rotate(angle);
+
+        for (let row = -diagonal; row < diagonal; row += textH) {
+          for (let col = -diagonal; col < diagonal; col += textW) {
+            ctx.strokeText(text, col, row);
+            ctx.fillText(text, col, row);
+          }
+        }
+        ctx.restore();
 
         canvas.toBlob((blob) => {
           if (blob) {
