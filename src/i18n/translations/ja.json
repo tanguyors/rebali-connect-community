@@ -10,7 +10,7 @@
   "home": {
     "hero": "バリで売買する", "heroSub": "バリの駐在員、地元の人々、企業のための信頼できるマーケットプレイス",
     "searchPlaceholder": "家具、車両、不動産を検索...", "categories": "カテゴリーを閲覧",
-    "latest": "最新の出品", "howItWorks": "使い方",
+    "latest": "最新の出品", "howItWorks": "使い方", "featured": "注目の出品",
     "step1Title": "出品する", "step1Desc": "写真を撮り、価格を設定し、数分で公開",
     "step2Title": "買い手とつながる", "step2Desc": "買い手がWhatsAppまたは電話で直接連絡します",
     "step3Title": "取引を完了する", "step3Desc": "会って、確認して、取引を完了しましょう",

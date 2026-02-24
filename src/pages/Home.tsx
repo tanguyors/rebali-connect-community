@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import ListingCard from '@/components/ListingCard';
 import AnimatedHeroText from '@/components/AnimatedHeroText';
-import { Search, Plus, ArrowRight } from 'lucide-react';
+import { Search, Plus, ArrowRight, Star } from 'lucide-react';
 import CategoryMarquee from '@/components/CategoryMarquee';
 import { CATEGORIES, CATEGORY_ICONS } from '@/lib/constants';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,6 +12,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
 
 function useCategoryListings(category: string) {
@@ -140,6 +141,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Featured Listings (Boost Premium) */}
+      <FeaturedListings />
+
       {/* How it works */}
       <section className="bg-card border-t border-border/50 py-14 mt-4">
         <div className="container mx-auto px-4">
@@ -209,6 +213,72 @@ function CategoryRow({ category }: { category: string }) {
           ))
         ) : (
           <p className="col-span-full text-center text-muted-foreground py-8">{t('common.noResults')}</p>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function FeaturedListings() {
+  const { t } = useLanguage();
+
+  const { data: featuredListings, isLoading } = useQuery({
+    queryKey: ['featured-listings'],
+    queryFn: async () => {
+      // Get active boost_premium addons with their listing_ids
+      const { data: boosts } = await supabase
+        .from('user_addons')
+        .select('listing_id')
+        .eq('addon_type', 'boost_premium')
+        .eq('active', true);
+
+      if (!boosts || boosts.length === 0) return [];
+
+      const listingIds = boosts.map(b => b.listing_id).filter(Boolean) as string[];
+      if (listingIds.length === 0) return [];
+
+      const { data } = await supabase
+        .from('listings')
+        .select('*, listing_images(storage_path, sort_order), listing_translations(lang, title), profiles:seller_id(user_type, is_verified_seller), favorites(count)')
+        .eq('status', 'active')
+        .in('id', listingIds)
+        .limit(8);
+
+      return data || [];
+    },
+    staleTime: 2 * 60 * 1000,
+  });
+
+  if (!isLoading && (!featuredListings || featuredListings.length === 0)) return null;
+
+  return (
+    <section className="container mx-auto px-4 py-10">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl md:text-2xl font-extrabold flex items-center gap-2">
+          <Star className="h-6 w-6 text-amber-500" />
+          {t('home.featured')}
+        </h2>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {isLoading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="space-y-2">
+              <Skeleton className="aspect-[4/3] w-full rounded-lg" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-5 w-1/2" />
+            </div>
+          ))
+        ) : (
+          featuredListings!.map((listing: any, i: number) => (
+            <motion.div
+              key={listing.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: i * 0.05 }}
+            >
+              <ListingCard listing={listing} />
+            </motion.div>
+          ))
         )}
       </div>
     </section>

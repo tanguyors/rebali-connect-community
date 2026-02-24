@@ -14,7 +14,8 @@
     "step1Title": "İlanınızı oluşturun", "step1Desc": "Fotoğraf çekin, fiyat belirleyin ve dakikalar içinde yayınlayın",
     "step2Title": "Alıcılarla bağlantı kurun", "step2Desc": "Alıcılar sizi doğrudan WhatsApp veya telefon ile arar",
     "step3Title": "Anlaşmayı tamamlayın", "step3Desc": "Buluşun, kontrol edin ve işlemi tamamlayın",
-    "freePlatform": "%100 Ücretsiz Platform", "freeDesc": "Ücret yok, komisyon yok. Re-Bali herkes için ücretsizdir."
+    "freePlatform": "%100 Ücretsiz Platform", "freeDesc": "Ücret yok, komisyon yok. Re-Bali herkes için ücretsizdir.",
+    "featured": "Öne Çıkan İlanlar"
   },
   "categories": {
     "emploi": "İş İlanları", "vehicules": "Araçlar", "immobilier": "Emlak", "mode": "Moda",

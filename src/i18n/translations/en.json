@@ -14,7 +14,8 @@
     "step1Title": "List your item", "step1Desc": "Take a photo, set your price, and publish in minutes",
     "step2Title": "Connect with buyers", "step2Desc": "Buyers contact you directly via WhatsApp or phone",
     "step3Title": "Close the deal", "step3Desc": "Meet up, inspect, and complete the transaction",
-    "freePlatform": "100% Free Platform", "freeDesc": "No fees, no commissions. Re-Bali is free for everyone."
+    "freePlatform": "100% Free Platform", "freeDesc": "No fees, no commissions. Re-Bali is free for everyone.",
+    "featured": "Featured Listings"
   },
   "categories": {
     "emploi": "Jobs",

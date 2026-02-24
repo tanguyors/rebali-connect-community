@@ -65,6 +65,20 @@ export default function Browse() {
     setRadiusKm(25);
   };
 
+  // Fetch active boosts to sort them higher
+  const { data: activeBoostedIds } = useQuery({
+    queryKey: ['active-boosts'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('user_addons')
+        .select('listing_id')
+        .in('addon_type', ['boost', 'boost_premium'])
+        .eq('active', true);
+      return new Set((data || []).map(b => b.listing_id).filter(Boolean));
+    },
+    staleTime: 2 * 60 * 1000,
+  });
+
   const { data: listings, isLoading } = useQuery({
     queryKey: ['listings', debouncedSearch, category, subcategory, location, condition, sort, minPrice, maxPrice],
     queryFn: async () => {
@@ -98,15 +112,26 @@ export default function Browse() {
     },
   });
 
-  // Filter by distance client-side
+  // Filter by distance client-side, then sort boosted listings first
   const filteredListings = useMemo(() => {
-    if (!listings || !userCoords) return listings;
-    return listings.filter((l: any) => {
-      const coords = LOCATION_COORDS[l.location_area];
-      if (!coords) return true;
-      return getDistanceKm(userCoords.lat, userCoords.lng, coords.lat, coords.lng) <= radiusKm;
-    });
-  }, [listings, userCoords, radiusKm]);
+    let result = listings || [];
+    if (userCoords) {
+      result = result.filter((l: any) => {
+        const coords = LOCATION_COORDS[l.location_area];
+        if (!coords) return true;
+        return getDistanceKm(userCoords.lat, userCoords.lng, coords.lat, coords.lng) <= radiusKm;
+      });
+    }
+    // Sort boosted listings to the top
+    if (activeBoostedIds && activeBoostedIds.size > 0) {
+      result = [...result].sort((a: any, b: any) => {
+        const aBoost = activeBoostedIds.has(a.id) ? 1 : 0;
+        const bBoost = activeBoostedIds.has(b.id) ? 1 : 0;
+        return bBoost - aBoost;
+      });
+    }
+    return result;
+  }, [listings, userCoords, radiusKm, activeBoostedIds]);
 
   const clearFilters = () => {
     setSearch('');
