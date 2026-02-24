@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { Shield, AlertTriangle, Users, FileText, CheckCircle, BarChart3, Search, Ban, Eye, Phone, MessageSquare, Globe, Calendar, User, MapPin, Tag, Package, DollarSign, BarChart2, Trash2, Archive, Pencil, Save, X, Fingerprint, Wifi, WifiOff, ShieldCheck, ShieldAlert, FileCheck, MessageCircle } from 'lucide-react';
+import { Shield, AlertTriangle, Users, FileText, CheckCircle, BarChart3, Search, Ban, Eye, Phone, MessageSquare, Globe, Calendar, User, MapPin, Tag, Package, DollarSign, BarChart2, Trash2, Archive, Pencil, Save, X, Fingerprint, Wifi, WifiOff, ShieldCheck, ShieldAlert, FileCheck, MessageCircle, Coins } from 'lucide-react';
 import { CATEGORY_TREE } from '@/lib/constants';
 
 function VerificationCard({ verification, profileName, onApprove, onReject }: {
@@ -226,6 +226,7 @@ export default function Admin() {
   const [editUserPhone, setEditUserPhone] = useState('');
   const [editUserWhatsapp, setEditUserWhatsapp] = useState('');
   const [editUserDisplayName, setEditUserDisplayName] = useState('');
+  const [editUserPoints, setEditUserPoints] = useState('');
 
   // Reports query
   const { data: reports } = useQuery({
@@ -301,6 +302,18 @@ export default function Admin() {
         .select('*')
         .order('created_at', { ascending: false });
       return data || [];
+    },
+    enabled: isAdmin,
+  });
+
+  // User points query
+  const { data: allUserPoints } = useQuery({
+    queryKey: ['admin-user-points'],
+    queryFn: async () => {
+      const { data } = await supabase.functions.invoke('manage-points', {
+        body: { action: 'admin_get_all_points' },
+      });
+      return data?.points || [];
     },
     enabled: isAdmin,
   });
@@ -381,6 +394,8 @@ export default function Admin() {
     setEditUserLang(selectedUser.preferred_lang || 'en');
     setEditUserPhone(selectedUser.phone || '');
     setEditUserWhatsapp(selectedUser.whatsapp || '');
+    const userPts = allUserPoints?.find((p: any) => p.user_id === selectedUser.id);
+    setEditUserPoints(String(userPts?.balance || 0));
     setEditingUser(true);
   };
 
@@ -392,6 +407,17 @@ export default function Admin() {
       phone: editUserPhone.trim() || null,
       whatsapp: editUserWhatsapp.trim() || null,
     }).eq('id', selectedUser.id);
+
+    // Update points if changed
+    const currentPts = allUserPoints?.find((p: any) => p.user_id === selectedUser.id);
+    const newBalance = Math.max(0, parseInt(editUserPoints) || 0);
+    if (newBalance !== (currentPts?.balance || 0)) {
+      await supabase.functions.invoke('manage-points', {
+        body: { action: 'admin_set_balance', target_user_id: selectedUser.id, new_balance: newBalance },
+      });
+      qc.invalidateQueries({ queryKey: ['admin-user-points'] });
+    }
+
     setSelectedUser((prev: any) => prev ? {
       ...prev,
       display_name: editUserDisplayName.trim() || null,
@@ -484,6 +510,10 @@ export default function Admin() {
                   <label className="text-xs text-muted-foreground">{t('profile.whatsapp')}</label>
                   <Input value={editUserWhatsapp} onChange={e => setEditUserWhatsapp(e.target.value)} placeholder="+62..." />
                 </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">{t('admin.shopPoints') || 'Points Shop'}</label>
+                  <Input type="number" min="0" value={editUserPoints} onChange={e => setEditUserPoints(e.target.value)} />
+                </div>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-3">
@@ -513,6 +543,13 @@ export default function Admin() {
                   <div>
                     <p className="text-muted-foreground">{t('profile.whatsapp')}</p>
                     <p className="font-medium">{selectedUser.whatsapp || '—'}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Coins className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-muted-foreground">{t('admin.shopPoints') || 'Points Shop'}</p>
+                    <p className="font-medium">{allUserPoints?.find((p: any) => p.user_id === selectedUser.id)?.balance || 0} pts</p>
                   </div>
                 </div>
               </div>
