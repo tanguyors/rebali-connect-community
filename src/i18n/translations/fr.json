@@ -346,13 +346,13 @@
     "buyPointsComingSoon": "Paiement en ligne bientôt disponible !",
     "buyPointsComingSoonDesc": "Le paiement via Xendit / DOKU sera disponible sous peu. En attendant, gagnez des points via vos badges et votre activité.",
     "pack": {
-      "starter": "Pack Démarrage",
+      "starter": "Petit Boost",
       "starterDesc": "Idéal pour tester un premier boost",
-      "popular": "Pack Populaire",
+      "popular": "Le plus populaire",
       "popularDesc": "Meilleur rapport qualité-prix — le plus acheté",
-      "premium": "Pack Premium",
+      "premium": "Pro",
       "premiumDesc": "Pour les vendeurs qui veulent tout",
-      "mega": "Pack Méga",
+      "mega": "Business",
       "megaDesc": "Maximum de points, maximum d'économies"
     },
     "packPoints": "{pts} points",

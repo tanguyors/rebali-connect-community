@@ -372,7 +372,7 @@
     "buyPointsDesc": "ポイントパックで残高を即時チャージ",
     "buyPointsComingSoon": "オンライン決済まもなく開始！",
     "buyPointsComingSoonDesc": "Xendit / DOKU 決済がまもなく利用可能になります。現在はバッジとアクティビティでポイントを獲得できます。",
-    "pack": { "starter": "スターターパック", "starterDesc": "初めてのブーストに最適", "popular": "人気パック", "popularDesc": "最もお得 — 一番人気", "premium": "プレミアムパック", "premiumDesc": "パワーセラー向け", "mega": "メガパック", "megaDesc": "最大ポイント、最大節約" },
+    "pack": { "starter": "スモールブースト", "starterDesc": "初めてのブーストに最適", "popular": "一番人気", "popularDesc": "最もお得 — 一番人気", "premium": "Pro", "premiumDesc": "パワーセラー向け", "mega": "Business", "megaDesc": "最大ポイント、最大節約" },
     "packPoints": "{pts} ポイント", "packPrice": "Rp {price}", "bestValue": "最もお得", "comingSoon": "近日公開", "paymentMethods": "Xendit / DOKU 決済"
   }
 }

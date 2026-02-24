@@ -372,7 +372,7 @@
     "buyPointsDesc": "Bir puan paketiyle bakiyenizi anında doldurun",
     "buyPointsComingSoon": "Online ödeme yakında!",
     "buyPointsComingSoonDesc": "Xendit / DOKU ile ödeme yakında kullanılabilir olacak. Şimdilik rozetler ve aktivitelerle puan kazanın.",
-    "pack": { "starter": "Başlangıç Paketi", "starterDesc": "İlk boost'unuzu denemek için ideal", "popular": "Popüler Paket", "popularDesc": "En iyi değer — en çok satılan", "premium": "Premium Paket", "premiumDesc": "Her şeyi isteyen satıcılar için", "mega": "Mega Paket", "megaDesc": "Maksimum puan, maksimum tasarruf" },
+    "pack": { "starter": "Küçük Boost", "starterDesc": "İlk boost'unuzu denemek için ideal", "popular": "En Popüler", "popularDesc": "En iyi değer — en çok satılan", "premium": "Pro", "premiumDesc": "Her şeyi isteyen satıcılar için", "mega": "Business", "megaDesc": "Maksimum puan, maksimum tasarruf" },
     "packPoints": "{pts} puan", "packPrice": "Rp {price}", "bestValue": "En İyi Değer", "comingSoon": "Yakında", "paymentMethods": "Xendit / DOKU ile ödeme"
   }
 }

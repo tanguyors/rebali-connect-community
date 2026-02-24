@@ -216,7 +216,7 @@
     "buyPointsDesc": "Пополните баланс мгновенно с помощью пакета баллов",
     "buyPointsComingSoon": "Онлайн-оплата скоро!",
     "buyPointsComingSoonDesc": "Оплата через Xendit / DOKU будет доступна в ближайшее время. Пока зарабатывайте баллы через значки и активность.",
-    "pack": { "starter": "Стартовый пакет", "starterDesc": "Идеально для первого буста", "popular": "Популярный пакет", "popularDesc": "Лучшая цена — самый популярный", "premium": "Премиум пакет", "premiumDesc": "Для активных продавцов", "mega": "Мега пакет", "megaDesc": "Максимум баллов, максимум экономии" },
+    "pack": { "starter": "Малый буст", "starterDesc": "Идеально для первого буста", "popular": "Самый популярный", "popularDesc": "Лучшая цена — самый популярный", "premium": "Pro", "premiumDesc": "Для активных продавцов", "mega": "Business", "megaDesc": "Максимум баллов, максимум экономии" },
     "packPoints": "{pts} баллов", "packPrice": "Rp {price}", "bestValue": "Лучшая цена", "comingSoon": "Скоро", "paymentMethods": "Оплата через Xendit / DOKU"
   }
 }

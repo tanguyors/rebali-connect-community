@@ -43,10 +43,10 @@ const ADDON_CONFIG = [
 ];
 
 const POINT_PACKS = [
-  { id: 'starter', points: 50, price: 15000, icon: Zap },
-  { id: 'popular', points: 150, price: 35000, icon: Star, bestValue: true },
-  { id: 'premium', points: 350, price: 70000, icon: Crown },
-  { id: 'mega', points: 800, price: 140000, icon: Sparkles },
+  { id: 'starter', points: 50, price: 29000, icon: Zap },
+  { id: 'popular', points: 120, price: 59000, icon: Star, bestValue: true },
+  { id: 'premium', points: 250, price: 99000, icon: Crown },
+  { id: 'mega', points: 600, price: 199000, icon: Sparkles },
 ];
 
 export default function PointsShop() {

@@ -293,13 +293,13 @@
     "buyPointsComingSoon": "Pembayaran online segera hadir!",
     "buyPointsComingSoonDesc": "Pembayaran melalui Xendit / DOKU akan segera tersedia. Untuk saat ini, dapatkan poin melalui lencana dan aktivitas.",
     "pack": {
-      "starter": "Paket Pemula",
+      "starter": "Boost Kecil",
       "starterDesc": "Sempurna untuk mencoba boost pertama",
-      "popular": "Paket Populer",
+      "popular": "Paling Populer",
       "popularDesc": "Nilai terbaik — paling banyak dibeli",
-      "premium": "Paket Premium",
+      "premium": "Pro",
       "premiumDesc": "Untuk penjual yang menginginkan semuanya",
-      "mega": "Paket Mega",
+      "mega": "Business",
       "megaDesc": "Poin maksimal, hemat maksimal"
     },
     "packPoints": "{pts} poin",

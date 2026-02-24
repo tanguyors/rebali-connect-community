@@ -216,7 +216,7 @@
     "buyPointsDesc": "通过积分包即时充值余额",
     "buyPointsComingSoon": "在线支付即将推出！",
     "buyPointsComingSoonDesc": "Xendit / DOKU 支付即将上线。目前可通过徽章和活动赚取积分。",
-    "pack": { "starter": "入门包", "starterDesc": "适合尝试第一次置顶", "popular": "热门包", "popularDesc": "最佳性价比——最受欢迎", "premium": "高级包", "premiumDesc": "为资深卖家准备", "mega": "超值包", "megaDesc": "最多积分，最多省" },
+    "pack": { "starter": "小型加速", "starterDesc": "适合尝试第一次置顶", "popular": "最受欢迎", "popularDesc": "最佳性价比——最受欢迎", "premium": "Pro", "premiumDesc": "为资深卖家准备", "mega": "Business", "megaDesc": "最多积分，最多省" },
     "packPoints": "{pts} 积分", "packPrice": "Rp {price}", "bestValue": "最佳价值", "comingSoon": "即将推出", "paymentMethods": "通过 Xendit / DOKU 支付"
   }
 }
