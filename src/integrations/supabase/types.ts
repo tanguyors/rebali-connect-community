@@ -450,6 +450,51 @@ export type Database = {
         }
         Relationships: []
       }
+      pro_subscriptions: {
+        Row: {
+          cancelled_at: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          payment_method: string | null
+          payment_reference: string | null
+          plan_type: string
+          price_idr: number
+          started_at: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancelled_at?: string | null
+          created_at?: string
+          expires_at: string
+          id?: string
+          payment_method?: string | null
+          payment_reference?: string | null
+          plan_type: string
+          price_idr?: number
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancelled_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          payment_method?: string | null
+          payment_reference?: string | null
+          plan_type?: string
+          price_idr?: number
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
