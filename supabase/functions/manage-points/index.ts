@@ -57,7 +57,58 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { action, addon_type, listing_id } = await req.json();
+    const { action, addon_type, listing_id, target_user_id, new_balance } = await req.json();
+
+    // Check if user is admin
+    const isAdmin = async () => {
+      const { data } = await supabase.from("user_roles").select("role").eq("user_id", user!.id).eq("role", "admin");
+      return (data?.length || 0) > 0;
+    };
+
+    // Admin: get all user points
+    if (action === "admin_get_all_points") {
+      if (!(await isAdmin())) {
+        return new Response(JSON.stringify({ error: "forbidden" }), {
+          status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const { data } = await supabase.from("user_points").select("*");
+      return new Response(JSON.stringify({ points: data || [] }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Admin: set user balance
+    if (action === "admin_set_balance") {
+      if (!(await isAdmin())) {
+        return new Response(JSON.stringify({ error: "forbidden" }), {
+          status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (!target_user_id || new_balance === undefined) {
+        return new Response(JSON.stringify({ error: "missing_params" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const bal = Math.max(0, parseInt(new_balance) || 0);
+      // Upsert user_points
+      await supabase.from("user_points").upsert(
+        { user_id: target_user_id, balance: bal, total_earned: 0, total_spent: 0 },
+        { onConflict: "user_id" }
+      );
+      // If row existed, just update balance
+      await supabase.from("user_points").update({ balance: bal, updated_at: new Date().toISOString() }).eq("user_id", target_user_id);
+      // Log the admin action
+      await supabase.from("point_transactions").insert({
+        user_id: target_user_id,
+        amount: bal,
+        type: "admin",
+        reason: `admin:set_balance_by_${user!.id}`,
+      });
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     // Ensure user_points row exists
     await supabase.from("user_points").upsert(
