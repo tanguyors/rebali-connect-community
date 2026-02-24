@@ -332,7 +332,7 @@ export default function ListingDetail() {
                             <Facebook className="h-4 w-4 mr-2" />
                             {t('share.facebook')}
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(`${listing?.title_original} — ${ogUrl}`)}`, '_blank')}>
+                          <DropdownMenuItem onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(ogUrl)}`, '_blank')}>
                             <MessageCircle className="h-4 w-4 mr-2" />
                             {t('share.whatsapp')}
                           </DropdownMenuItem>
