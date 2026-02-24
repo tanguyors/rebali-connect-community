@@ -24,6 +24,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { fr, id as idLocale, es, zhCN, de, nl, ru } from 'date-fns/locale';
 import ListingCard from '@/components/ListingCard';
 import UserBadges from '@/components/UserBadges';
+import WatermarkOverlay from '@/components/WatermarkOverlay';
 
 const DATE_LOCALES: Record<string, any> = { fr, id: idLocale, es, zh: zhCN, de, nl, ru };
 
@@ -301,7 +302,7 @@ export default function ListingDetail() {
           <div>
             {/* Image gallery */}
             <div className="relative rounded-xl overflow-hidden bg-muted mb-2">
-              <div className="aspect-[4/3]">
+            <div className="aspect-[4/3] relative">
                 <img
                   src={images.length > 0
                     ? supabase.storage.from('listings').getPublicUrl(images[currentImage]?.storage_path).data.publicUrl
@@ -309,6 +310,7 @@ export default function ListingDetail() {
                   alt={title}
                   className="w-full h-full object-cover"
                 />
+                <WatermarkOverlay />
               </div>
               {/* Share & Fav floating buttons */}
               <div className="absolute top-3 right-3 flex gap-2">
