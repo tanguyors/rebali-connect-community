@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import ListingCard from '@/components/ListingCard';
 import ListingMarquee from '@/components/ListingMarquee';
 import AnimatedHeroText from '@/components/AnimatedHeroText';
 import { Search, Plus, ArrowRight, Star } from 'lucide-react';
@@ -9,8 +10,10 @@ import CategoryMarquee from '@/components/CategoryMarquee';
 import { CATEGORY_ICONS } from '@/lib/constants';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { Skeleton } from '@/components/ui/skeleton';
+import { motion } from 'framer-motion';
 
 function useCategoryListings(category: string) {
   return useQuery({
@@ -25,6 +28,34 @@ function useCategoryListings(category: string) {
         .limit(20);
       return data || [];
     },
+  });
+}
+
+function useFeaturedListings() {
+  return useQuery({
+    queryKey: ['featured-listings'],
+    queryFn: async () => {
+      const { data: boosts } = await supabase
+        .from('user_addons')
+        .select('listing_id')
+        .eq('addon_type', 'boost_premium')
+        .eq('active', true);
+
+      if (!boosts || boosts.length === 0) return [];
+
+      const listingIds = boosts.map(b => b.listing_id).filter(Boolean) as string[];
+      if (listingIds.length === 0) return [];
+
+      const { data } = await supabase
+        .from('listings')
+        .select('*, listing_images(storage_path, sort_order), listing_translations(lang, title), profiles:seller_id(user_type, is_verified_seller), favorites(count)')
+        .eq('status', 'active')
+        .in('id', listingIds)
+        .limit(20);
+
+      return data || [];
+    },
+    staleTime: 2 * 60 * 1000,
   });
 }
 
@@ -47,10 +78,14 @@ export default function Home() {
     },
   });
 
+  const { data: featuredListings, isLoading: featuredLoading } = useFeaturedListings();
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) navigate(`/browse?q=${encodeURIComponent(searchQuery)}`);
   };
+
+  const hasFeatured = !featuredLoading && featuredListings && featuredListings.length > 0;
 
   return (
     <div>
@@ -100,7 +135,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Latest Listings - Horizontal Scroll */}
+      {/* Latest Listings - Marquee */}
       <section className="container mx-auto px-4 py-10">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl md:text-2xl font-extrabold">{t('home.latest')}</h2>
@@ -114,8 +149,41 @@ export default function Home() {
         <ListingMarquee listings={listings || []} isLoading={isLoading} emptyMessage={t('common.noResults')} />
       </section>
 
-      {/* Featured Listings (Boost Premium) - Horizontal Scroll */}
-      <FeaturedListings />
+      {/* ⭐ Featured / En Vedette - Large cards grid */}
+      {(featuredLoading || hasFeatured) && (
+        <section className="bg-gradient-to-b from-amber-50/50 to-background dark:from-amber-950/10 border-y border-amber-200/30 py-10">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl md:text-2xl font-extrabold flex items-center gap-2">
+                <Star className="h-6 w-6 text-amber-500" />
+                {t('home.featured')}
+              </h2>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {featuredLoading ? (
+                Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="space-y-2">
+                    <Skeleton className="aspect-[4/3] w-full rounded-lg" />
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-5 w-1/2" />
+                  </div>
+                ))
+              ) : (
+                featuredListings!.map((listing: any, i: number) => (
+                  <motion.div
+                    key={listing.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: i * 0.05 }}
+                  >
+                    <ListingCard listing={listing} />
+                  </motion.div>
+                ))
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* How it works */}
       <section className="bg-card border-t border-border/50 py-14 mt-4">
@@ -137,18 +205,40 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Category: Immobilier */}
-      <CategoryRow category="immobilier" />
+      {/* Category: Immobilier (with featured injection) */}
+      <CategoryRow category="immobilier" featuredListings={featuredListings} />
 
-      {/* Category: Emploi */}
-      <CategoryRow category="emploi" />
+      {/* Category: Emploi (with featured injection) */}
+      <CategoryRow category="emploi" featuredListings={featuredListings} />
     </div>
   );
 }
 
-function CategoryRow({ category }: { category: string }) {
+function CategoryRow({ category, featuredListings }: { category: string; featuredListings?: any[] }) {
   const { t } = useLanguage();
   const { data: listings, isLoading } = useCategoryListings(category);
+
+  // Inject 1-2 random featured listings into the category marquee
+  const mergedListings = useMemo(() => {
+    if (!listings || listings.length === 0) return [];
+    if (!featuredListings || featuredListings.length === 0) return listings;
+
+    // Pick up to 2 random featured listings not already in this category
+    const categoryIds = new Set(listings.map((l: any) => l.id));
+    const eligible = featuredListings.filter((f: any) => !categoryIds.has(f.id));
+    const shuffled = [...eligible].sort(() => Math.random() - 0.5);
+    const toInject = shuffled.slice(0, Math.min(2, shuffled.length));
+
+    if (toInject.length === 0) return listings;
+
+    // Insert at random positions
+    const result = [...listings];
+    toInject.forEach((item: any) => {
+      const pos = Math.floor(Math.random() * (result.length + 1));
+      result.splice(pos, 0, item);
+    });
+    return result;
+  }, [listings, featuredListings]);
 
   return (
     <section className="container mx-auto px-4 py-10">
@@ -163,52 +253,7 @@ function CategoryRow({ category }: { category: string }) {
           </Link>
         </Button>
       </div>
-      <ListingMarquee listings={listings || []} isLoading={isLoading} emptyMessage={t('common.noResults')} />
-    </section>
-  );
-}
-
-function FeaturedListings() {
-  const { t } = useLanguage();
-
-  const { data: featuredListings, isLoading } = useQuery({
-    queryKey: ['featured-listings'],
-    queryFn: async () => {
-      // Get active boost_premium addons with their listing_ids
-      const { data: boosts } = await supabase
-        .from('user_addons')
-        .select('listing_id')
-        .eq('addon_type', 'boost_premium')
-        .eq('active', true);
-
-      if (!boosts || boosts.length === 0) return [];
-
-      const listingIds = boosts.map(b => b.listing_id).filter(Boolean) as string[];
-      if (listingIds.length === 0) return [];
-
-      const { data } = await supabase
-        .from('listings')
-        .select('*, listing_images(storage_path, sort_order), listing_translations(lang, title), profiles:seller_id(user_type, is_verified_seller), favorites(count)')
-        .eq('status', 'active')
-        .in('id', listingIds)
-        .limit(20);
-
-      return data || [];
-    },
-    staleTime: 2 * 60 * 1000,
-  });
-
-  if (!isLoading && (!featuredListings || featuredListings.length === 0)) return null;
-
-  return (
-    <section className="container mx-auto px-4 pb-10">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl md:text-2xl font-extrabold flex items-center gap-2">
-          <Star className="h-6 w-6 text-amber-500" />
-          {t('home.featured')}
-        </h2>
-      </div>
-      <ListingMarquee listings={featuredListings || []} isLoading={isLoading} />
+      <ListingMarquee listings={mergedListings} isLoading={isLoading} emptyMessage={t('common.noResults')} />
     </section>
   );
 }
