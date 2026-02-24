@@ -422,5 +422,5 @@
     "privacyContact": "Contact Us",
     "privacyContactText": "For privacy-related questions or to exercise your data rights, please contact us through our platform or visit the About page."
   },
-  "share": { "copyLink": "Copy link", "facebook": "Post on Facebook", "instagramStory": "Instagram Story" }
+  "share": { "copyLink": "Copy link", "facebook": "Post on Facebook", "whatsapp": "Share on WhatsApp" }
 }
