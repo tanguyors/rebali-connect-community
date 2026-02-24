@@ -1,116 +1,211 @@
 
 
-# Evolution du systeme "Deal Conclu" -- Rating bidirectionnel dans la conversation
+# Re-Bali Economy V2 -- Complete Overhaul
 
-## Ce qui change par rapport a l'implementation actuelle
+This plan restructures the trust score, badges, points economy, and shop to match the Indonesia-optimized strategy you described. It's a large but systematic update across 4 layers: database, edge functions, frontend components, and i18n.
 
-L'implementation actuelle ferme immediatement la conversation du deal et redirige l'acheteur vers SellerProfile pour noter. Le nouveau flux garde la conversation ouverte pour permettre un echange de notes bidirectionnel directement dans la conversation.
+---
 
-## Nouveau flux complet
+## Summary of Changes
 
-```text
-1. Vendeur clique "Deal conclu" + confirme via popup
-2. L'annonce passe en statut "sold" (disparait des recherches)
-3. Toutes les AUTRES conversations pour cette annonce sont fermees immediatement
-4. La conversation du deal RESTE OUVERTE (deal_closed = true)
-5. L'acheteur voit un bandeau + bouton "Confirmer le deal"
-6. L'acheteur confirme -> buyer_confirmed = true
-7. Les deux parties peuvent se noter mutuellement (etoiles + commentaire) directement dans la conversation
-8. Quand les deux ont note -> la conversation se ferme definitivement
-9. Si l'acheteur ne confirme pas sous 7 jours -> fermeture automatique (cron job)
+### 1. Trust Score -- New Formula
+
+**Current** formula uses arbitrary weights (1pt/day, 5pts/listing, etc.) with thresholds at 10/30.
+
+**New** formula:
+
+| Factor | Gain | Max |
+|--------|------|-----|
+| Account age | 0.5 pt/day | +20 |
+| Active listings | 3 pts/listing | +15 |
+| Completed deals | 5 pts/deal | +20 |
+| Positive reviews (4+) | 3 pts each | +20 |
+| WhatsApp verified | +10 | +10 |
+| Identity verified | +15 | +15 |
+
+| Penalty | Points |
+|---------|--------|
+| Unresolved report | -10 |
+| Fake listing detected (3 scam reports) | -20 |
+| VPN/proxy abuse | -10 |
+| Multi-device abuse | -15 |
+
+**New thresholds**: 70-100 = "Safe", 40-69 = "Standard", 0-39 = "Risky"
+
+Public-facing labels change from "low/medium/high risk" to "Safe / Standard / Risky" (more positive framing). The exact numeric score stays internal (not shown publicly), only the label is displayed.
+
+### 2. Badges -- New Generation
+
+**Keep existing**: newMember, activeMember, veteran, elder, whatsappVerified, identityVerified
+
+**Remove**: firstSeller, activeSeller, communicator, superCommunicator, wellRated, topSeller
+
+**Add new badges**:
+
+| Badge | Icon | Condition |
+|-------|------|-----------|
+| safeSeller | ShieldCheck | Trust score >= 70 |
+| trustedPro | Medal | Trust score >= 85 AND >= 10 completed deals |
+| firstDeal | Handshake | 1 completed deal |
+| fiveDeals | Target | 5 completed deals |
+| twentyDeals | Flame | 20 completed deals |
+| fiftyDeals | Trophy | 50 completed deals |
+
+This requires counting completed deals (conversations where `deal_closed = true AND buyer_confirmed = true`).
+
+### 3. Points -- New Economy
+
+**Badge point values (one-time sync)**:
+
+| Badge | Points |
+|-------|--------|
+| WhatsApp Verified | 20 |
+| Identity Verified | 40 |
+| First Listing (newMember equivalent, keep firstSeller internally for points only) | 10 |
+| First Deal | 20 |
+| 5 Deals | 30 |
+| 20 Deals | 50 |
+| Safe Seller | 25 |
+| Trusted Pro | 60 |
+
+**Dynamic earning** (new concept -- points earned automatically on events):
+
+| Action | Points |
+|--------|--------|
+| Completed deal (both confirmed) | 5 pts |
+| 5-star review received | 3 pts |
+| Validated report against scammer | 10 pts |
+
+Monthly cap: 150 pts from dynamic earnings (anti-farming).
+
+This requires a new tracking mechanism in the `manage-points` edge function and a `monthly_dynamic_earned` counter.
+
+### 4. Shop -- 5 Products
+
+| Product | Cost | Duration | Effect |
+|---------|------|----------|--------|
+| Boost 48h | 40 pts | 48h | Top of category results, "Boosted" badge on card |
+| Boost Premium (Homepage) | 80 pts | 48h | Featured on homepage section, larger card, "Featured" badge |
+| VIP 30j | 120 pts | 30 days | VIP badge, +10% search priority, 1 free Boost included |
+| Extra 5 Listings | 90 pts | 30 days | +5 listing slots (max 2 packs) |
+| Protection Boost | 150 pts | 30 days | "Priority Seller" badge, +20% organic visibility |
+
+### 5. Gamification UX
+
+- Show "You are X pts away from [next product]" nudge in the shop
+- "Complete 1 more deal to earn 5 pts" suggestion
+
+---
+
+## Technical Implementation Plan
+
+### Step 1: Database Migration
+
+Add a `monthly_dynamic_earned` column to `user_points` to track the monthly cap:
+
+```sql
+ALTER TABLE public.user_points 
+  ADD COLUMN IF NOT EXISTS monthly_dynamic_earned integer NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS month_reset text NOT NULL DEFAULT to_char(now(), 'YYYY-MM');
 ```
 
-## Plan technique
+Update the `check_listing_limit` function to account for `extra_listings` addons (check `user_addons` for active `extra_listings` and add `extra_slots` to the max).
 
-### 1. Migration base de donnees
+### Step 2: Update `calculate-trust-score` Edge Function
 
-**Table `conversations`** -- ajouter 2 nouvelles colonnes (en plus des 3 existantes) :
-- `buyer_confirmed` (boolean, default false)
-- `buyer_confirmed_at` (timestamptz, nullable)
+- Change formula weights to match new table above
+- Count completed deals via `conversations` where `deal_closed = true AND buyer_confirmed = true` and user is either buyer or seller
+- Change thresholds: `>= 70` = low risk (Safe), `>= 40` = medium, `< 40` = high (Risky)
+- Add "fake listing" penalty: count listings archived due to 3+ scam reports
 
-**Table `reviews`** -- modifier pour supporter le rating bidirectionnel :
-- Supprimer la contrainte UNIQUE sur `conversation_id` (car 2 reviews par conversation : acheteur -> vendeur ET vendeur -> acheteur)
-- Ajouter une contrainte UNIQUE sur `(conversation_id, reviewer_id)` (un seul avis par personne par conversation)
-- Ajouter une colonne `reviewed_user_id` (uuid) pour savoir qui est note (remplace `seller_id` dans la logique -- on garde `seller_id` pour la retrocompatibilite mais `reviewed_user_id` sera le vrai destinataire)
+### Step 3: Update `manage-points` Edge Function
 
-**Mettre a jour la politique RLS INSERT de `reviews`** pour permettre aussi au vendeur de noter l'acheteur :
-- Le reviewer peut etre le buyer OU le seller de la conversation
-- `reviewed_user_id` doit etre l'autre partie
-- `buyer_confirmed = true` obligatoire (les deux ont confirme)
-- Les conditions existantes restent (comptes > 7 jours, messages des deux cotes)
+Major rewrite:
 
-### 2. Modifications dans Messages.tsx
+- **New badge list** with updated point values matching the new badges
+- **`sync_badges`**: Update badge detection logic to include deal-based badges (query `conversations` for completed deals count) and trust-score-based badges (safeSeller, trustedPro)
+- **`award_dynamic`** new action: Called after deal completion, 5-star review, or validated report. Checks monthly cap before awarding.
+- **New shop products**: Update `ADDON_COSTS` and `ADDON_DURATIONS` for 5 products: `boost` (40), `boost_premium` (80), `vip` (120), `extra_listings` (90), `protection` (150)
+- **Admin actions**: Keep `admin_get_all_points` and `admin_set_balance` as-is
 
-**Etape vendeur -- "Deal conclu" (deja en place, a ajuster)** :
-- Le bouton reste comme aujourd'hui
-- A la confirmation : ne plus fermer la conversation courante (retirer le blocage input quand deal_closed est true sur la conversation du deal)
+### Step 4: Update `UserBadges.tsx`
 
-**Etape acheteur -- "Confirmer le deal"** :
-- Quand `deal_closed = true` et `buyer_confirmed = false` et l'utilisateur est l'acheteur :
-  - Afficher un bandeau jaune "Le vendeur a marque ce deal comme conclu. Confirmez-vous ?"
-  - Bouton "Confirmer le deal" + bouton "Contester"
-- Au clic "Confirmer" : update `buyer_confirmed = true, buyer_confirmed_at = now()`
+- Replace badge definitions with new set (keep age/verification badges, add deal + trust badges)
+- Add `completedDeals` and `trustScore` to `BadgeContext`
+- Query completed deals count from `conversations`
+- Query user's trust score from `profiles`
 
-**Etape notation -- Formulaire inline** :
-- Quand `buyer_confirmed = true` :
-  - Afficher une section de notation au-dessus de l'input (etoiles 1-5 + commentaire + bouton "Envoyer ma note")
-  - Visible pour chaque partie tant qu'elle n'a pas note
-  - Quand un utilisateur soumet sa note : inserer dans `reviews` + inserer un message systeme ("X a laisse un avis")
-  - Quand les DEUX ont note : fermer la conversation (`relay_status = 'closed'`) + message systeme "Transaction terminee"
+### Step 5: Update `TrustIndicator.tsx`
 
-**Zone input** :
-- Conversation ouverte normalement si `deal_closed = false`
-- Conversation ouverte si `deal_closed = true` mais `buyer_confirmed = false` (pour permettre la discussion avant confirmation)
-- Input desactive une fois que l'utilisateur a note (seule la section notation reste active pour l'autre partie)
-- Conversation fermee definitivement quand les deux ont note
+- Change labels from "Low risk / Medium risk / High risk" to "Safe / Standard / Risky"
+- Adjust color thresholds: green >= 70, amber >= 40, red < 40
 
-### 3. Cron job -- Auto-fermeture a 7 jours
+### Step 6: Update `TrustBadges.tsx` (Explanation Page)
 
-Creer une Edge Function `close-expired-deals` :
-- Chercher les conversations ou `deal_closed = true` ET `buyer_confirmed = false` ET `deal_closed_at < now() - 7 jours`
-- Les fermer automatiquement (`relay_status = 'closed'`)
-- Inserer un message systeme "Cette conversation a ete fermee automatiquement apres 7 jours sans confirmation"
-- Planifier via pg_cron (quotidien a minuit, comme l'expiration des annonces)
+- Update `TRUST_FACTORS` with new weights
+- Update `BADGE_LIST` with new badges
+- Update `POINTS_BADGES` with new values
+- Add new shop products (5 instead of 3)
+- Add "Dynamic Earning" section explaining deal/review/report rewards + monthly cap
+- Update penalty descriptions
 
-### 4. Suppression du rating depuis SellerProfile
+### Step 7: Update `PointsShop.tsx`
 
-Retirer la logique de review depuis SellerProfile.tsx :
-- Supprimer le bouton "Laisser un avis" et le dialog
-- Supprimer les queries `dealConversation` et `existingReview`
-- Garder l'affichage des avis existants (lecture seule) avec le badge "Acheteur verifie"
-- Le rating se fait desormais exclusivement dans la conversation
+- Add 2 new products (boost_premium, protection) to `ADDON_CONFIG`
+- Add gamification nudge: "You are X pts away from [cheapest affordable addon]"
+- Boost Premium needs a listing selector dialog too (like regular boost)
+- Show monthly dynamic points status (X/150 earned this month)
 
-### 5. Traductions
+### Step 8: Update `ListingCard.tsx`
 
-Nouvelles cles :
-- `messages.buyerConfirmDeal` : "Confirm the deal"
-- `messages.buyerConfirmBanner` : "The seller marked this deal as concluded. Do you confirm?"
-- `messages.contest` : "Contest"
-- `messages.rateUser` : "Rate this transaction"
-- `messages.ratingSubmitted` : "Your rating has been submitted"
-- `messages.transactionComplete` : "Transaction completed. Both parties have rated."
-- `messages.autoClosedExpired` : "Automatically closed after 7 days"
-- `messages.waitingBuyerConfirm` : "Waiting for buyer confirmation..."
-- `messages.waitingRatings` : "Rate this transaction to close the deal"
+- Show "Boosted" badge on boosted listings (query `user_addons` for active boost on that listing_id)
+- Show "Featured" badge for premium boosted listings
 
-## Fichiers concernes
+### Step 9: Update `Home.tsx`
 
-| Fichier | Action |
-|---------|--------|
-| Migration SQL | Colonnes `buyer_confirmed`, `buyer_confirmed_at` + contrainte UNIQUE reviews + RLS |
-| `src/pages/Messages.tsx` | Bandeau confirmation acheteur + formulaire notation inline + logique fermeture |
-| `src/pages/SellerProfile.tsx` | Retirer le bouton "Laisser un avis" (garder l'affichage) |
-| `src/i18n/translations/en.json` | Nouvelles cles |
-| `src/i18n/translations/fr.json` | Traductions |
-| `supabase/functions/close-expired-deals/index.ts` | Nouvelle Edge Function pour fermeture auto a 7 jours |
+- Add "Featured Listings" section showing listings with active `boost_premium` addon
 
-## Securite
+### Step 10: Update `Browse.tsx`
 
-- Le vendeur seul peut initier le deal (verifie client + RLS)
-- L'acheteur seul peut confirmer (verifie client + RLS)
-- Chaque partie ne peut noter que l'AUTRE partie (RLS enforce)
-- Un seul avis par personne par conversation (contrainte UNIQUE)
-- Comptes < 7 jours bloques (RLS)
-- Messages reels requis des deux cotes (RLS)
-- Fermeture automatique apres 7 jours sans confirmation (cron)
+- Sort boosted listings higher in results (query active boosts and sort accordingly)
+
+### Step 11: Update `check_listing_limit` DB Function
+
+- Account for active `extra_listings` addons: query `user_addons` for active `extra_listings` and add `extra_slots` to `max_listings`
+
+### Step 12: i18n Updates (All 12 Languages)
+
+Update all translation files with:
+- New badge names and descriptions (safeSeller, trustedPro, firstDeal, fiveDeals, twentyDeals, fiftyDeals)
+- New trust level labels (Safe / Standard / Risky)
+- New shop product names and descriptions (boost_premium, protection)
+- Dynamic earning explanations
+- Gamification nudge texts
+- Remove old badge translations (communicator, superCommunicator, etc.) or keep for backward compat
+
+---
+
+## Files to Create/Modify
+
+| File | Action |
+|------|--------|
+| `supabase/migrations/...` | New migration for `monthly_dynamic_earned` column + update `check_listing_limit` function |
+| `supabase/functions/calculate-trust-score/index.ts` | Rewrite with new formula |
+| `supabase/functions/manage-points/index.ts` | Major update: new badges, new shop items, dynamic earning |
+| `src/components/UserBadges.tsx` | New badge definitions + deal/trust queries |
+| `src/components/TrustIndicator.tsx` | New thresholds + labels |
+| `src/pages/TrustBadges.tsx` | Full content update for new system |
+| `src/pages/PointsShop.tsx` | 5 products + gamification nudge + dynamic earnings display |
+| `src/components/ListingCard.tsx` | Boosted/Featured badges |
+| `src/pages/Home.tsx` | Featured Listings section |
+| `src/pages/Browse.tsx` | Boost priority in sort |
+| All 12 `src/i18n/translations/*.json` | New keys for badges, shop, trust labels |
+
+---
+
+## What is NOT Included (Future Phases)
+
+- **IAP / Point Pack Purchases with IDR**: Requires payment gateway integration (Midtrans, Xendit, etc.). This will be a separate project phase.
+- **Points-to-Cash Conversion**: Pro-only feature for later.
+- **PRO Seller SaaS Plan**: Direct IDR subscription -- separate monetization layer.
 
