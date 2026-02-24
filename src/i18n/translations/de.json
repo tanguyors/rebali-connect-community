@@ -292,7 +292,7 @@
     "buyPointsDesc": "Laden Sie Ihr Guthaben sofort mit einem Punktepaket auf",
     "buyPointsComingSoon": "Online-Zahlung kommt bald!",
     "buyPointsComingSoonDesc": "Zahlung über Xendit / DOKU wird in Kürze verfügbar sein. Verdienen Sie in der Zwischenzeit Punkte durch Abzeichen und Aktivität.",
-    "pack": { "starter": "Starter-Paket", "starterDesc": "Perfekt für den ersten Boost", "popular": "Beliebtes Paket", "popularDesc": "Bester Wert — am meisten gekauft", "premium": "Premium-Paket", "premiumDesc": "Für Power-Verkäufer", "mega": "Mega-Paket", "megaDesc": "Maximale Punkte, maximale Ersparnis" },
+    "pack": { "starter": "Kleiner Boost", "starterDesc": "Perfekt für den ersten Boost", "popular": "Am beliebtesten", "popularDesc": "Bester Wert — am meisten gekauft", "premium": "Pro", "premiumDesc": "Für Power-Verkäufer", "mega": "Business", "megaDesc": "Maximale Punkte, maximale Ersparnis" },
     "packPoints": "{pts} Punkte", "packPrice": "Rp {price}", "bestValue": "Bester Wert", "comingSoon": "Demnächst", "paymentMethods": "Zahlung über Xendit / DOKU"
   }
 }
