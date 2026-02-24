@@ -232,7 +232,24 @@
       "multiAccount": "Comptes multiples sur le même appareil (-10)"
     },
     "badgesTitle": "Badges",
-    "badgesExplanation": "Les badges sont attribués automatiquement selon votre activité. Ils apparaissent sur votre profil et votre page vendeur pour rassurer les acheteurs."
+    "badgesExplanation": "Les badges sont attribués automatiquement selon votre activité. Ils apparaissent sur votre profil et votre page vendeur pour rassurer les acheteurs.",
+    "pointsTitle": "Boutique de Points",
+    "pointsExplanation": "Les points sont une monnaie de récompense gagnée en débloquant des badges. Ils sont indépendants de votre indice de confiance. Dépensez-les dans la Boutique de Points pour booster vos annonces et votre profil.",
+    "pointsHowToEarn": "Comment gagner des points",
+    "pointsEarnExplanation": "Synchronisez vos badges dans la Boutique de Points pour gagner des points. Chaque badge débloqué vous accorde une récompense unique en points.",
+    "pointsHowToSpend": "Ce que vous pouvez acheter",
+    "addon": {
+      "boost": "Boost d'annonce",
+      "boostDesc": "Propulsez une annonce en tête des résultats pendant 48 heures",
+      "vip": "Compte VIP",
+      "vipDesc": "Obtenez le badge VIP et le support prioritaire pendant 30 jours",
+      "extraListings": "Annonces supplémentaires",
+      "extraListingsDesc": "Obtenez 3 emplacements d'annonces supplémentaires pendant 30 jours"
+    },
+    "pointsNote": "Notes importantes :",
+    "pointsNote1": "Les points sont une monnaie à usage unique — ils sont définitivement déduits lors de l'achat.",
+    "pointsNote2": "La synchronisation des badges ne peut être effectuée qu'une seule fois par badge.",
+    "pointsNote3": "Les points sont indépendants de l'indice de confiance."
   },
   "legal": {
     "termsTitle": "Conditions d'utilisation",
