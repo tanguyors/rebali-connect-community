@@ -138,3 +138,17 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Listing marquee auto-scroll */
+@keyframes listing-marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.listing-marquee {
+  animation: listing-marquee-scroll 60s linear infinite;
+}
+
+.listing-marquee.paused {
+  animation-play-state: paused;
+}
