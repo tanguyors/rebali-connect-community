@@ -383,7 +383,24 @@
       "multiAccount": "Multiple accounts on same device (-10)"
     },
     "badgesTitle": "Badges",
-    "badgesExplanation": "Badges are awarded automatically based on your activity. They appear on your profile and seller page to help buyers trust you."
+    "badgesExplanation": "Badges are awarded automatically based on your activity. They appear on your profile and seller page to help buyers trust you.",
+    "pointsTitle": "Points Shop",
+    "pointsExplanation": "Points are a reward currency earned by unlocking badges. They are separate from your trust score. Spend them in the Points Shop to boost your listings and profile.",
+    "pointsHowToEarn": "How to earn points",
+    "pointsEarnExplanation": "Synchronize your badges in the Points Shop to earn points. Each badge unlocked grants you a one-time point reward.",
+    "pointsHowToSpend": "What you can buy",
+    "addon": {
+      "boost": "Listing Boost",
+      "boostDesc": "Push a listing to the top of search results for 48 hours",
+      "vip": "VIP Account",
+      "vipDesc": "Get the VIP badge and priority support for 30 days",
+      "extraListings": "Extra Listing Slots",
+      "extraListingsDesc": "Get 3 additional listing slots for 30 days"
+    },
+    "pointsNote": "Important notes:",
+    "pointsNote1": "Points are a one-time use currency — they are permanently deducted upon purchase.",
+    "pointsNote2": "Badge synchronization can only be done once per badge.",
+    "pointsNote3": "Points are independent from the trust score."
   },
   "legal": {
     "termsTitle": "Terms of Use",

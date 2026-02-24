@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   Sprout, Clock, Award, Crown, Package, TrendingUp,
   MessageCircle, MessagesSquare, Star, Trophy, CheckCircle, ShieldCheck,
-  Shield, Info
+  Shield, Info, Coins, Zap, Gem, LayoutGrid
 } from 'lucide-react';
 
 const BADGE_LIST = [
@@ -31,6 +31,26 @@ const TRUST_FACTORS = [
   { key: 'idVerified', max: 20 },
 ];
 
+const POINTS_BADGES = [
+  { key: 'newMember', pts: 5 },
+  { key: 'activeMember', pts: 10 },
+  { key: 'veteran', pts: 20 },
+  { key: 'elder', pts: 25 },
+  { key: 'firstSeller', pts: 10 },
+  { key: 'activeSeller', pts: 15 },
+  { key: 'communicator', pts: 5 },
+  { key: 'superCommunicator', pts: 15 },
+  { key: 'wellRated', pts: 10 },
+  { key: 'topSeller', pts: 20 },
+  { key: 'whatsappVerified', pts: 15 },
+  { key: 'identityVerified', pts: 25 },
+];
+
+const ADDONS = [
+  { key: 'boost', icon: Zap, cost: 30 },
+  { key: 'vip', icon: Gem, cost: 80 },
+  { key: 'extraListings', icon: LayoutGrid, cost: 50 },
+];
 export default function TrustBadges() {
   const { t } = useLanguage();
 
@@ -114,6 +134,56 @@ export default function TrustBadges() {
                 </div>
               );
             })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Points Shop Section */}
+      <Card>
+        <CardContent className="p-6 space-y-4">
+          <h2 className="text-xl font-bold flex items-center gap-2">
+            <Coins className="h-5 w-5 text-primary" />
+            {t('trustPage.pointsTitle')}
+          </h2>
+          <p className="text-sm text-muted-foreground">{t('trustPage.pointsExplanation')}</p>
+
+          <div className="mt-4 space-y-3">
+            <h3 className="text-sm font-semibold">{t('trustPage.pointsHowToEarn')}</h3>
+            <p className="text-xs text-muted-foreground">{t('trustPage.pointsEarnExplanation')}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {POINTS_BADGES.map(pb => (
+                <div key={pb.key} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                  <span className="text-sm font-medium">{t(`badges.${pb.key}`)}</span>
+                  <Badge variant="secondary" className="text-xs">+{pb.pts} pts</Badge>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-4 space-y-3">
+            <h3 className="text-sm font-semibold">{t('trustPage.pointsHowToSpend')}</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {ADDONS.map(addon => {
+                const Icon = addon.icon;
+                return (
+                  <div key={addon.key} className="flex flex-col items-center gap-2 p-4 rounded-lg bg-muted/50 text-center">
+                    <Icon className="h-6 w-6 text-primary" />
+                    <p className="text-sm font-semibold">{t(`trustPage.addon.${addon.key}`)}</p>
+                    <p className="text-xs text-muted-foreground">{t(`trustPage.addon.${addon.key}Desc`)}</p>
+                    <Badge variant="secondary">{addon.cost} pts</Badge>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="mt-4 p-4 rounded-lg bg-muted/30 space-y-2">
+            <p className="text-sm font-medium">{t('trustPage.pointsNote')}</p>
+            <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+              <li>{t('trustPage.pointsNote1')}</li>
+              <li>{t('trustPage.pointsNote2')}</li>
+              <li>{t('trustPage.pointsNote3')}</li>
+            </ul>
           </div>
         </CardContent>
       </Card>
