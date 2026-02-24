@@ -328,21 +328,21 @@ export default function ListingDetail() {
                             <Link2 className="h-4 w-4 mr-2" />
                             {t('share.copyLink')}
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => {
+                          <DropdownMenuItem onClick={async () => {
                             const webShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(ogUrl)}`;
-                            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                            const isAndroid = /Android/i.test(navigator.userAgent);
+                            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-                            if (isIOS) {
-                              window.location.href = `fb://facewebmodal/f?href=${encodeURIComponent(webShareUrl)}`;
-                              setTimeout(() => { window.location.href = webShareUrl; }, 900);
-                              return;
-                            }
-
-                            if (isAndroid) {
-                              window.location.href = `intent://facewebmodal/f?href=${encodeURIComponent(webShareUrl)}#Intent;scheme=fb;package=com.facebook.katana;end`;
-                              setTimeout(() => { window.location.href = webShareUrl; }, 900);
-                              return;
+                            if (isMobile && navigator.share) {
+                              try {
+                                await navigator.share({
+                                  title: listing?.title_original || 'Re-Bali',
+                                  text: listing?.title_original || '',
+                                  url: ogUrl,
+                                });
+                                return;
+                              } catch {
+                                // User cancelled or app unavailable, fallback below
+                              }
                             }
 
                             window.open(webShareUrl, '_blank', 'noopener,noreferrer');
