@@ -328,7 +328,7 @@ export default function ListingDetail() {
                             <Link2 className="h-4 w-4 mr-2" />
                             {t('share.copyLink')}
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(ogUrl)}`, '_blank', 'width=600,height=400')}>
+                          <DropdownMenuItem onClick={() => { const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(ogUrl)}`; window.open(url, '_blank'); }}>
                             <Facebook className="h-4 w-4 mr-2" />
                             {t('share.facebook')}
                           </DropdownMenuItem>
