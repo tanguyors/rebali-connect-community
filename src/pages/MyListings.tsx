@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,7 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { formatPrice, CATEGORY_ICONS, MAX_ACTIVE_LISTINGS } from '@/lib/constants';
-import { Plus, Eye, ArchiveRestore, Pencil } from 'lucide-react';
+import { Plus, Eye, ArchiveRestore, Pencil, Rocket, Star } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 
@@ -16,6 +18,9 @@ export default function MyListings() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const [boostDialogOpen, setBoostDialogOpen] = useState(false);
+  const [boostListingId, setBoostListingId] = useState<string | null>(null);
+  const [purchasing, setPurchasing] = useState(false);
 
   const { data: listings } = useQuery({
     queryKey: ['my-listings', user?.id],
@@ -26,6 +31,22 @@ export default function MyListings() {
         .select('*, listing_images(storage_path, sort_order)')
         .eq('seller_id', user.id)
         .order('created_at', { ascending: false });
+      return data || [];
+    },
+    enabled: !!user,
+  });
+
+  // Fetch active boosts for user's listings
+  const { data: activeBoosts } = useQuery({
+    queryKey: ['my-boosts', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data } = await supabase
+        .from('user_addons')
+        .select('listing_id, addon_type')
+        .eq('user_id', user.id)
+        .eq('active', true)
+        .in('addon_type', ['boost', 'boost_premium']);
       return data || [];
     },
     enabled: !!user,
@@ -49,16 +70,60 @@ export default function MyListings() {
     toast({ title: t(statusToastMap[status] || status) });
   };
 
+  const getBoostStatus = (listingId: string) => {
+    const boost = activeBoosts?.find(b => b.listing_id === listingId);
+    if (boost?.addon_type === 'boost_premium') return 'featured';
+    if (boost?.addon_type === 'boost') return 'boosted';
+    return null;
+  };
+
+  const openBoostDialog = (listingId: string) => {
+    setBoostListingId(listingId);
+    setBoostDialogOpen(true);
+  };
+
+  const purchaseBoost = async (type: string) => {
+    if (!boostListingId) return;
+    setPurchasing(true);
+    const { data, error } = await supabase.functions.invoke('manage-points', {
+      body: { action: 'purchase', addon_type: type, listing_id: boostListingId },
+    });
+    if (error || data?.error) {
+      const msg = data?.error === 'insufficient_points'
+        ? t('points.insufficientPoints')
+        : t('points.purchaseError');
+      toast({ title: msg, variant: 'destructive' });
+    } else {
+      toast({ title: t('points.purchaseSuccess') });
+      qc.invalidateQueries({ queryKey: ['my-boosts'] });
+    }
+    setPurchasing(false);
+    setBoostDialogOpen(false);
+  };
+
   const ListingRow = ({ listing }: { listing: any }) => {
     const imgUrl = listing.listing_images?.[0]?.storage_path
       ? supabase.storage.from('listings').getPublicUrl(listing.listing_images[0].storage_path).data.publicUrl
       : '/placeholder.svg';
+    const boostStatus = getBoostStatus(listing.id);
     return (
-      <Card className="overflow-hidden">
+      <Card className={`overflow-hidden ${boostStatus === 'featured' ? 'ring-2 ring-amber-400 shadow-amber-200/50' : boostStatus === 'boosted' ? 'ring-2 ring-blue-400 shadow-blue-200/50' : ''}`}>
         <CardContent className="p-3 flex gap-3">
           <img src={imgUrl} alt="" className="w-20 h-20 rounded-lg object-cover flex-shrink-0" />
           <div className="flex-1 min-w-0">
-            <h3 className="font-medium text-sm truncate">{listing.title_original}</h3>
+            <div className="flex items-center gap-1.5">
+              <h3 className="font-medium text-sm truncate">{listing.title_original}</h3>
+              {boostStatus === 'featured' && (
+                <Badge className="bg-amber-500 text-white text-[9px] gap-0.5 px-1.5 py-0 shrink-0">
+                  <Star className="h-2.5 w-2.5" /> Featured
+                </Badge>
+              )}
+              {boostStatus === 'boosted' && (
+                <Badge className="bg-blue-500 text-white text-[9px] gap-0.5 px-1.5 py-0 shrink-0">
+                  <Rocket className="h-2.5 w-2.5" /> Boost
+                </Badge>
+              )}
+            </div>
             <p className="text-primary font-bold text-sm">{formatPrice(listing.price, listing.currency)}</p>
             <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
               <span>{CATEGORY_ICONS[listing.category]}</span>
@@ -72,6 +137,11 @@ export default function MyListings() {
                 <Button size="sm" variant="outline" onClick={() => navigate(`/create?edit=${listing.id}`)} className="gap-1">
                   <Pencil className="h-3 w-3" /> {t('listing.edit')}
                 </Button>
+                {!boostStatus && (
+                  <Button size="sm" variant="outline" onClick={() => openBoostDialog(listing.id)} className="gap-1 text-blue-600 border-blue-300 hover:bg-blue-50">
+                    <Rocket className="h-3 w-3" /> Boost
+                  </Button>
+                )}
                 <Button size="sm" variant="outline" onClick={() => updateStatus(listing.id, 'sold')}>
                   {t('listing.markSold')}
                 </Button>
@@ -121,6 +191,48 @@ export default function MyListings() {
           );
         })}
       </Tabs>
+
+      {/* Boost Dialog */}
+      <Dialog open={boostDialogOpen} onOpenChange={setBoostDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Rocket className="h-5 w-5 text-blue-500" /> Boost cette annonce
+            </DialogTitle>
+            <DialogDescription>Choisis le type de boost à appliquer</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <button
+              onClick={() => purchaseBoost('boost')}
+              disabled={purchasing}
+              className="w-full p-4 rounded-xl border-2 border-blue-200 hover:border-blue-400 transition-colors flex items-center gap-3 text-left"
+            >
+              <div className="h-10 w-10 rounded-full bg-blue-500/10 flex items-center justify-center">
+                <Rocket className="h-5 w-5 text-blue-500" />
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-sm">Boost 48h</p>
+                <p className="text-xs text-muted-foreground">Tête de liste dans ta catégorie</p>
+              </div>
+              <span className="font-bold text-primary">40 pts</span>
+            </button>
+            <button
+              onClick={() => purchaseBoost('boost_premium')}
+              disabled={purchasing}
+              className="w-full p-4 rounded-xl border-2 border-amber-200 hover:border-amber-400 transition-colors flex items-center gap-3 text-left"
+            >
+              <div className="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center">
+                <Star className="h-5 w-5 text-amber-500" />
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-sm">Boost Premium</p>
+                <p className="text-xs text-muted-foreground">Mise en avant sur la page d'accueil</p>
+              </div>
+              <span className="font-bold text-primary">80 pts</span>
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

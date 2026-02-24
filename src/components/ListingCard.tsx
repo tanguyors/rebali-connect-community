@@ -107,7 +107,7 @@ export default function ListingCard({ listing, sellerProfile: sellerProfileProp,
 
   return (
     <Link to={`/listing/${listing.id}`}>
-      <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group h-full">
+      <Card className={`overflow-hidden hover:shadow-lg transition-all duration-300 group h-full ${isFeatured ? 'ring-2 ring-amber-400 shadow-amber-200/50' : isBoosted ? 'ring-2 ring-blue-400 shadow-blue-200/50' : ''}`}>
         <div className="aspect-[4/3] overflow-hidden bg-muted relative">
           <img
             src={imageUrl}
