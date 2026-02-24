@@ -534,7 +534,7 @@
     "paymentMethods": "Payment via Xendit / DOKU — Coming soon",
     "faqTitle": "Frequently Asked Questions",
     "faq1Q": "What happens when my Pro subscription expires?",
-    "faq1A": "Your account reverts to the free plan. Extra listings beyond the limit will remain active until manually deactivated.",
+    "faq1A": "Your account reverts to the free plan. Listings exceeding the free limit will be automatically archived.",
     "faq2Q": "Can I cancel anytime?",
     "faq2A": "Yes, you can cancel anytime. Your Pro benefits will remain active until the end of your billing period.",
     "faq3Q": "Do I keep my points and badges?",

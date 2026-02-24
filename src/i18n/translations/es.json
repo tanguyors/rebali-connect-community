@@ -258,7 +258,7 @@
     "paymentMethods": "Pago vía Xendit / DOKU — Próximamente",
     "faqTitle": "Preguntas Frecuentes",
     "faq1Q": "¿Qué pasa cuando expira mi suscripción Pro?",
-    "faq1A": "Tu cuenta vuelve al plan gratuito. Los anuncios excedentes seguirán activos hasta que se desactiven manualmente.",
+    "faq1A": "Tu cuenta vuelve al plan gratuito. Los anuncios que excedan el límite serán archivados automáticamente.",
     "faq2Q": "¿Puedo cancelar en cualquier momento?",
     "faq2A": "Sí, puedes cancelar en cualquier momento. Tus beneficios Pro seguirán activos hasta el final de tu período de facturación.",
     "faq3Q": "¿Conservo mis puntos e insignias?",

@@ -381,7 +381,7 @@
     "paymentMethods": "Paiement via Xendit / DOKU — Bientôt",
     "faqTitle": "Questions fréquentes",
     "faq1Q": "Que se passe-t-il quand mon abonnement Pro expire ?",
-    "faq1A": "Votre compte revient au plan gratuit. Les annonces excédentaires resteront actives jusqu'à désactivation manuelle.",
+    "faq1A": "Votre compte revient au plan gratuit. Les annonces excédentaires seront automatiquement archivées.",
     "faq2Q": "Puis-je annuler à tout moment ?",
     "faq2A": "Oui, vous pouvez annuler à tout moment. Vos avantages Pro resteront actifs jusqu'à la fin de votre période de facturation.",
     "faq3Q": "Est-ce que je garde mes points et badges ?",
