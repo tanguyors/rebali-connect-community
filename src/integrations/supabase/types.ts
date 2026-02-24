@@ -420,6 +420,36 @@ export type Database = {
         }
         Relationships: []
       }
+      point_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          metadata: Json | null
+          reason: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          reason: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          reason?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -631,6 +661,47 @@ export type Database = {
         }
         Relationships: []
       }
+      user_addons: {
+        Row: {
+          active: boolean
+          addon_type: string
+          created_at: string
+          expires_at: string | null
+          extra_slots: number | null
+          id: string
+          listing_id: string | null
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          addon_type: string
+          created_at?: string
+          expires_at?: string | null
+          extra_slots?: number | null
+          id?: string
+          listing_id?: string | null
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          addon_type?: string
+          created_at?: string
+          expires_at?: string | null
+          extra_slots?: number | null
+          id?: string
+          listing_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_addons_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_devices: {
         Row: {
           browser: string | null
@@ -663,6 +734,33 @@ export type Database = {
           is_vpn?: boolean | null
           os?: string | null
           user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_points: {
+        Row: {
+          balance: number
+          id: string
+          total_earned: number
+          total_spent: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          id?: string
+          total_earned?: number
+          total_spent?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          id?: string
+          total_earned?: number
+          total_spent?: number
+          updated_at?: string
           user_id?: string
         }
         Relationships: []

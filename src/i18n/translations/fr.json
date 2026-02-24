@@ -271,5 +271,30 @@
     "privacyContact": "Nous contacter",
     "privacyContactText": "Pour toute question relative à la confidentialité ou pour exercer vos droits, contactez-nous via notre plateforme ou visitez la page À propos."
   },
-  "share": { "copyLink": "Copier le lien", "facebook": "Publier sur Facebook", "whatsapp": "Partager sur WhatsApp" }
+  "share": { "copyLink": "Copier le lien", "facebook": "Publier sur Facebook", "whatsapp": "Partager sur WhatsApp" },
+  "points": {
+    "yourBalance": "Vos Points",
+    "earned": "Gagnés",
+    "spent": "Dépensés",
+    "syncBadges": "Synchroniser mes badges",
+    "pointsEarned": "points gagnés",
+    "alreadySynced": "Points déjà à jour !",
+    "shopTitle": "Boutique de Points",
+    "shopDesc": "Dépensez vos points pour booster vos annonces et votre profil",
+    "buy": "Acheter",
+    "activeUntil": "Actif jusqu'au",
+    "insufficientPoints": "Pas assez de points !",
+    "purchaseError": "Échec de l'achat",
+    "purchaseSuccess": "Add-on activé !",
+    "history": "Historique des transactions",
+    "noTransactions": "Aucune transaction. Synchronisez vos badges pour gagner des points !",
+    "addon": {
+      "boost": "Boost d'annonce",
+      "boostDesc": "Propulsez une annonce en tête des résultats pendant 48 heures",
+      "vip": "Compte VIP",
+      "vipDesc": "Obtenez le badge VIP et le support prioritaire pendant 30 jours",
+      "extra_listings": "Annonces supplémentaires",
+      "extra_listingsDesc": "Obtenez 3 emplacements d'annonces supplémentaires pendant 30 jours"
+    }
+  }
 }

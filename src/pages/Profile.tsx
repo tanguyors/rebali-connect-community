@@ -16,7 +16,7 @@ import { SUPPORTED_LANGUAGES } from '@/i18n';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
-import { User, Camera, Shield, Star, BarChart3, Eye, ShoppingBag, Package, Mail, Lock, Trash2, ExternalLink, MessageCircle, CheckCircle, ShieldCheck, Clock, Upload, LogOut } from 'lucide-react';
+import { User, Camera, Shield, Star, BarChart3, Eye, ShoppingBag, Package, Mail, Lock, Trash2, ExternalLink, MessageCircle, CheckCircle, ShieldCheck, Clock, Upload, LogOut, Coins } from 'lucide-react';
 import UserBadges from '@/components/UserBadges';
 import TrustIndicator from '@/components/TrustIndicator';
 
@@ -515,6 +515,10 @@ export default function Profile() {
             <div className="mt-4 space-y-3 border-t pt-4">
               <UserBadges userId={user.id} profile={profile} />
               <TrustIndicator score={profile.trust_score} riskLevel={profile.risk_level as 'low' | 'medium' | 'high'} />
+              <Button variant="outline" size="sm" className="gap-2" onClick={() => navigate('/points')}>
+                <Coins className="h-4 w-4" />
+                {t('points.shopTitle')}
+              </Button>
             </div>
           )}
         </CardContent>

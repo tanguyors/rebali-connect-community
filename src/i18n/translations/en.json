@@ -422,5 +422,30 @@
     "privacyContact": "Contact Us",
     "privacyContactText": "For privacy-related questions or to exercise your data rights, please contact us through our platform or visit the About page."
   },
-  "share": { "copyLink": "Copy link", "facebook": "Post on Facebook", "whatsapp": "Share on WhatsApp" }
+  "share": { "copyLink": "Copy link", "facebook": "Post on Facebook", "whatsapp": "Share on WhatsApp" },
+  "points": {
+    "yourBalance": "Your Points",
+    "earned": "Earned",
+    "spent": "Spent",
+    "syncBadges": "Sync my badges",
+    "pointsEarned": "points earned",
+    "alreadySynced": "Points already up to date!",
+    "shopTitle": "Points Shop",
+    "shopDesc": "Spend your points on add-ons to boost your listings and profile",
+    "buy": "Buy",
+    "activeUntil": "Active until",
+    "insufficientPoints": "Not enough points!",
+    "purchaseError": "Purchase failed",
+    "purchaseSuccess": "Add-on activated!",
+    "history": "Transaction History",
+    "noTransactions": "No transactions yet. Sync your badges to earn points!",
+    "addon": {
+      "boost": "Listing Boost",
+      "boostDesc": "Boost a listing to the top of search results for 48 hours",
+      "vip": "VIP Account",
+      "vipDesc": "Get the VIP badge and priority support for 30 days",
+      "extra_listings": "Extra Listings",
+      "extra_listingsDesc": "Get 3 additional listing slots for 30 days"
+    }
+  }
 }

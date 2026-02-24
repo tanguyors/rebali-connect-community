@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.oglisting]
 verify_jwt = false
+
+[functions.manage-points]
+verify_jwt = false

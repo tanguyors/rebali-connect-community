@@ -27,6 +27,7 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Messages from "./pages/Messages";
 import TrustBadges from "./pages/TrustBadges";
+import PointsShop from "./pages/PointsShop";
 
 
 const queryClient = new QueryClient({});
@@ -60,6 +61,7 @@ const App = () => (
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/messages" element={<Messages />} />
                   <Route path="/trust-badges" element={<TrustBadges />} />
+                  <Route path="/points" element={<PointsShop />} />
                   
                   <Route path="/seller/:id" element={<SellerProfile />} />
                   <Route path="*" element={<NotFound />} />
