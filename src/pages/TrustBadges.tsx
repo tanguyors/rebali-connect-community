@@ -2,9 +2,9 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
-  Sprout, Clock, Award, Crown, Package, TrendingUp,
-  MessageCircle, MessagesSquare, Star, Trophy, CheckCircle, ShieldCheck,
-  Shield, Info, Coins, Zap, Gem, LayoutGrid
+  Sprout, Clock, Award, Crown, CheckCircle, ShieldCheck,
+  Handshake, Target, Flame, Trophy, Medal,
+  Shield, Info, Coins, Zap, Star, LayoutGrid, ShieldPlus, Gem
 } from 'lucide-react';
 
 const BADGE_LIST = [
@@ -12,45 +12,54 @@ const BADGE_LIST = [
   { key: 'activeMember', icon: Clock, color: 'bg-blue-500/10 text-blue-600 border-blue-500/20' },
   { key: 'veteran', icon: Award, color: 'bg-purple-500/10 text-purple-600 border-purple-500/20' },
   { key: 'elder', icon: Crown, color: 'bg-amber-500/10 text-amber-600 border-amber-500/20' },
-  { key: 'firstSeller', icon: Package, color: 'bg-teal-500/10 text-teal-600 border-teal-500/20' },
-  { key: 'activeSeller', icon: TrendingUp, color: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20' },
-  { key: 'communicator', icon: MessageCircle, color: 'bg-sky-500/10 text-sky-600 border-sky-500/20' },
-  { key: 'superCommunicator', icon: MessagesSquare, color: 'bg-cyan-500/10 text-cyan-600 border-cyan-500/20' },
-  { key: 'wellRated', icon: Star, color: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20' },
-  { key: 'topSeller', icon: Trophy, color: 'bg-orange-500/10 text-orange-600 border-orange-500/20' },
   { key: 'whatsappVerified', icon: CheckCircle, color: 'bg-green-500/10 text-green-600 border-green-500/20' },
   { key: 'identityVerified', icon: ShieldCheck, color: 'bg-green-500/10 text-green-600 border-green-500/20' },
+  { key: 'firstDeal', icon: Handshake, color: 'bg-teal-500/10 text-teal-600 border-teal-500/20' },
+  { key: 'fiveDeals', icon: Target, color: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20' },
+  { key: 'twentyDeals', icon: Flame, color: 'bg-orange-500/10 text-orange-600 border-orange-500/20' },
+  { key: 'fiftyDeals', icon: Trophy, color: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20' },
+  { key: 'safeSeller', icon: ShieldCheck, color: 'bg-sky-500/10 text-sky-600 border-sky-500/20' },
+  { key: 'trustedPro', icon: Medal, color: 'bg-cyan-500/10 text-cyan-600 border-cyan-500/20' },
 ];
 
 const TRUST_FACTORS = [
-  { key: 'accountAge', max: 30 },
-  { key: 'activeListings', max: 20 },
-  { key: 'messagesSent', max: 10 },
-  { key: 'positiveReviews', max: 15 },
-  { key: 'whatsappVerifiedFactor', max: 15 },
-  { key: 'idVerified', max: 20 },
+  { key: 'accountAge', max: 20 },
+  { key: 'activeListings', max: 15 },
+  { key: 'completedDeals', max: 20 },
+  { key: 'positiveReviews', max: 20 },
+  { key: 'whatsappVerifiedFactor', max: 10 },
+  { key: 'idVerified', max: 15 },
 ];
 
 const POINTS_BADGES = [
-  { key: 'newMember', pts: 5 },
+  { key: 'newMember', pts: 10 },
   { key: 'activeMember', pts: 10 },
   { key: 'veteran', pts: 20 },
-  { key: 'elder', pts: 25 },
-  { key: 'firstSeller', pts: 10 },
-  { key: 'activeSeller', pts: 15 },
-  { key: 'communicator', pts: 5 },
-  { key: 'superCommunicator', pts: 15 },
-  { key: 'wellRated', pts: 10 },
-  { key: 'topSeller', pts: 20 },
-  { key: 'whatsappVerified', pts: 15 },
-  { key: 'identityVerified', pts: 25 },
+  { key: 'elder', pts: 30 },
+  { key: 'whatsappVerified', pts: 20 },
+  { key: 'identityVerified', pts: 40 },
+  { key: 'firstDeal', pts: 20 },
+  { key: 'fiveDeals', pts: 30 },
+  { key: 'twentyDeals', pts: 50 },
+  { key: 'fiftyDeals', pts: 60 },
+  { key: 'safeSeller', pts: 25 },
+  { key: 'trustedPro', pts: 60 },
+];
+
+const DYNAMIC_REWARDS = [
+  { key: 'completedDeal', pts: 5 },
+  { key: 'fiveStarReview', pts: 3 },
+  { key: 'validatedReport', pts: 10 },
 ];
 
 const ADDONS = [
-  { key: 'boost', icon: Zap, cost: 30 },
-  { key: 'vip', icon: Gem, cost: 80 },
-  { key: 'extraListings', icon: LayoutGrid, cost: 50 },
+  { key: 'boost', icon: Zap, cost: 40 },
+  { key: 'boost_premium', icon: Star, cost: 80 },
+  { key: 'vip', icon: Gem, cost: 120 },
+  { key: 'extraListings', icon: LayoutGrid, cost: 90 },
+  { key: 'protection', icon: ShieldPlus, cost: 150 },
 ];
+
 export default function TrustBadges() {
   const { t } = useLanguage();
 
@@ -87,6 +96,7 @@ export default function TrustBadges() {
             <p className="text-sm font-medium">{t('trustPage.penalties')}</p>
             <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
               <li>{t('trustPage.penalty.reports')}</li>
+              <li>{t('trustPage.penalty.fakeListings')}</li>
               <li>{t('trustPage.penalty.vpn')}</li>
               <li>{t('trustPage.penalty.multiAccount')}</li>
             </ul>
@@ -96,15 +106,15 @@ export default function TrustBadges() {
           <div className="flex flex-wrap gap-4 mt-4">
             <div className="flex items-center gap-2">
               <div className="h-3 w-8 rounded-full bg-green-500" />
-              <span className="text-xs text-muted-foreground">60-100 — {t('badges.trustLow')}</span>
+              <span className="text-xs text-muted-foreground">70-100 — {t('badges.trustSafe')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="h-3 w-8 rounded-full bg-amber-500" />
-              <span className="text-xs text-muted-foreground">30-59 — {t('badges.trustMedium')}</span>
+              <span className="text-xs text-muted-foreground">40-69 — {t('badges.trustStandard')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="h-3 w-8 rounded-full bg-red-500" />
-              <span className="text-xs text-muted-foreground">0-29 — {t('badges.trustHigh')}</span>
+              <span className="text-xs text-muted-foreground">0-39 — {t('badges.trustRisky')}</span>
             </div>
           </div>
         </CardContent>
@@ -147,6 +157,7 @@ export default function TrustBadges() {
           </h2>
           <p className="text-sm text-muted-foreground">{t('trustPage.pointsExplanation')}</p>
 
+          {/* Badge points */}
           <div className="mt-4 space-y-3">
             <h3 className="text-sm font-semibold">{t('trustPage.pointsHowToEarn')}</h3>
             <p className="text-xs text-muted-foreground">{t('trustPage.pointsEarnExplanation')}</p>
@@ -160,9 +171,25 @@ export default function TrustBadges() {
             </div>
           </div>
 
+          {/* Dynamic rewards */}
+          <div className="mt-4 space-y-3">
+            <h3 className="text-sm font-semibold">{t('trustPage.dynamicEarningTitle')}</h3>
+            <p className="text-xs text-muted-foreground">{t('trustPage.dynamicEarningDesc')}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {DYNAMIC_REWARDS.map(dr => (
+                <div key={dr.key} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                  <span className="text-sm font-medium">{t(`trustPage.dynamic.${dr.key}`)}</span>
+                  <Badge variant="secondary" className="text-xs">+{dr.pts} pts</Badge>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground italic">{t('trustPage.monthlyCap')}</p>
+          </div>
+
+          {/* Shop items */}
           <div className="mt-4 space-y-3">
             <h3 className="text-sm font-semibold">{t('trustPage.pointsHowToSpend')}</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {ADDONS.map(addon => {
                 const Icon = addon.icon;
                 return (

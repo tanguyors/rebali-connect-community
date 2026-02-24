@@ -742,6 +742,8 @@ export type Database = {
         Row: {
           balance: number
           id: string
+          month_reset: string
+          monthly_dynamic_earned: number
           total_earned: number
           total_spent: number
           updated_at: string
@@ -750,6 +752,8 @@ export type Database = {
         Insert: {
           balance?: number
           id?: string
+          month_reset?: string
+          monthly_dynamic_earned?: number
           total_earned?: number
           total_spent?: number
           updated_at?: string
@@ -758,6 +762,8 @@ export type Database = {
         Update: {
           balance?: number
           id?: string
+          month_reset?: string
+          monthly_dynamic_earned?: number
           total_earned?: number
           total_spent?: number
           updated_at?: string
