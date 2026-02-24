@@ -167,5 +167,33 @@
     "privacySecurityText": "我们实施多项安全措施，包括：加密存储、欺诈检测、内容过滤、自动信任评分和照片水印。",
     "privacyContact": "联系我们",
     "privacyContactText": "如有隐私相关问题，请通过平台联系我们或访问关于页面。"
+  },
+  "points": {
+    "yourBalance": "您的积分",
+    "earned": "已赚取",
+    "spent": "已消费",
+    "syncBadges": "同步我的徽章",
+    "pointsEarned": "积分已赚取",
+    "alreadySynced": "积分已是最新！",
+    "shopTitle": "积分商店",
+    "shopDesc": "使用积分购买增值服务来提升您的广告和个人资料",
+    "buy": "购买",
+    "activeUntil": "有效期至",
+    "insufficientPoints": "积分不足！",
+    "purchaseError": "购买失败",
+    "purchaseSuccess": "增值服务已激活！",
+    "history": "交易记录",
+    "noTransactions": "暂无交易记录。同步您的徽章来赚取积分！",
+    "addon": {
+      "boost": "广告置顶",
+      "boostDesc": "将广告置顶搜索结果48小时",
+      "vip": "VIP账户",
+      "vipDesc": "获得VIP徽章和优先支持30天",
+      "extra_listings": "额外广告位",
+      "extra_listingsDesc": "获得3个额外广告位30天"
+    },
+    "boostSelectTitle": "置顶广告",
+    "boostSelectDesc": "选择要置顶搜索结果48小时的广告",
+    "noActiveListings": "没有可置顶的活跃广告"
   }
 }

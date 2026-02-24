@@ -167,5 +167,33 @@
     "privacySecurityText": "Wir implementieren Sicherheitsmaßnahmen: verschlüsselte Speicherung, Betrugserkennung, Inhaltsfilterung, automatische Vertrauensbewertung und Foto-Wasserzeichen.",
     "privacyContact": "Kontaktieren Sie uns",
     "privacyContactText": "Bei Datenschutzfragen kontaktieren Sie uns über die Plattform oder besuchen Sie die Über-uns-Seite."
+  },
+  "points": {
+    "yourBalance": "Deine Punkte",
+    "earned": "Verdient",
+    "spent": "Ausgegeben",
+    "syncBadges": "Meine Abzeichen synchronisieren",
+    "pointsEarned": "Punkte verdient",
+    "alreadySynced": "Punkte bereits aktuell!",
+    "shopTitle": "Punkte-Shop",
+    "shopDesc": "Gib deine Punkte für Add-ons aus, um deine Anzeigen und dein Profil zu verbessern",
+    "buy": "Kaufen",
+    "activeUntil": "Aktiv bis",
+    "insufficientPoints": "Nicht genug Punkte!",
+    "purchaseError": "Kauf fehlgeschlagen",
+    "purchaseSuccess": "Add-on aktiviert!",
+    "history": "Transaktionsverlauf",
+    "noTransactions": "Noch keine Transaktionen. Synchronisiere deine Abzeichen, um Punkte zu verdienen!",
+    "addon": {
+      "boost": "Anzeigen-Boost",
+      "boostDesc": "Bringe eine Anzeige für 48 Stunden an die Spitze der Suchergebnisse",
+      "vip": "VIP-Konto",
+      "vipDesc": "Erhalte das VIP-Abzeichen und prioritären Support für 30 Tage",
+      "extra_listings": "Extra Anzeigen",
+      "extra_listingsDesc": "Erhalte 3 zusätzliche Anzeigenplätze für 30 Tage"
+    },
+    "boostSelectTitle": "Eine Anzeige boosten",
+    "boostSelectDesc": "Wähle, welche Anzeige für 48 Stunden geboostet werden soll",
+    "noActiveListings": "Keine aktiven Anzeigen zum Boosten"
   }
 }

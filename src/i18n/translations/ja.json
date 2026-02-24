@@ -323,5 +323,33 @@
     "privacySecurityText": "暗号化されたデータストレージ、デバイスフィンガープリンティング、コンテンツフィルタリングなど、複数のセキュリティ対策を実施しています。",
     "privacyContact": "お問い合わせ",
     "privacyContactText": "プライバシーに関するご質問は、プラットフォームを通じてお問い合わせください。"
+  },
+  "points": {
+    "yourBalance": "あなたのポイント",
+    "earned": "獲得済み",
+    "spent": "使用済み",
+    "syncBadges": "バッジを同期",
+    "pointsEarned": "ポイント獲得",
+    "alreadySynced": "ポイントは最新です！",
+    "shopTitle": "ポイントショップ",
+    "shopDesc": "ポイントを使って出品やプロフィールを強化するアドオンを購入",
+    "buy": "購入",
+    "activeUntil": "有効期限",
+    "insufficientPoints": "ポイントが不足しています！",
+    "purchaseError": "購入に失敗しました",
+    "purchaseSuccess": "アドオンが有効化されました！",
+    "history": "取引履歴",
+    "noTransactions": "取引はまだありません。バッジを同期してポイントを獲得しましょう！",
+    "addon": {
+      "boost": "出品ブースト",
+      "boostDesc": "出品を48時間検索結果のトップに表示",
+      "vip": "VIPアカウント",
+      "vipDesc": "30日間VIPバッジと優先サポートを取得",
+      "extra_listings": "追加出品枠",
+      "extra_listingsDesc": "30日間3つの追加出品枠を取得"
+    },
+    "boostSelectTitle": "出品をブースト",
+    "boostSelectDesc": "48時間トップに表示する出品を選択してください",
+    "noActiveListings": "ブーストできるアクティブな出品はありません"
   }
 }

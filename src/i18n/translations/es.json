@@ -167,5 +167,33 @@
     "privacySecurityText": "Implementamos medidas de seguridad: almacenamiento cifrado, detección de fraude, filtrado de contenido, puntuación de confianza automatizada y marcas de agua en fotos.",
     "privacyContact": "Contáctanos",
     "privacyContactText": "Para preguntas de privacidad, contáctanos a través de la plataforma o visita la página Acerca de."
+  },
+  "points": {
+    "yourBalance": "Tus Puntos",
+    "earned": "Ganados",
+    "spent": "Gastados",
+    "syncBadges": "Sincronizar mis insignias",
+    "pointsEarned": "puntos ganados",
+    "alreadySynced": "¡Puntos ya actualizados!",
+    "shopTitle": "Tienda de Puntos",
+    "shopDesc": "Gasta tus puntos en complementos para impulsar tus anuncios y perfil",
+    "buy": "Comprar",
+    "activeUntil": "Activo hasta",
+    "insufficientPoints": "¡Puntos insuficientes!",
+    "purchaseError": "Error en la compra",
+    "purchaseSuccess": "¡Complemento activado!",
+    "history": "Historial de transacciones",
+    "noTransactions": "Sin transacciones aún. ¡Sincroniza tus insignias para ganar puntos!",
+    "addon": {
+      "boost": "Impulsar anuncio",
+      "boostDesc": "Impulsa un anuncio a los primeros resultados durante 48 horas",
+      "vip": "Cuenta VIP",
+      "vipDesc": "Obtén la insignia VIP y soporte prioritario durante 30 días",
+      "extra_listings": "Anuncios extra",
+      "extra_listingsDesc": "Obtén 3 espacios adicionales para anuncios durante 30 días"
+    },
+    "boostSelectTitle": "Impulsar un anuncio",
+    "boostSelectDesc": "Elige qué anuncio impulsar a los primeros resultados durante 48 horas",
+    "noActiveListings": "No tienes anuncios activos para impulsar"
   }
 }

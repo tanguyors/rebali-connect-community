@@ -167,5 +167,33 @@
     "privacySecurityText": "Kami menerapkan beberapa langkah keamanan termasuk: penyimpanan terenkripsi, deteksi penipuan, pemfilteran konten, skor kepercayaan otomatis, dan watermark foto.",
     "privacyContact": "Hubungi Kami",
     "privacyContactText": "Untuk pertanyaan privasi, hubungi kami melalui platform atau kunjungi halaman Tentang."
+  },
+  "points": {
+    "yourBalance": "Poin Anda",
+    "earned": "Diperoleh",
+    "spent": "Dibelanjakan",
+    "syncBadges": "Sinkronkan lencana saya",
+    "pointsEarned": "poin diperoleh",
+    "alreadySynced": "Poin sudah terbaru!",
+    "shopTitle": "Toko Poin",
+    "shopDesc": "Belanjakan poin Anda untuk add-on guna meningkatkan iklan dan profil Anda",
+    "buy": "Beli",
+    "activeUntil": "Aktif hingga",
+    "insufficientPoints": "Poin tidak cukup!",
+    "purchaseError": "Pembelian gagal",
+    "purchaseSuccess": "Add-on diaktifkan!",
+    "history": "Riwayat Transaksi",
+    "noTransactions": "Belum ada transaksi. Sinkronkan lencana Anda untuk mendapatkan poin!",
+    "addon": {
+      "boost": "Boost Iklan",
+      "boostDesc": "Naikkan iklan ke posisi teratas hasil pencarian selama 48 jam",
+      "vip": "Akun VIP",
+      "vipDesc": "Dapatkan lencana VIP dan dukungan prioritas selama 30 hari",
+      "extra_listings": "Slot Iklan Tambahan",
+      "extra_listingsDesc": "Dapatkan 3 slot iklan tambahan selama 30 hari"
+    },
+    "boostSelectTitle": "Boost iklan",
+    "boostSelectDesc": "Pilih iklan yang ingin di-boost ke posisi teratas selama 48 jam",
+    "noActiveListings": "Tidak ada iklan aktif untuk di-boost"
   }
 }

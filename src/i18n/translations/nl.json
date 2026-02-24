@@ -167,5 +167,33 @@
     "privacySecurityText": "Wij implementeren beveiligingsmaatregelen: versleutelde opslag, fraudedetectie, inhoudsfiltering, automatische vertrouwensscore en fotowatermerken.",
     "privacyContact": "Neem contact op",
     "privacyContactText": "Voor privacyvragen, neem contact met ons op via het platform of bezoek de Over ons pagina."
+  },
+  "points": {
+    "yourBalance": "Jouw Punten",
+    "earned": "Verdiend",
+    "spent": "Besteed",
+    "syncBadges": "Mijn badges synchroniseren",
+    "pointsEarned": "punten verdiend",
+    "alreadySynced": "Punten al bijgewerkt!",
+    "shopTitle": "Puntenwinkel",
+    "shopDesc": "Besteed je punten aan add-ons om je advertenties en profiel te verbeteren",
+    "buy": "Kopen",
+    "activeUntil": "Actief tot",
+    "insufficientPoints": "Niet genoeg punten!",
+    "purchaseError": "Aankoop mislukt",
+    "purchaseSuccess": "Add-on geactiveerd!",
+    "history": "Transactiegeschiedenis",
+    "noTransactions": "Nog geen transacties. Synchroniseer je badges om punten te verdienen!",
+    "addon": {
+      "boost": "Advertentie boosten",
+      "boostDesc": "Boost een advertentie naar de top van zoekresultaten voor 48 uur",
+      "vip": "VIP-account",
+      "vipDesc": "Krijg de VIP-badge en prioritaire ondersteuning voor 30 dagen",
+      "extra_listings": "Extra advertenties",
+      "extra_listingsDesc": "Krijg 3 extra advertentieplaatsen voor 30 dagen"
+    },
+    "boostSelectTitle": "Een advertentie boosten",
+    "boostSelectDesc": "Kies welke advertentie je wilt boosten naar de top voor 48 uur",
+    "noActiveListings": "Geen actieve advertenties om te boosten"
   }
 }

@@ -323,5 +323,33 @@
     "privacySecurityText": "Şifreli veri depolama, cihaz parmak izi, içerik filtreleme ve otomatik güven puanlama dahil birçok güvenlik önlemi uyguluyoruz.",
     "privacyContact": "Bize Ulaşın",
     "privacyContactText": "Gizlilikle ilgili sorularınız için platformumuz üzerinden bizimle iletişime geçin."
+  },
+  "points": {
+    "yourBalance": "Puanlarınız",
+    "earned": "Kazanılan",
+    "spent": "Harcanan",
+    "syncBadges": "Rozetlerimi senkronize et",
+    "pointsEarned": "puan kazanıldı",
+    "alreadySynced": "Puanlar zaten güncel!",
+    "shopTitle": "Puan Mağazası",
+    "shopDesc": "İlanlarınızı ve profilinizi güçlendirmek için puanlarınızı eklentilere harcayın",
+    "buy": "Satın Al",
+    "activeUntil": "Aktif bitiş",
+    "insufficientPoints": "Yeterli puan yok!",
+    "purchaseError": "Satın alma başarısız",
+    "purchaseSuccess": "Eklenti etkinleştirildi!",
+    "history": "İşlem Geçmişi",
+    "noTransactions": "Henüz işlem yok. Puan kazanmak için rozetlerinizi senkronize edin!",
+    "addon": {
+      "boost": "İlan Öne Çıkarma",
+      "boostDesc": "Bir ilanı 48 saat boyunca arama sonuçlarının başına çıkarın",
+      "vip": "VIP Hesap",
+      "vipDesc": "30 gün boyunca VIP rozeti ve öncelikli destek alın",
+      "extra_listings": "Ekstra İlanlar",
+      "extra_listingsDesc": "30 gün boyunca 3 ek ilan yeri alın"
+    },
+    "boostSelectTitle": "Bir ilanı öne çıkar",
+    "boostSelectDesc": "48 saat boyunca sonuçların başına çıkarmak istediğiniz ilanı seçin",
+    "noActiveListings": "Öne çıkarılacak aktif ilan yok"
   }
 }
