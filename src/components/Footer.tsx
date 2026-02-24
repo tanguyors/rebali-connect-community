@@ -19,7 +19,7 @@ export default function Footer({ className }: { className?: string }) {
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
               <Link to="/browse" className="hover:text-foreground transition-colors">{t('nav.browse')}</Link>
               <Link to="/create" className="hover:text-foreground transition-colors">{t('nav.sell')}</Link>
-              <Link to="/trust-badges" className="hover:text-foreground transition-colors">{t('trustPage.title')}</Link>
+              <Link to="/trust-badges" className="hover:text-foreground transition-colors">Confiance, Badges & Points</Link>
             </div>
           </div>
           <div>
@@ -28,7 +28,7 @@ export default function Footer({ className }: { className?: string }) {
               <Link to="/about" className="hover:text-foreground transition-colors">{t('nav.about')}</Link>
               <Link to="/safety" className="hover:text-foreground transition-colors">{t('nav.safety')}</Link>
               <Link to="/rules" className="hover:text-foreground transition-colors">{t('nav.rules')}</Link>
-              <Link to="/trust-badges" className="hover:text-foreground transition-colors">{t('trustPage.title')}</Link>
+              
             </div>
           </div>
           <div>
