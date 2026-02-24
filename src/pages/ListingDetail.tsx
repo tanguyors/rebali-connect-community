@@ -328,7 +328,25 @@ export default function ListingDetail() {
                             <Link2 className="h-4 w-4 mr-2" />
                             {t('share.copyLink')}
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => { const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(ogUrl)}`; window.open(url, '_blank'); }}>
+                          <DropdownMenuItem onClick={() => {
+                            const webShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(ogUrl)}`;
+                            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                            const isAndroid = /Android/i.test(navigator.userAgent);
+
+                            if (isIOS) {
+                              window.location.href = `fb://facewebmodal/f?href=${encodeURIComponent(webShareUrl)}`;
+                              setTimeout(() => { window.location.href = webShareUrl; }, 900);
+                              return;
+                            }
+
+                            if (isAndroid) {
+                              window.location.href = `intent://facewebmodal/f?href=${encodeURIComponent(webShareUrl)}#Intent;scheme=fb;package=com.facebook.katana;end`;
+                              setTimeout(() => { window.location.href = webShareUrl; }, 900);
+                              return;
+                            }
+
+                            window.open(webShareUrl, '_blank', 'noopener,noreferrer');
+                          }}>
                             <Facebook className="h-4 w-4 mr-2" />
                             {t('share.facebook')}
                           </DropdownMenuItem>
