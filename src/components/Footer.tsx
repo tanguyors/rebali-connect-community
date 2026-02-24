@@ -19,7 +19,7 @@ export default function Footer({ className }: { className?: string }) {
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
               <Link to="/browse" className="hover:text-foreground transition-colors">{t('nav.browse')}</Link>
               <Link to="/create" className="hover:text-foreground transition-colors">{t('nav.sell')}</Link>
-              <Link to="/vip" className="hover:text-foreground transition-colors">{t('nav.vip')}</Link>
+              <Link to="/trust-badges" className="hover:text-foreground transition-colors">{t('trustPage.title')}</Link>
             </div>
           </div>
           <div>
