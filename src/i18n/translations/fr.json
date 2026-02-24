@@ -271,5 +271,5 @@
     "privacyContact": "Nous contacter",
     "privacyContactText": "Pour toute question relative à la confidentialité ou pour exercer vos droits, contactez-nous via notre plateforme ou visitez la page À propos."
   },
-  "share": { "copyLink": "Copier le lien", "facebook": "Publier sur Facebook", "instagramStory": "Story Instagram" }
+  "share": { "copyLink": "Copier le lien", "facebook": "Publier sur Facebook", "whatsapp": "Partager sur WhatsApp" }
 }
