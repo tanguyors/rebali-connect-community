@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Crown, Check, X, Rocket, BarChart3, Package, Lock,
-  Zap, Star, TrendingUp, ShieldCheck, Award
+  Zap, Star, TrendingUp, ShieldCheck, Award, Briefcase
 } from 'lucide-react';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -18,7 +18,7 @@ const FREE_FEATURES = [
   { key: 'basicSearch', included: true },
   { key: 'whatsappContact', included: true },
   { key: 'trustBadges', included: true },
-  { key: 'listings15', included: false },
+  { key: 'listings50', included: false },
   { key: 'freeBoosts', included: false },
   { key: 'analytics', included: false },
   { key: 'proBadge', included: false },
@@ -29,14 +29,14 @@ const PRO_FEATURES = [
   { key: 'basicSearch', included: true },
   { key: 'whatsappContact', included: true },
   { key: 'trustBadges', included: true },
-  { key: 'listings15', included: true },
+  { key: 'listings50', included: true },
   { key: 'freeBoosts', included: true },
   { key: 'analytics', included: true },
   { key: 'proBadge', included: true },
 ];
 
 const PRO_HIGHLIGHTS = [
-  { icon: Package, key: 'listings15' },
+  { icon: Package, key: 'listings50' },
   { icon: Rocket, key: 'freeBoosts' },
   { icon: BarChart3, key: 'analytics' },
   { icon: Award, key: 'proBadge' },
@@ -44,8 +44,9 @@ const PRO_HIGHLIGHTS = [
 
 export default function VIP() {
   const { t } = useLanguage();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
+  const isBusinessAccount = profile?.user_type === 'business';
 
   const { data: activeSub } = useQuery({
     queryKey: ['pro-subscription', user?.id],
@@ -82,6 +83,10 @@ export default function VIP() {
         </div>
         <h1 className="text-3xl md:text-4xl font-extrabold">{t('pro.title')}</h1>
         <p className="text-muted-foreground max-w-xl mx-auto">{t('pro.subtitle')}</p>
+        <Badge variant="outline" className="gap-1 mt-2">
+          <Briefcase className="h-3 w-3" />
+          {t('pro.businessOnly')}
+        </Badge>
       </div>
 
       {/* Active subscription banner */}
