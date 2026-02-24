@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
-import WatermarkOverlay from '@/components/WatermarkOverlay';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Eye, Clock, Briefcase, Heart, ShieldCheck } from 'lucide-react';
@@ -98,7 +98,7 @@ export default function ListingCard({ listing, sellerProfile: sellerProfileProp,
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
           />
-          <WatermarkOverlay />
+          
           <Badge className="absolute top-2 left-2 bg-card/90 text-foreground text-xs">
             {CATEGORY_ICONS[listing.category]} {t(`categories.${listing.category}`)}
           </Badge>
