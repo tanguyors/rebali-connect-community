@@ -61,14 +61,13 @@ export default function SavedSearches() {
           <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
             <Lock className="h-6 w-6 text-primary" />
           </div>
-          <h3 className="font-semibold text-lg">Alertes de recherche</h3>
+          <h3 className="font-semibold text-lg">{t('savedSearches.promoTitle')}</h3>
           <p className="text-sm text-muted-foreground">
-            Recevez des notifications quand une annonce correspond à vos mots-clés.
-            Fonctionnalité réservée aux membres VIP.
+            {t('savedSearches.promoDesc')}
           </p>
           <Button variant="outline" className="gap-2" onClick={() => window.location.href = '/points'}>
             <Crown className="h-4 w-4" />
-            Devenir VIP
+            {t('savedSearches.becomeVip')}
           </Button>
         </CardContent>
       </Card>
@@ -78,16 +77,15 @@ export default function SavedSearches() {
   const handleAdd = async () => {
     const keyword = newKeyword.trim();
     if (!keyword || keyword.length < 2) {
-      toast({ title: 'Mot-clé trop court (min 2 caractères)', variant: 'destructive' });
+      toast({ title: t('savedSearches.tooShort'), variant: 'destructive' });
       return;
     }
     if (searches.length >= MAX_SAVED_SEARCHES) {
-      toast({ title: `Maximum ${MAX_SAVED_SEARCHES} alertes autorisées`, variant: 'destructive' });
+      toast({ title: (t('savedSearches.maxReached') || '').replace('{{max}}', String(MAX_SAVED_SEARCHES)), variant: 'destructive' });
       return;
     }
-    // Check duplicate
     if (searches.some((s: any) => s.keyword.toLowerCase() === keyword.toLowerCase())) {
-      toast({ title: 'Ce mot-clé existe déjà', variant: 'destructive' });
+      toast({ title: t('savedSearches.duplicate'), variant: 'destructive' });
       return;
     }
 
@@ -97,9 +95,9 @@ export default function SavedSearches() {
       keyword,
     });
     if (error) {
-      toast({ title: 'Erreur', description: error.message, variant: 'destructive' });
+      toast({ title: t('savedSearches.error'), description: error.message, variant: 'destructive' });
     } else {
-      toast({ title: 'Alerte ajoutée !' });
+      toast({ title: t('savedSearches.added') });
       setNewKeyword('');
       qc.invalidateQueries({ queryKey: ['saved-searches'] });
     }
@@ -109,7 +107,7 @@ export default function SavedSearches() {
   const handleDelete = async (id: string) => {
     await supabase.from('saved_searches').delete().eq('id', id);
     qc.invalidateQueries({ queryKey: ['saved-searches'] });
-    toast({ title: 'Alerte supprimée' });
+    toast({ title: t('savedSearches.deleted') });
   };
 
   const handleToggle = async (id: string, active: boolean) => {
@@ -122,11 +120,11 @@ export default function SavedSearches() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Bell className="h-5 w-5" />
-          Alertes de recherche
+          {t('savedSearches.title')}
           <Badge variant="secondary" className="ml-auto">{searches.length}/{MAX_SAVED_SEARCHES}</Badge>
         </CardTitle>
         <CardDescription>
-          Recevez une notification in-app et WhatsApp quand une annonce correspond à vos mots-clés.
+          {t('savedSearches.description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -135,7 +133,7 @@ export default function SavedSearches() {
           <Input
             value={newKeyword}
             onChange={e => setNewKeyword(e.target.value)}
-            placeholder="Ex: iPhone, scooter, villa..."
+            placeholder={t('savedSearches.placeholder')}
             className="flex-1"
             onKeyDown={e => e.key === 'Enter' && handleAdd()}
             disabled={searches.length >= MAX_SAVED_SEARCHES}
@@ -147,14 +145,14 @@ export default function SavedSearches() {
             className="gap-1"
           >
             <Plus className="h-4 w-4" />
-            Ajouter
+            {t('savedSearches.add')}
           </Button>
         </div>
 
         {/* List */}
         {searches.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-4">
-            Aucune alerte configurée. Ajoutez un mot-clé ci-dessus.
+            {t('savedSearches.empty')}
           </p>
         ) : (
           <div className="space-y-2">
