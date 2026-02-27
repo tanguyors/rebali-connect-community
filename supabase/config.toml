@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.purge-search-logs]
 verify_jwt = false
+
+[functions.notify-saved-searches]
+verify_jwt = false

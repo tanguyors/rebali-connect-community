@@ -19,6 +19,7 @@ import { z } from 'zod';
 import { User, Camera, Shield, Star, BarChart3, Eye, ShoppingBag, Package, Mail, Lock, Trash2, ExternalLink, MessageCircle, CheckCircle, ShieldCheck, Clock, Upload, LogOut, Coins } from 'lucide-react';
 import UserBadges from '@/components/UserBadges';
 import TrustIndicator from '@/components/TrustIndicator';
+import SavedSearches from '@/components/SavedSearches';
 
 const profileSchema = z.object({
   display_name: z.string().trim().min(2, 'Min 2 characters').max(50, 'Max 50 characters'),
@@ -578,6 +579,9 @@ export default function Profile() {
 
       {/* WhatsApp Verification */}
       <WhatsAppVerification user={user} profile={profile} refreshProfile={refreshProfile} />
+
+      {/* Saved Search Alerts (VIP) */}
+      <SavedSearches />
 
       {/* Identity Verification */}
       <IdVerification user={user} profile={profile} refreshProfile={refreshProfile} />
