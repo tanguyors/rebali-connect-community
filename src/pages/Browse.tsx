@@ -113,6 +113,11 @@ export default function Browse() {
     },
   });
 
+  // Batch fetch boosts & fav counts
+  const listingIds = (listings || []).map((l: any) => l.id);
+  const { data: boostsMap } = useListingBoosts(listingIds);
+  const { data: favCountsMap } = useListingFavCounts(listingIds);
+
   // Filter by distance client-side, then sort boosted listings first
   const filteredListings = useMemo(() => {
     let result = listings || [];
@@ -123,16 +128,16 @@ export default function Browse() {
         return getDistanceKm(userCoords.lat, userCoords.lng, coords.lat, coords.lng) <= radiusKm;
       });
     }
-    // Sort boosted listings to the top
-    if (activeBoostedIds && activeBoostedIds.size > 0) {
+    // Sort boosted listings to the top using batch data
+    if (boostsMap && boostsMap.size > 0) {
       result = [...result].sort((a: any, b: any) => {
-        const aBoost = activeBoostedIds.has(a.id) ? 1 : 0;
-        const bBoost = activeBoostedIds.has(b.id) ? 1 : 0;
+        const aBoost = boostsMap.has(a.id) ? 1 : 0;
+        const bBoost = boostsMap.has(b.id) ? 1 : 0;
         return bBoost - aBoost;
       });
     }
     return result;
-  }, [listings, userCoords, radiusKm, activeBoostedIds]);
+  }, [listings, userCoords, radiusKm, boostsMap]);
 
   const clearFilters = () => {
     setSearch('');
