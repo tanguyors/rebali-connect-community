@@ -1,6 +1,6 @@
 import { useSearchParams } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useListingBoosts, useListingFavCounts } from '@/hooks/useListingEnrichment';
 import { supabase } from '@/integrations/supabase/client';
 import ListingCard from '@/components/ListingCard';
@@ -11,7 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { CATEGORIES, LOCATIONS, CONDITIONS, CATEGORY_TREE, LOCATION_COORDS, getDistanceKm } from '@/lib/constants';
 import { SlidersHorizontal, X, MapPin, Loader2 } from 'lucide-react';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+
+const PAGE_SIZE = 20;
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -51,7 +53,7 @@ export default function Browse() {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setUserCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        setLocation('all'); // disable manual location filter when using GPS
+        setLocation('all');
         setGeoLoading(false);
       },
       () => {
@@ -67,11 +69,16 @@ export default function Browse() {
     setRadiusKm(25);
   };
 
-  // Active boosts now fetched via batch hook below
-
-  const { data: listings, isLoading } = useQuery({
+  // Infinite query
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
     queryKey: ['listings', debouncedSearch, category, subcategory, location, condition, sort, minPrice, maxPrice],
-    queryFn: async () => {
+    queryFn: async ({ pageParam = 0 }) => {
       // If searching, use multilingual search RPC to get matching IDs first
       let matchingIds: string[] | null = null;
       if (debouncedSearch) {
@@ -97,19 +104,27 @@ export default function Browse() {
       else if (sort === 'price_low') query = query.order('price', { ascending: true });
       else if (sort === 'price_high') query = query.order('price', { ascending: false });
 
-      const { data } = await query.limit(50);
+      const { data } = await query.range(pageParam, pageParam + PAGE_SIZE - 1);
       return data || [];
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.length < PAGE_SIZE) return undefined;
+      return allPages.reduce((acc, page) => acc + page.length, 0);
     },
   });
 
+  // Flatten all pages into a single array
+  const listings = useMemo(() => data?.pages.flat() || [], [data]);
+
   // Batch fetch boosts & fav counts
-  const listingIds = (listings || []).map((l: any) => l.id);
+  const listingIds = listings.map((l: any) => l.id);
   const { data: boostsMap } = useListingBoosts(listingIds);
   const { data: favCountsMap } = useListingFavCounts(listingIds);
 
   // Filter by distance client-side, then sort boosted listings first
   const filteredListings = useMemo(() => {
-    let result = listings || [];
+    let result = listings;
     if (userCoords) {
       result = result.filter((l: any) => {
         const coords = LOCATION_COORDS[l.location_area];
@@ -117,7 +132,6 @@ export default function Browse() {
         return getDistanceKm(userCoords.lat, userCoords.lng, coords.lat, coords.lng) <= radiusKm;
       });
     }
-    // Sort boosted listings to the top using batch data
     if (boostsMap && boostsMap.size > 0) {
       result = [...result].sort((a: any, b: any) => {
         const aBoost = boostsMap.has(a.id) ? 1 : 0;
@@ -127,6 +141,25 @@ export default function Browse() {
     }
     return result;
   }, [listings, userCoords, radiusKm, boostsMap]);
+
+  // Intersection Observer for infinite scroll
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const clearFilters = () => {
     setSearch('');
@@ -149,10 +182,7 @@ export default function Browse() {
 
       {/* Search bar with autocomplete */}
       <div className="flex gap-2 mb-4">
-        <SearchAutocomplete
-          value={search}
-          onChange={setSearch}
-        />
+        <SearchAutocomplete value={search} onChange={setSearch} />
         <Button variant="outline" size="icon" onClick={() => setShowFilters(!showFilters)} className="md:hidden">
           <SlidersHorizontal className="h-4 w-4" />
         </Button>
@@ -272,11 +302,23 @@ export default function Browse() {
           ))}
         </div>
       ) : filteredListings && filteredListings.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {filteredListings.map((listing: any) => (
-            <ListingCard key={listing.id} listing={listing} boostTypes={boostsMap?.get(listing.id)} favCount={favCountsMap?.get(listing.id) ?? 0} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {filteredListings.map((listing: any) => (
+              <ListingCard key={listing.id} listing={listing} boostTypes={boostsMap?.get(listing.id)} favCount={favCountsMap?.get(listing.id) ?? 0} />
+            ))}
+          </div>
+
+          {/* Sentinel for infinite scroll */}
+          <div ref={sentinelRef} className="flex justify-center py-8">
+            {isFetchingNextPage && (
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            )}
+            {!hasNextPage && filteredListings.length >= PAGE_SIZE && (
+              <p className="text-sm text-muted-foreground">{t('filters.noMoreResults') || 'No more results'}</p>
+            )}
+          </div>
+        </>
       ) : (
         <div className="text-center py-20 text-muted-foreground">
           <p className="text-lg">{t('common.noResults')}</p>
