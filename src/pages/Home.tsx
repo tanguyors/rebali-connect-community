@@ -141,7 +141,7 @@ export default function Home() {
           <p className="text-base md:text-lg text-muted-foreground mb-8 max-w-xl mx-auto font-medium">
             {t('home.heroSub')}
           </p>
-          <form onSubmit={handleSearch} className="max-w-lg mx-auto flex gap-2">
+          <form onSubmit={handleSearch} className="max-w-lg mx-auto flex gap-2 relative z-20">
             <SearchAutocomplete
               value={searchQuery}
               onChange={setSearchQuery}
