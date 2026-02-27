@@ -198,6 +198,7 @@
   },
   "notFound": { "title": "ページが見つかりません", "description": "お探しのページは存在しません。", "backHome": "ホームに戻る" },
   "notifications": { "newListing": "新しい出品！", "listingActive": "出品が再有効化されました", "listingSold": "出品が売却済みになりました", "listingArchived": "出品がアーカイブされました", "vipNotify": "VIP開始時にお知らせします！", "alerts": "通知", "title": "お知らせ", "markAllRead": "すべて既読にする", "empty": "通知はありません", "alertLabel": "アラート", "listing": "出品" },
+  "savedSearches": { "title": "検索アラート", "description": "キーワードに一致する出品があるとアプリ内とWhatsApp通知を受け取れます。", "add": "追加", "placeholder": "例：iPhone、スクーター、ヴィラ...", "empty": "アラートがありません。上にキーワードを追加してください。", "added": "アラートを追加しました！", "deleted": "アラートを削除しました", "tooShort": "キーワードが短すぎます（最低2文字）", "maxReached": "最大{{max}}件のアラートが許可されています", "duplicate": "このキーワードは既に存在します", "error": "エラー", "promoTitle": "検索アラート", "promoDesc": "キーワードに一致する出品があると通知を受け取れます。VIP会員限定。", "becomeVip": "VIPになる" },
   "adminLabels": { "accessDenied": "アクセス拒否", "listing": "出品", "reporter": "報告者", "deleted": "削除済み", "unknown": "不明" },
   "seller": { "activeListings": "アクティブ出品", "reviews": "レビュー", "reviewsTitle": "レビュー", "leaveReview": "レビューを書く", "reviewPlaceholder": "この出品者との体験を共有してください...", "reviewSubmitted": "レビューが送信されました！", "noReviews": "まだレビューはありません", "allListings": "出品" },
   "security": {

@@ -21,6 +21,7 @@
   "footer": {"tagline":"巴厘岛值得信赖的市场","marketplace":"市场","company":"公司","legal":"法律","terms":"服务条款","privacy":"隐私政策","copyright":"© 2025 Re-Bali。保留所有权利。","trustBadgesPoints":"信任、徽章与积分"},
   "notFound": {"title":"页面未找到","description":"该页面不存在。","backHome":"返回首页"},
   "notifications": {"listingActive":"列表已重新激活","listingSold":"列表标记已售","listingArchived":"列表已归档","vipNotify":"VIP上线时将通知您！","alerts":"通知","title":"通知","markAllRead":"全部标为已读","empty":"暂无通知","alertLabel":"提醒","listing":"广告"},
+  "savedSearches": {"title":"搜索提醒","description":"当有广告匹配您的关键词时，收到应用内和WhatsApp通知。","add":"添加","placeholder":"例如：iPhone、摩托车、别墅...","empty":"未配置提醒。请在上方添加关键词。","added":"提醒已添加！","deleted":"提醒已删除","tooShort":"关键词太短（最少2个字符）","maxReached":"最多允许{{max}}个提醒","duplicate":"此关键词已存在","error":"错误","promoTitle":"搜索提醒","promoDesc":"当广告匹配您的关键词时收到通知。仅限VIP会员。","becomeVip":"成为VIP"},
   "adminLabels": {"accessDenied":"访问被拒绝","listing":"列表","reporter":"举报者","deleted":"已删除","unknown":"未知"},
   "seller": {"activeListings":"活跃列表","reviews":"评价","reviewsTitle":"评价","leaveReview":"留下评价","reviewPlaceholder":"分享您的体验...","reviewSubmitted":"评价已提交！","noReviews":"暂无评价","allListings":"列表"},
   "security": {
