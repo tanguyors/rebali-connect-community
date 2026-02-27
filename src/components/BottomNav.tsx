@@ -47,12 +47,6 @@ export default function BottomNav() {
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-t md:hidden safe-area-bottom">
       <div className="flex items-center justify-around h-16 px-2">
         {NAV_ITEMS.map((item) => {
-          // Custom notification bell slot
-          if (item.custom) {
-            if (!user) return null;
-            return <NotificationBell key="notifications" compact />;
-          }
-
           const isActive = location.pathname === item.path;
           const Icon = item.icon;
 
