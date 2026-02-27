@@ -212,7 +212,7 @@ export default function Home() {
                       <SelectContent>
                         {CONDITIONS.map((c) => (
                           <SelectItem key={c} value={c}>
-                            {t(`condition.${c}`)}
+                            {t(`conditions.${c}`)}
                           </SelectItem>
                         ))}
                       </SelectContent>
