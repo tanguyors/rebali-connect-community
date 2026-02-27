@@ -22,6 +22,9 @@ export default function MyListings() {
   const [boostDialogOpen, setBoostDialogOpen] = useState(false);
   const [boostListingId, setBoostListingId] = useState<string | null>(null);
   const [purchasing, setPurchasing] = useState(false);
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') || 'active';
+  const [activeTab, setActiveTab] = useState(initialTab);
 
   const { data: listings } = useQuery({
     queryKey: ['my-listings', user?.id],
