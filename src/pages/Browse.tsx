@@ -66,19 +66,7 @@ export default function Browse() {
     setRadiusKm(25);
   };
 
-  // Fetch active boosts to sort them higher
-  const { data: activeBoostedIds } = useQuery({
-    queryKey: ['active-boosts'],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('user_addons')
-        .select('listing_id')
-        .in('addon_type', ['boost', 'boost_premium'])
-        .eq('active', true);
-      return new Set((data || []).map(b => b.listing_id).filter(Boolean));
-    },
-    staleTime: 2 * 60 * 1000,
-  });
+  // Active boosts now fetched via batch hook below
 
   const { data: listings, isLoading } = useQuery({
     queryKey: ['listings', debouncedSearch, category, subcategory, location, condition, sort, minPrice, maxPrice],
