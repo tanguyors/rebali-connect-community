@@ -23,6 +23,8 @@ export default function MyListings() {
   const [boostDialogOpen, setBoostDialogOpen] = useState(false);
   const [boostListingId, setBoostListingId] = useState<string | null>(null);
   const [purchasing, setPurchasing] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [searchParams] = useSearchParams();
   const initialTab = searchParams.get('tab') || 'active';
   const [activeTab, setActiveTab] = useState(initialTab);
