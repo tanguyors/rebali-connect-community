@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.expire-addons]
 verify_jwt = false
+
+[functions.purge-search-logs]
+verify_jwt = false
