@@ -529,11 +529,15 @@ export default function Profile() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
           { icon: Package, label: t('profile.statsActive'), value: stats.active, color: 'text-primary', href: '/my-listings' },
-          { icon: ShoppingBag, label: t('profile.statsSold'), value: stats.sold, color: 'text-accent', href: '/my-listings' },
-          { icon: Eye, label: t('profile.statsTotalViews'), value: stats.totalViews, color: 'text-muted-foreground', href: '/my-listings' },
+          { icon: ShoppingBag, label: t('profile.statsSold'), value: stats.sold, color: 'text-accent', href: '/my-listings?tab=sold' },
+          { icon: Eye, label: t('profile.statsTotalViews'), value: stats.totalViews, color: 'text-muted-foreground', href: null },
           { icon: Star, label: t('profile.statsAvgRating'), value: stats.reviewCount > 0 ? stats.avgRating.toFixed(1) : '—', color: 'text-accent', href: `/seller/${encodeURIComponent(user.id)}` },
         ].map((stat, i) => (
-          <Card key={i} className="cursor-pointer hover:border-primary/50 transition-colors" onClick={() => navigate(stat.href)}>
+          <Card
+            key={i}
+            className={stat.href ? 'cursor-pointer hover:border-primary/50 transition-colors' : ''}
+            onClick={() => stat.href && navigate(stat.href)}
+          >
             <CardContent className="p-4 flex flex-col items-center gap-1">
               <stat.icon className={`h-5 w-5 ${stat.color}`} />
               <span className="text-2xl font-bold">{stat.value}</span>
