@@ -899,6 +899,7 @@ export type Database = {
     }
     Functions: {
       get_active_listing_count: { Args: { _user_id: string }; Returns: number }
+      get_favorites_count: { Args: { _listing_id: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
