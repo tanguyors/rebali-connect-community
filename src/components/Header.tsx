@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import { Button } from '@/components/ui/button';
 import { Plus, User, LogOut, Shield, Search, Heart, Bell, Sun, Moon, MessageCircle } from 'lucide-react';
+import NotificationBell from './NotificationBell';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
