@@ -1010,6 +1010,7 @@ export type Database = {
           listing_id: string
         }[]
       }
+      get_total_unread_messages: { Args: { _user_id: string }; Returns: number }
       get_trending_searches: {
         Args: { max_results?: number }
         Returns: {

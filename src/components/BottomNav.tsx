@@ -12,31 +12,17 @@ export default function BottomNav() {
   const { t } = useLanguage();
   const { user, profile } = useAuth();
 
-  // Fetch total unread message count
+  // Fetch total unread message count (single RPC call instead of N+1)
   const { data: totalUnread = 0 } = useQuery({
     queryKey: ['total-unread', user?.id],
     queryFn: async () => {
-      // Get all conversations for this user
-      const { data: convs } = await supabase
-        .from('conversations')
-        .select('id')
-        .or(`buyer_id.eq.${user!.id},seller_id.eq.${user!.id}`);
-      if (!convs || convs.length === 0) return 0;
-
-      let total = 0;
-      for (const conv of convs) {
-        const { count } = await supabase
-          .from('messages')
-          .select('*', { count: 'exact', head: true })
-          .eq('conversation_id', conv.id)
-          .eq('read', false)
-          .neq('sender_id', user!.id);
-        total += count || 0;
-      }
-      return total;
+      const { data } = await supabase.rpc('get_total_unread_messages', {
+        _user_id: user!.id,
+      });
+      return data ?? 0;
     },
     enabled: !!user && !!profile?.phone_verified,
-    refetchInterval: 15000, // poll every 15s
+    refetchInterval: 15000,
   });
 
   const NAV_ITEMS = [
