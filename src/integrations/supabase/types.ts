@@ -898,8 +898,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_active_boosts: {
+        Args: { _listing_ids: string[] }
+        Returns: {
+          addon_type: string
+          listing_id: string
+        }[]
+      }
       get_active_listing_count: { Args: { _user_id: string }; Returns: number }
       get_favorites_count: { Args: { _listing_id: string }; Returns: number }
+      get_listing_fav_counts: {
+        Args: { _listing_ids: string[] }
+        Returns: {
+          fav_count: number
+          listing_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
