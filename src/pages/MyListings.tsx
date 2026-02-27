@@ -174,9 +174,16 @@ export default function MyListings() {
                 </>
               )}
               {(listing.status === 'sold' || listing.status === 'archived') && (
-                <Button size="sm" variant="outline" onClick={() => updateStatus(listing.id, 'active')} className="h-7 text-xs px-2">
-                  <ArchiveRestore className="h-3 w-3 mr-1" /> {t('listing.reactivate')}
-                </Button>
+                <>
+                  <Button size="sm" variant="outline" onClick={() => updateStatus(listing.id, 'active')} className="h-7 text-xs px-2">
+                    <ArchiveRestore className="h-3 w-3 mr-1" /> {t('listing.reactivate')}
+                  </Button>
+                  {listing.status === 'archived' && (
+                    <Button size="sm" variant="ghost" onClick={() => setDeleteId(listing.id)} className="h-7 text-xs px-2 text-destructive hover:text-destructive">
+                      <Trash2 className="h-3 w-3 mr-1" /> {t('common.delete')}
+                    </Button>
+                  )}
+                </>
               )}
             </div>
           </div>
