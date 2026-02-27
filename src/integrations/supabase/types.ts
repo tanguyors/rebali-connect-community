@@ -685,6 +685,27 @@ export type Database = {
         }
         Relationships: []
       }
+      search_logs: {
+        Row: {
+          created_at: string
+          id: string
+          term: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          term: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          term?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       trust_scores: {
         Row: {
           factors: Json | null
@@ -918,6 +939,13 @@ export type Database = {
         Returns: {
           fav_count: number
           listing_id: string
+        }[]
+      }
+      get_trending_searches: {
+        Args: { max_results?: number }
+        Returns: {
+          search_count: number
+          term: string
         }[]
       }
       has_role: {
