@@ -7,7 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 
-export default function NotificationBell() {
+interface NotificationBellProps {
+  compact?: boolean;
+}
+
+export default function NotificationBell({ compact = false }: NotificationBellProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
