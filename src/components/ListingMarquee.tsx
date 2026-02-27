@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import ListingCardSmall from '@/components/ListingCardSmall';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useListingBoosts } from '@/hooks/useListingEnrichment';
 
 interface ListingMarqueeProps {
   listings: any[];
@@ -10,6 +11,9 @@ interface ListingMarqueeProps {
 
 export default function ListingMarquee({ listings, isLoading, emptyMessage }: ListingMarqueeProps) {
   const [paused, setPaused] = useState(false);
+
+  const listingIds = (listings || []).map((l: any) => l.id);
+  const { data: boostsMap } = useListingBoosts(listingIds);
 
   if (!isLoading && (!listings || listings.length === 0)) {
     return emptyMessage ? (
@@ -44,7 +48,11 @@ export default function ListingMarquee({ listings, isLoading, emptyMessage }: Li
         className={`listing-marquee flex gap-3 w-max ${paused ? 'paused' : ''}`}
       >
         {items.map((listing: any, i: number) => (
-          <ListingCardSmall key={`${listing.id}-${i}`} listing={listing} />
+          <ListingCardSmall
+            key={`${listing.id}-${i}`}
+            listing={listing}
+            boostTypes={boostsMap?.get(listing.id)}
+          />
         ))}
       </div>
     </div>

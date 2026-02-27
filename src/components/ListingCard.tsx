@@ -8,7 +8,6 @@ import { formatPrice, CATEGORY_ICONS, CATEGORY_PLACEHOLDERS } from '@/lib/consta
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { fr, id as idLocale, es, zhCN, de, nl, ru } from 'date-fns/locale';
-import { useQuery } from '@tanstack/react-query';
 
 const DATE_LOCALES: Record<string, any> = { fr, id: idLocale, es, zh: zhCN, de, nl, ru };
 
@@ -30,60 +29,18 @@ interface ListingCardProps {
     profiles?: { user_type: string; is_verified_seller: boolean } | null;
     favorites?: { count: number }[];
   };
-  sellerProfile?: { user_type: string; is_verified_seller: boolean } | null;
+  boostTypes?: string[];
   favCount?: number;
 }
 
-export default function ListingCard({ listing, sellerProfile: sellerProfileProp, favCount: favCountProp }: ListingCardProps) {
+export default function ListingCard({ listing, boostTypes, favCount: favCountProp }: ListingCardProps) {
   const { t, language } = useLanguage();
 
-  // Only fetch if not provided via props (backward compatible)
-  const { data: fetchedSellerProfile } = useQuery({
-    queryKey: ['seller-profile', listing.seller_id],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('profiles')
-        .select('user_type, is_verified_seller')
-        .eq('id', listing.seller_id)
-        .single();
-      return data;
-    },
-    staleTime: 5 * 60 * 1000,
-    enabled: sellerProfileProp === undefined && !listing.profiles,
-  });
+  const isBoosted = boostTypes?.includes('boost') || false;
+  const isFeatured = boostTypes?.includes('boost_premium') || false;
 
-  const { data: fetchedFavCount } = useQuery({
-    queryKey: ['fav-count', listing.id],
-    queryFn: async () => {
-      const { count } = await supabase
-        .from('favorites')
-        .select('*', { count: 'exact', head: true })
-        .eq('listing_id', listing.id);
-      return count || 0;
-    },
-    staleTime: 60 * 1000,
-    enabled: favCountProp === undefined && !listing.favorites,
-  });
-
-  const { data: activeBoosts } = useQuery({
-    queryKey: ['listing-boosts', listing.id],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('user_addons')
-        .select('addon_type')
-        .eq('listing_id', listing.id)
-        .eq('active', true)
-        .in('addon_type', ['boost', 'boost_premium']);
-      return data || [];
-    },
-    staleTime: 2 * 60 * 1000,
-  });
-
-  const isBoosted = activeBoosts?.some(a => a.addon_type === 'boost') || false;
-  const isFeatured = activeBoosts?.some(a => a.addon_type === 'boost_premium') || false;
-
-  const resolvedProfile = sellerProfileProp ?? listing.profiles ?? fetchedSellerProfile;
-  const resolvedFavCount = favCountProp ?? listing.favorites?.[0]?.count ?? fetchedFavCount ?? 0;
+  const resolvedProfile = listing.profiles;
+  const resolvedFavCount = favCountProp ?? listing.favorites?.[0]?.count ?? 0;
 
   const isPro = resolvedProfile?.user_type === 'business';
   const isVerified = resolvedProfile?.is_verified_seller === true;

@@ -2,10 +2,9 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Eye, Briefcase, ShieldCheck, Rocket, Star } from 'lucide-react';
-import { formatPrice, CATEGORY_ICONS, CATEGORY_PLACEHOLDERS } from '@/lib/constants';
+import { MapPin, Briefcase, Rocket, Star } from 'lucide-react';
+import { formatPrice, CATEGORY_PLACEHOLDERS } from '@/lib/constants';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery } from '@tanstack/react-query';
 
 interface ListingCardSmallProps {
   listing: {
@@ -24,30 +23,16 @@ interface ListingCardSmallProps {
     listing_translations?: { lang: string; title: string }[];
     profiles?: { user_type: string; is_verified_seller: boolean } | null;
   };
+  boostTypes?: string[];
 }
 
-export default function ListingCardSmall({ listing }: ListingCardSmallProps) {
+export default function ListingCardSmall({ listing, boostTypes }: ListingCardSmallProps) {
   const { t, language } = useLanguage();
 
-  const { data: activeBoosts } = useQuery({
-    queryKey: ['listing-boosts', listing.id],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('user_addons')
-        .select('addon_type')
-        .eq('listing_id', listing.id)
-        .eq('active', true)
-        .in('addon_type', ['boost', 'boost_premium']);
-      return data || [];
-    },
-    staleTime: 2 * 60 * 1000,
-  });
-
-  const isBoosted = activeBoosts?.some(a => a.addon_type === 'boost') || false;
-  const isFeatured = activeBoosts?.some(a => a.addon_type === 'boost_premium') || false;
+  const isBoosted = boostTypes?.includes('boost') || false;
+  const isFeatured = boostTypes?.includes('boost_premium') || false;
 
   const isPro = listing.profiles?.user_type === 'business';
-  const isVerified = listing.profiles?.is_verified_seller === true;
 
   const translation = listing.listing_translations?.find(tr => tr.lang === language);
   const enTranslation = listing.listing_translations?.find(tr => tr.lang === 'en');
