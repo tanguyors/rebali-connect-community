@@ -214,7 +214,7 @@
   "filters": {
     "allCategories": "All Categories", "allSubcategories": "All Subcategories", "allLocations": "All Locations",
     "allConditions": "All Conditions", "priceRange": "Price Range", "minPrice": "Min price", "maxPrice": "Max price",
-    "sortNewest": "Newest first", "sortPriceLow": "Price: Low to High", "sortPriceHigh": "Price: High to Low",
+    "sortNewest": "Newest first", "sortPriceLow": "Price: Low to High", "sortPriceHigh": "Price: High to Low", "sortMostViewed": "Most viewed", "sortMostLiked": "Most liked",
     "clearFilters": "Clear filters", "results": "results",
     "locateMe": "Locate me", "localized": "Located", "geoError": "Unable to access your location", "geoNotSupported": "Geolocation is not supported"
   },
