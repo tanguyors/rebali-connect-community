@@ -224,7 +224,7 @@
     "trustBadgesPoints": "Trust, Badges & Points"
   },
   "notFound": { "title": "Page not found", "description": "Oops! The page you're looking for doesn't exist.", "backHome": "Return to Home" },
-  "notifications": { "newListing": "New listing!", "listingActive": "Listing reactivated", "listingSold": "Listing marked as sold", "listingArchived": "Listing archived", "vipNotify": "You'll be notified when VIP launches!" },
+  "notifications": { "newListing": "New listing!", "listingActive": "Listing reactivated", "listingSold": "Listing marked as sold", "listingArchived": "Listing archived", "vipNotify": "You'll be notified when VIP launches!", "alerts": "Alerts", "title": "Notifications", "markAllRead": "Mark all read", "empty": "No notifications", "alertLabel": "Alert", "listing": "Listing" },
   "adminLabels": { "accessDenied": "Access denied", "listing": "Listing", "reporter": "Reporter", "deleted": "Deleted", "unknown": "Unknown" },
   "seller": { "activeListings": "active listings", "reviews": "reviews", "reviewsTitle": "Reviews", "leaveReview": "Leave a review", "reviewPlaceholder": "Share your experience with this seller...", "reviewSubmitted": "Review submitted!", "noReviews": "No reviews yet", "allListings": "Listings", "verifiedPurchase": "Verified Buyer", "reviewRequiresDeal": "The seller must confirm the deal before you can leave a review.", "accountTooNew": "Your account or the seller's account must be at least 7 days old to leave a review.", "noExchangeYet": "A real conversation with messages from both sides is needed before leaving a review.", "alreadyReviewed": "You have already reviewed this transaction." },
   "security": {
