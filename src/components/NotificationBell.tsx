@@ -103,8 +103,10 @@ export default function NotificationBell({ compact = false }: NotificationBellPr
 
       {open && (
         <div className={cn(
-          "absolute top-full mt-1 bg-card border rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto",
-          compact ? "right-0 left-auto w-[calc(100vw-2rem)] max-w-80 -translate-x-1/4" : "right-0 w-80"
+          "absolute bg-card border rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto",
+          compact 
+            ? "bottom-full mb-2 right-0 w-[calc(100vw-2rem)] max-w-80" 
+            : "top-full mt-1 right-0 w-80"
         )}>
           <div className="flex items-center justify-between px-3 py-2 border-b">
             <span className="text-sm font-semibold">Notifications</span>
