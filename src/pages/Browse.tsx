@@ -119,6 +119,8 @@ export default function Browse() {
       if (sort === 'newest') query = query.order('created_at', { ascending: false });
       else if (sort === 'price_low') query = query.order('price', { ascending: true });
       else if (sort === 'price_high') query = query.order('price', { ascending: false });
+      else if (sort === 'most_viewed') query = query.order('views_count', { ascending: false });
+      else if (sort === 'most_liked') query = query.order('created_at', { ascending: false });
 
       const { data } = await query.range(pageParam, pageParam + PAGE_SIZE - 1);
       return data || [];
