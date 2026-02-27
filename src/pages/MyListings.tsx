@@ -77,6 +77,23 @@ export default function MyListings() {
     toast({ title: t(statusToastMap[status] || status) });
   };
 
+  const deleteListing = async (id: string) => {
+    setDeleting(true);
+    // Delete related data first, then the listing
+    await supabase.from('listing_images').delete().eq('listing_id', id);
+    await supabase.from('favorites').delete().eq('listing_id', id);
+    await supabase.from('listing_translations').delete().eq('listing_id', id);
+    const { error } = await supabase.from('listings').delete().eq('id', id);
+    if (error) {
+      toast({ title: t('common.error'), variant: 'destructive' });
+    } else {
+      toast({ title: t('myListings.deleted') });
+      qc.invalidateQueries({ queryKey: ['my-listings'] });
+    }
+    setDeleting(false);
+    setDeleteId(null);
+  };
+
   const getBoostStatus = (listingId: string) => {
     const boost = activeBoosts?.find(b => b.listing_id === listingId);
     if (boost?.addon_type === 'boost_premium') return 'featured';
