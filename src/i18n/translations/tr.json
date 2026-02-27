@@ -121,7 +121,8 @@
   "myListings": {
     "title": "İlanlarım", "active": "Aktif", "sold": "Satıldı", "archived": "Arşivlendi", "draft": "Taslak",
     "noListings": "Henüz ilanınız yok", "createFirst": "İlk ilanınızı oluşturun",
-    "activeCount": "aktif ilan (5 üzerinden)"
+    "activeCount": "aktif ilan (5 üzerinden)",
+    "deleted": "İlan kalıcı olarak silindi", "deleteTitle": "Bu ilanı sil?", "deleteDescription": "Bu işlem geri alınamaz. Bu ilana ait tüm resimler ve veriler kalıcı olarak silinecektir."
   },
   "report": {
     "title": "İlanı Şikayet Et", "reason": "Sebep", "scam": "Dolandırıcılık", "prohibited": "Yasak ürün",

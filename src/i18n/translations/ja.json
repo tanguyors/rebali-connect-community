@@ -120,7 +120,8 @@
   "myListings": {
     "title": "マイ出品", "active": "アクティブ", "sold": "売却済み", "archived": "アーカイブ済み", "draft": "下書き",
     "noListings": "まだ出品がありません", "createFirst": "最初の出品を作成",
-    "activeCount": "アクティブ出品（5件中）"
+    "activeCount": "アクティブ出品（5件中）",
+    "deleted": "出品が完全に削除されました", "deleteTitle": "この出品を削除しますか？", "deleteDescription": "この操作は元に戻せません。この出品に関連するすべての画像とデータが完全に削除されます。"
   },
   "report": {
     "title": "出品を報告", "reason": "理由", "scam": "詐欺", "prohibited": "禁止商品",
