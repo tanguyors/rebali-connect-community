@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
-import { Search, X, Loader2, Clock, Trash2 } from 'lucide-react';
+import { Search, X, Loader2, Clock, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const RECENT_KEY = 'rebali_recent_searches';
@@ -71,6 +71,16 @@ export default function SearchAutocomplete({
     setRecentSearches(getRecentSearches());
   }, []);
 
+  // Fetch trending searches
+  const { data: trendingSearches } = useQuery({
+    queryKey: ['trending-searches'],
+    queryFn: async () => {
+      const { data } = await supabase.rpc('get_trending_searches', { max_results: 6 });
+      return (data as { term: string; search_count: number }[]) || [];
+    },
+    staleTime: 5 * 60_000, // 5 min cache
+  });
+
   const { data: suggestions, isFetching } = useQuery({
     queryKey: ['search-suggestions', debouncedValue],
     queryFn: async () => {
@@ -85,9 +95,20 @@ export default function SearchAutocomplete({
     enabled: debouncedValue.length >= 2,
   });
 
+  // Log search to DB (fire-and-forget, debounced)
+  const loggedRef = useRef<string>('');
+  useEffect(() => {
+    if (debouncedValue.length >= 2 && debouncedValue !== loggedRef.current) {
+      loggedRef.current = debouncedValue;
+      supabase.from('search_logs').insert({ term: debouncedValue }).then(() => {});
+    }
+  }, [debouncedValue]);
+
   const hasSuggestions = suggestions && suggestions.length > 0 && debouncedValue.length >= 2;
   const showRecent = !value && recentSearches.length > 0;
-  const shouldOpen = hasSuggestions || showRecent;
+  const hasTrending = !value && !showRecent && trendingSearches && trendingSearches.length > 0;
+  const showTrendingWithRecent = !value && showRecent && trendingSearches && trendingSearches.length > 0;
+  const shouldOpen = hasSuggestions || showRecent || hasTrending;
 
   // Close on click outside
   useEffect(() => {
@@ -138,11 +159,14 @@ export default function SearchAutocomplete({
   }, []);
 
   // Compute all items for keyboard nav
+  const trendingItems = (hasTrending ? trendingSearches!.map((t) => t.term) : showTrendingWithRecent ? trendingSearches!.map((t) => t.term) : []);
   const allItems = hasSuggestions
     ? suggestions!.map((s) => s.title)
     : showRecent
-      ? recentSearches
-      : [];
+      ? [...recentSearches, ...trendingItems]
+      : hasTrending
+        ? trendingItems
+        : [];
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!open || allItems.length === 0) return;
@@ -261,6 +285,45 @@ export default function SearchAutocomplete({
                   </button>
                 </li>
               ))}
+            </>
+          )}
+
+          {/* Trending searches (shown when input is empty) */}
+          {!hasSuggestions && !value && trendingSearches && trendingSearches.length > 0 && (
+            <>
+              <li className="flex items-center gap-2 px-3 py-2 border-b border-border">
+                <TrendingUp className="h-3.5 w-3.5 text-primary" />
+                <span className="text-xs font-medium text-muted-foreground">
+                  {t('search.trending') || 'Trending'}
+                </span>
+              </li>
+              {trendingSearches.map((item, i) => {
+                const itemIndex = showRecent ? recentSearches.length + i : i;
+                return (
+                  <li
+                    key={`trending-${item.term}`}
+                    role="option"
+                    aria-selected={itemIndex === activeIndex}
+                    className={cn(
+                      'flex items-center gap-3 px-3 py-2.5 text-sm cursor-pointer transition-colors',
+                      itemIndex === activeIndex
+                        ? 'bg-accent text-accent-foreground'
+                        : 'hover:bg-accent/50',
+                    )}
+                    onMouseEnter={() => setActiveIndex(itemIndex)}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      handleSelect(item.term);
+                    }}
+                  >
+                    <TrendingUp className="h-3.5 w-3.5 text-primary/60 shrink-0" />
+                    <span className="truncate capitalize">{item.term}</span>
+                    <span className="ml-auto text-xs text-muted-foreground shrink-0">
+                      {item.search_count}×
+                    </span>
+                  </li>
+                );
+              })}
             </>
           )}
 
