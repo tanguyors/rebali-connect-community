@@ -10,8 +10,9 @@ import CategoryMarquee from '@/components/CategoryMarquee';
 import { CATEGORY_ICONS } from '@/lib/constants';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useListingBoosts, useListingFavCounts } from '@/hooks/useListingEnrichment';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
 
