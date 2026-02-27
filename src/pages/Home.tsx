@@ -49,7 +49,7 @@ function useFeaturedListings() {
 
       const { data } = await supabase
         .from('listings')
-        .select('*, listing_images(storage_path, sort_order), listing_translations(lang, title), profiles:seller_id(user_type, is_verified_seller), favorites(count)')
+        .select('*, listing_images(storage_path, sort_order), listing_translations(lang, title), profiles:seller_id(user_type, is_verified_seller)')
         .eq('status', 'active')
         .in('id', listingIds)
         .limit(20);
