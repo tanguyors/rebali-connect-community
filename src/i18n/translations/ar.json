@@ -198,7 +198,7 @@
     "terms": "شروط الاستخدام", "privacy": "سياسة الخصوصية", "copyright": "جميع الحقوق محفوظة.", "trustBadgesPoints": "الثقة والشارات والنقاط"
   },
   "notFound": { "title": "الصفحة غير موجودة", "description": "الصفحة التي تبحث عنها غير موجودة.", "backHome": "العودة للرئيسية" },
-  "notifications": { "newListing": "إعلان جديد!", "listingActive": "تم إعادة تفعيل الإعلان", "listingSold": "تم تحديد الإعلان كمباع", "listingArchived": "تم أرشفة الإعلان", "vipNotify": "سيتم إشعارك عند إطلاق VIP!" },
+  "notifications": { "newListing": "إعلان جديد!", "listingActive": "تم إعادة تفعيل الإعلان", "listingSold": "تم تحديد الإعلان كمباع", "listingArchived": "تم أرشفة الإعلان", "vipNotify": "سيتم إشعارك عند إطلاق VIP!", "alerts": "تنبيهات", "title": "الإشعارات", "markAllRead": "تحديد الكل كمقروء", "empty": "لا توجد إشعارات", "alertLabel": "تنبيه", "listing": "إعلان" },
   "adminLabels": { "accessDenied": "تم رفض الوصول", "listing": "إعلان", "reporter": "المُبلِّغ", "deleted": "محذوف", "unknown": "غير معروف" },
   "seller": { "activeListings": "إعلانات نشطة", "reviews": "تقييمات", "reviewsTitle": "التقييمات", "leaveReview": "اترك تقييماً", "reviewPlaceholder": "شارك تجربتك مع هذا البائع...", "reviewSubmitted": "تم إرسال التقييم!", "noReviews": "لا توجد تقييمات بعد", "allListings": "الإعلانات" },
   "security": {

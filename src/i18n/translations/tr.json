@@ -198,7 +198,7 @@
     "terms": "Kullanım Şartları", "privacy": "Gizlilik Politikası", "copyright": "Tüm hakları saklıdır.", "trustBadgesPoints": "Güven, Rozetler ve Puanlar"
   },
   "notFound": { "title": "Sayfa bulunamadı", "description": "Aradığınız sayfa mevcut değil.", "backHome": "Ana Sayfaya Dön" },
-  "notifications": { "newListing": "Yeni ilan!", "listingActive": "İlan yeniden etkinleştirildi", "listingSold": "İlan satıldı olarak işaretlendi", "listingArchived": "İlan arşivlendi", "vipNotify": "VIP başladığında bildirileceksiniz!" },
+  "notifications": { "newListing": "Yeni ilan!", "listingActive": "İlan yeniden etkinleştirildi", "listingSold": "İlan satıldı olarak işaretlendi", "listingArchived": "İlan arşivlendi", "vipNotify": "VIP başladığında bildirileceksiniz!", "alerts": "Uyarılar", "title": "Bildirimler", "markAllRead": "Tümünü okundu işaretle", "empty": "Bildirim yok", "alertLabel": "Uyarı", "listing": "İlan" },
   "adminLabels": { "accessDenied": "Erişim reddedildi", "listing": "İlan", "reporter": "Şikayet eden", "deleted": "Silindi", "unknown": "Bilinmiyor" },
   "seller": { "activeListings": "aktif ilan", "reviews": "değerlendirme", "reviewsTitle": "Değerlendirmeler", "leaveReview": "Değerlendirme bırakın", "reviewPlaceholder": "Bu satıcıyla deneyiminizi paylaşın...", "reviewSubmitted": "Değerlendirme gönderildi!", "noReviews": "Henüz değerlendirme yok", "allListings": "İlanlar" },
   "security": {
