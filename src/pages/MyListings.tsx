@@ -115,7 +115,7 @@ export default function MyListings() {
         <CardContent className="p-3 flex gap-3">
           <img src={imgUrl} alt="" className="w-20 h-20 rounded-lg object-cover flex-shrink-0" />
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-start gap-1.5">
               <h3 className="font-medium text-sm truncate">{listing.title_original}</h3>
               {boostStatus === 'featured' && (
                 <Badge className="bg-amber-500 text-white text-[9px] gap-0.5 px-1.5 py-0 shrink-0">
@@ -134,31 +134,31 @@ export default function MyListings() {
               <span>{t(`locations.${listing.location_area}`)}</span>
               <span className="flex items-center gap-0.5"><Eye className="h-3 w-3" />{listing.views_count}</span>
             </div>
-          </div>
-          <div className="flex flex-col gap-1">
-            {listing.status === 'active' && (
-              <>
-                <Button size="sm" variant="outline" onClick={() => navigate(`/create?edit=${listing.id}`)} className="gap-1">
-                  <Pencil className="h-3 w-3" /> {t('listing.edit')}
-                </Button>
-                {!boostStatus && (
-                  <Button size="sm" variant="outline" onClick={() => openBoostDialog(listing.id)} className="gap-1 text-blue-600 border-blue-300 hover:bg-blue-50">
-                    <Rocket className="h-3 w-3" /> Boost
+            <div className="flex flex-wrap gap-1 mt-2">
+              {listing.status === 'active' && (
+                <>
+                  <Button size="sm" variant="outline" onClick={() => navigate(`/create?edit=${listing.id}`)} className="gap-1 h-7 text-xs px-2">
+                    <Pencil className="h-3 w-3" /> {t('listing.edit')}
                   </Button>
-                )}
-                <Button size="sm" variant="outline" onClick={() => updateStatus(listing.id, 'sold')}>
-                  {t('listing.markSold')}
+                  {!boostStatus && (
+                    <Button size="sm" variant="outline" onClick={() => openBoostDialog(listing.id)} className="gap-1 h-7 text-xs px-2 text-blue-600 border-blue-300 hover:bg-blue-50">
+                      <Rocket className="h-3 w-3" /> Boost
+                    </Button>
+                  )}
+                  <Button size="sm" variant="outline" onClick={() => updateStatus(listing.id, 'sold')} className="h-7 text-xs px-2">
+                    {t('listing.markSold')}
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => updateStatus(listing.id, 'archived')} className="h-7 text-xs px-2">
+                    {t('listing.archive')}
+                  </Button>
+                </>
+              )}
+              {(listing.status === 'sold' || listing.status === 'archived') && (
+                <Button size="sm" variant="outline" onClick={() => updateStatus(listing.id, 'active')} className="h-7 text-xs px-2">
+                  <ArchiveRestore className="h-3 w-3 mr-1" /> {t('listing.reactivate')}
                 </Button>
-                <Button size="sm" variant="ghost" onClick={() => updateStatus(listing.id, 'archived')}>
-                  {t('listing.archive')}
-                </Button>
-              </>
-            )}
-            {(listing.status === 'sold' || listing.status === 'archived') && (
-              <Button size="sm" variant="outline" onClick={() => updateStatus(listing.id, 'active')}>
-                <ArchiveRestore className="h-3 w-3 mr-1" /> {t('listing.reactivate')}
-              </Button>
-            )}
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
