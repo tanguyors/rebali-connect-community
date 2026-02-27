@@ -226,23 +226,30 @@ function CategoryRow({ category, featuredListings }: { category: string; feature
   const { t } = useLanguage();
   const { data: listings, isLoading } = useCategoryListings(category);
 
-  // Inject 1-2 random featured listings into the category marquee
+  // Use a stable ref for randomization to avoid re-shuffling on every render
+  const seedRef = useRef(Math.random());
+
+  // Inject 1-2 featured listings into the category marquee (stable order)
   const mergedListings = useMemo(() => {
     if (!listings || listings.length === 0) return [];
     if (!featuredListings || featuredListings.length === 0) return listings;
 
-    // Pick up to 2 random featured listings not already in this category
     const categoryIds = new Set(listings.map((l: any) => l.id));
     const eligible = featuredListings.filter((f: any) => !categoryIds.has(f.id));
-    const shuffled = [...eligible].sort(() => Math.random() - 0.5);
+    // Stable shuffle using seed
+    const seed = seedRef.current;
+    const shuffled = [...eligible].sort((a, b) => {
+      const ha = (a.id.charCodeAt(0) * seed) % 1;
+      const hb = (b.id.charCodeAt(0) * seed) % 1;
+      return ha - hb;
+    });
     const toInject = shuffled.slice(0, Math.min(2, shuffled.length));
 
     if (toInject.length === 0) return listings;
 
-    // Insert at random positions
     const result = [...listings];
-    toInject.forEach((item: any) => {
-      const pos = Math.floor(Math.random() * (result.length + 1));
+    toInject.forEach((item: any, idx: number) => {
+      const pos = Math.min(Math.floor((seed * (idx + 1) * 7) % (result.length + 1)), result.length);
       result.splice(pos, 0, item);
     });
     return result;
