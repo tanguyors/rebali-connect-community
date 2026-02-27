@@ -14,6 +14,7 @@ interface NotificationBellProps {
 }
 
 export default function NotificationBell({ compact = false }: NotificationBellProps) {
+  const { t } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
