@@ -3,8 +3,36 @@ import { useQuery } from '@tanstack/react-query';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
-import { Search, X, Loader2 } from 'lucide-react';
+import { Search, X, Loader2, Clock, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+const RECENT_KEY = 'rebali_recent_searches';
+const MAX_RECENT = 6;
+
+function getRecentSearches(): string[] {
+  try {
+    return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+  } catch {
+    return [];
+  }
+}
+
+function addRecentSearch(term: string) {
+  const trimmed = term.trim();
+  if (!trimmed) return;
+  const existing = getRecentSearches().filter((s) => s.toLowerCase() !== trimmed.toLowerCase());
+  const updated = [trimmed, ...existing].slice(0, MAX_RECENT);
+  localStorage.setItem(RECENT_KEY, JSON.stringify(updated));
+}
+
+function removeRecentSearch(term: string) {
+  const updated = getRecentSearches().filter((s) => s !== term);
+  localStorage.setItem(RECENT_KEY, JSON.stringify(updated));
+}
+
+function clearRecentSearches() {
+  localStorage.removeItem(RECENT_KEY);
+}
 
 interface SearchAutocompleteProps {
   value: string;
@@ -33,9 +61,15 @@ export default function SearchAutocomplete({
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const debouncedValue = useDebounce(value, 250);
+
+  // Load recent searches on mount
+  useEffect(() => {
+    setRecentSearches(getRecentSearches());
+  }, []);
 
   const { data: suggestions, isFetching } = useQuery({
     queryKey: ['search-suggestions', debouncedValue],
@@ -51,6 +85,10 @@ export default function SearchAutocomplete({
     enabled: debouncedValue.length >= 2,
   });
 
+  const hasSuggestions = suggestions && suggestions.length > 0 && debouncedValue.length >= 2;
+  const showRecent = !value && recentSearches.length > 0;
+  const shouldOpen = hasSuggestions || showRecent;
+
   // Close on click outside
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -62,18 +100,20 @@ export default function SearchAutocomplete({
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Open dropdown when suggestions arrive
+  // Open/close dropdown based on content
   useEffect(() => {
-    if (suggestions && suggestions.length > 0 && debouncedValue.length >= 2) {
+    if (hasSuggestions) {
       setOpen(true);
       setActiveIndex(-1);
-    } else {
+    } else if (!showRecent) {
       setOpen(false);
     }
-  }, [suggestions, debouncedValue]);
+  }, [hasSuggestions, showRecent]);
 
   const handleSelect = useCallback(
     (title: string) => {
+      addRecentSearch(title);
+      setRecentSearches(getRecentSearches());
       onChange(title);
       onSelect?.(title);
       setOpen(false);
@@ -82,25 +122,47 @@ export default function SearchAutocomplete({
     [onChange, onSelect],
   );
 
+  const handleRemoveRecent = useCallback((term: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    removeRecentSearch(term);
+    setRecentSearches(getRecentSearches());
+  }, []);
+
+  const handleClearAll = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    clearRecentSearches();
+    setRecentSearches([]);
+    setOpen(false);
+  }, []);
+
+  // Compute all items for keyboard nav
+  const allItems = hasSuggestions
+    ? suggestions!.map((s) => s.title)
+    : showRecent
+      ? recentSearches
+      : [];
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (!open || !suggestions?.length) return;
+    if (!open || allItems.length === 0) return;
 
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setActiveIndex((prev) => (prev < suggestions.length - 1 ? prev + 1 : 0));
+      setActiveIndex((prev) => (prev < allItems.length - 1 ? prev + 1 : 0));
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      setActiveIndex((prev) => (prev > 0 ? prev - 1 : suggestions.length - 1));
+      setActiveIndex((prev) => (prev > 0 ? prev - 1 : allItems.length - 1));
     } else if (e.key === 'Enter' && activeIndex >= 0) {
       e.preventDefault();
-      handleSelect(suggestions[activeIndex].title);
+      handleSelect(allItems[activeIndex]);
     } else if (e.key === 'Escape') {
       setOpen(false);
     }
   };
 
-  // Highlight matching text
   const highlightMatch = (text: string, query: string) => {
+    if (!query) return text;
     const idx = text.toLowerCase().indexOf(query.toLowerCase());
     if (idx === -1) return text;
     return (
@@ -121,7 +183,10 @@ export default function SearchAutocomplete({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onFocus={() => {
-          if (suggestions && suggestions.length > 0 && value.length >= 2) setOpen(true);
+          if (shouldOpen) {
+            setOpen(true);
+            setActiveIndex(-1);
+          }
         }}
         onKeyDown={handleKeyDown}
         className="pl-9 pr-8"
@@ -147,35 +212,84 @@ export default function SearchAutocomplete({
         </button>
       )}
 
-      {open && suggestions && suggestions.length > 0 && (
+      {open && (
         <ul
           className="absolute z-50 mt-1 w-full rounded-lg border border-border bg-popover shadow-lg overflow-hidden"
           role="listbox"
         >
-          {suggestions.map((s, i) => (
-            <li
-              key={s.listing_id}
-              role="option"
-              aria-selected={i === activeIndex}
-              className={cn(
-                'flex items-center gap-3 px-3 py-2.5 text-sm cursor-pointer transition-colors',
-                i === activeIndex
-                  ? 'bg-accent text-accent-foreground'
-                  : 'hover:bg-accent/50',
-              )}
-              onMouseEnter={() => setActiveIndex(i)}
-              onMouseDown={(e) => {
-                e.preventDefault(); // prevent blur before click
-                handleSelect(s.title);
-              }}
-            >
-              <Search className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-              <span className="truncate">{highlightMatch(s.title, value)}</span>
-              <span className="ml-auto text-xs text-muted-foreground shrink-0">
-                {t(`categories.${s.category}`)}
-              </span>
-            </li>
-          ))}
+          {/* Recent searches (shown when input is empty) */}
+          {showRecent && !hasSuggestions && (
+            <>
+              <li className="flex items-center justify-between px-3 py-2 border-b border-border">
+                <span className="text-xs font-medium text-muted-foreground">
+                  {t('search.recentSearches') || 'Recent searches'}
+                </span>
+                <button
+                  type="button"
+                  onMouseDown={handleClearAll}
+                  className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  {t('search.clearAll') || 'Clear all'}
+                </button>
+              </li>
+              {recentSearches.map((term, i) => (
+                <li
+                  key={term}
+                  role="option"
+                  aria-selected={i === activeIndex}
+                  className={cn(
+                    'flex items-center gap-3 px-3 py-2.5 text-sm cursor-pointer transition-colors group',
+                    i === activeIndex
+                      ? 'bg-accent text-accent-foreground'
+                      : 'hover:bg-accent/50',
+                  )}
+                  onMouseEnter={() => setActiveIndex(i)}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    handleSelect(term);
+                  }}
+                >
+                  <Clock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                  <span className="truncate">{term}</span>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => handleRemoveRecent(term, e)}
+                    className="ml-auto opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-opacity shrink-0"
+                    aria-label="Remove"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </li>
+              ))}
+            </>
+          )}
+
+          {/* Suggestions from API */}
+          {hasSuggestions &&
+            suggestions!.map((s, i) => (
+              <li
+                key={s.listing_id}
+                role="option"
+                aria-selected={i === activeIndex}
+                className={cn(
+                  'flex items-center gap-3 px-3 py-2.5 text-sm cursor-pointer transition-colors',
+                  i === activeIndex
+                    ? 'bg-accent text-accent-foreground'
+                    : 'hover:bg-accent/50',
+                )}
+                onMouseEnter={() => setActiveIndex(i)}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  handleSelect(s.title);
+                }}
+              >
+                <Search className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <span className="truncate">{highlightMatch(s.title, value)}</span>
+                <span className="ml-auto text-xs text-muted-foreground shrink-0">
+                  {t(`categories.${s.category}`)}
+                </span>
+              </li>
+            ))}
         </ul>
       )}
     </div>
