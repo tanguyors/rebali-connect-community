@@ -121,7 +121,7 @@ export default function NotificationBell({ compact = false }: NotificationBellPr
 
           {notifications.length === 0 ? (
             <div className="p-4 text-center text-sm text-muted-foreground">
-              Aucune notification
+              {t('notifications.empty')}
             </div>
           ) : (
             <div>
