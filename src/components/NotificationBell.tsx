@@ -82,7 +82,7 @@ export default function NotificationBell({ compact = false }: NotificationBellPr
               </span>
             )}
           </div>
-          <span className="text-[10px]">Alertes</span>
+          <span className="text-[10px]">{t('notifications.alerts')}</span>
         </button>
       ) : (
         <Button
