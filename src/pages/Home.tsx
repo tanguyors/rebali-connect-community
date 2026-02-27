@@ -2,20 +2,21 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import SearchAutocomplete from '@/components/SearchAutocomplete';
 import ListingCard from '@/components/ListingCard';
 import ListingMarquee from '@/components/ListingMarquee';
 import AnimatedHeroText from '@/components/AnimatedHeroText';
-import { Plus, ArrowRight, Star } from 'lucide-react';
+import { Plus, ArrowRight, Star, SlidersHorizontal, X } from 'lucide-react';
 import CategoryMarquee from '@/components/CategoryMarquee';
-import { CATEGORY_ICONS } from '@/lib/constants';
+import { CATEGORY_ICONS, CATEGORIES, CONDITIONS, LOCATIONS } from '@/lib/constants';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useListingBoosts, useListingFavCounts } from '@/hooks/useListingEnrichment';
 import { Skeleton } from '@/components/ui/skeleton';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function useCategoryListings(category: string) {
   return useQuery({
@@ -65,6 +66,12 @@ export default function Home() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [filterCategory, setFilterCategory] = useState('');
+  const [filterCondition, setFilterCondition] = useState('');
+  const [filterLocation, setFilterLocation] = useState('');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
   const { user } = useAuth();
 
   const { data: listings, isLoading } = useQuery({
@@ -89,9 +96,30 @@ export default function Home() {
   const { data: boostsMap } = useListingBoosts(allIds);
   const { data: favCountsMap } = useListingFavCounts(allIds);
 
+  const buildSearchUrl = () => {
+    const params = new URLSearchParams();
+    if (searchQuery.trim()) params.set('q', searchQuery.trim());
+    if (filterCategory) params.set('category', filterCategory);
+    if (filterCondition) params.set('condition', filterCondition);
+    if (filterLocation) params.set('location', filterLocation);
+    if (minPrice) params.set('minPrice', minPrice);
+    if (maxPrice) params.set('maxPrice', maxPrice);
+    return `/browse?${params.toString()}`;
+  };
+
+  const hasActiveFilters = filterCategory || filterCondition || filterLocation || minPrice || maxPrice;
+
+  const clearFilters = () => {
+    setFilterCategory('');
+    setFilterCondition('');
+    setFilterLocation('');
+    setMinPrice('');
+    setMaxPrice('');
+  };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) navigate(`/browse?q=${encodeURIComponent(searchQuery)}`);
+    navigate(buildSearchUrl());
   };
 
   const hasFeatured = !featuredLoading && featuredListings && featuredListings.length > 0;
@@ -120,8 +148,123 @@ export default function Home() {
               onSelect={(title) => navigate(`/browse?q=${encodeURIComponent(title)}`)}
               className="[&_input]:pl-11 [&_input]:h-13 [&_input]:text-base [&_input]:border-border [&_input]:bg-card [&_input]:rounded-full [&_input]:shadow-sm"
             />
+            <Button
+              type="button"
+              size="lg"
+              variant={showFilters ? 'default' : 'outline'}
+              className="rounded-full px-4 relative"
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              <SlidersHorizontal className="h-5 w-5" />
+              {hasActiveFilters && (
+                <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-destructive" />
+              )}
+            </Button>
             <Button type="submit" size="lg" className="rounded-full px-7 font-bold shadow-md">{t('common.search')}</Button>
           </form>
+
+          {/* Advanced Filters Panel */}
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden max-w-2xl mx-auto"
+              >
+                <div className="mt-4 p-4 rounded-2xl bg-card/80 backdrop-blur border border-border shadow-lg">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-semibold text-foreground">
+                      {t('browse.filters') || 'Filters'}
+                    </span>
+                    {hasActiveFilters && (
+                      <button
+                        type="button"
+                        onClick={clearFilters}
+                        className="text-xs text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1"
+                      >
+                        <X className="h-3 w-3" />
+                        {t('search.clearAll') || 'Clear all'}
+                      </button>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {/* Category */}
+                    <Select value={filterCategory} onValueChange={setFilterCategory}>
+                      <SelectTrigger className="h-10 rounded-lg bg-background text-sm">
+                        <SelectValue placeholder={t('browse.category') || 'Category'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CATEGORIES.map((cat) => (
+                          <SelectItem key={cat} value={cat}>
+                            {CATEGORY_ICONS[cat]} {t(`categories.${cat}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    {/* Condition */}
+                    <Select value={filterCondition} onValueChange={setFilterCondition}>
+                      <SelectTrigger className="h-10 rounded-lg bg-background text-sm">
+                        <SelectValue placeholder={t('browse.condition') || 'Condition'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CONDITIONS.map((c) => (
+                          <SelectItem key={c} value={c}>
+                            {t(`condition.${c}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    {/* Location */}
+                    <Select value={filterLocation} onValueChange={setFilterLocation}>
+                      <SelectTrigger className="h-10 rounded-lg bg-background text-sm">
+                        <SelectValue placeholder={t('browse.location') || 'Location'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {LOCATIONS.map((loc) => (
+                          <SelectItem key={loc} value={loc}>
+                            {t(`locations.${loc}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    {/* Min Price */}
+                    <Input
+                      type="number"
+                      placeholder={t('browse.minPrice') || 'Min price'}
+                      value={minPrice}
+                      onChange={(e) => setMinPrice(e.target.value)}
+                      className="h-10 rounded-lg bg-background text-sm"
+                      min={0}
+                    />
+
+                    {/* Max Price */}
+                    <Input
+                      type="number"
+                      placeholder={t('browse.maxPrice') || 'Max price'}
+                      value={maxPrice}
+                      onChange={(e) => setMaxPrice(e.target.value)}
+                      className="h-10 rounded-lg bg-background text-sm"
+                      min={0}
+                    />
+
+                    {/* Search button inside filters */}
+                    <Button
+                      type="button"
+                      onClick={() => navigate(buildSearchUrl())}
+                      className="h-10 rounded-lg font-bold"
+                    >
+                      {t('common.search')}
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </section>
 
