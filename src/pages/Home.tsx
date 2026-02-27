@@ -6,7 +6,7 @@ import SearchAutocomplete from '@/components/SearchAutocomplete';
 import ListingCard from '@/components/ListingCard';
 import ListingMarquee from '@/components/ListingMarquee';
 import AnimatedHeroText from '@/components/AnimatedHeroText';
-import { Search, Plus, ArrowRight, Star } from 'lucide-react';
+import { Plus, ArrowRight, Star } from 'lucide-react';
 import CategoryMarquee from '@/components/CategoryMarquee';
 import { CATEGORY_ICONS } from '@/lib/constants';
 import { supabase } from '@/integrations/supabase/client';
