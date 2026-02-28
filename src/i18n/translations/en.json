@@ -8,7 +8,7 @@
   },
   "nav": { "home": "Home", "browse": "Browse", "sell": "Sell", "myListings": "My Listings", "profile": "Profile", "admin": "Admin", "about": "About", "safety": "Safety Tips", "rules": "Rules", "vip": "VIP", "searches": "Searches", "favorites": "Favorites", "messages": "Messages", "loginSignup": "Log in" },
   "home": {
-    "hero": "Buy & Sell in Bali", "heroSub": "The trusted marketplace for expats, locals, and businesses in Bali",
+    "hero": "Buy & Sell in Bali", "heroSub": "The trusted platform connecting expats, locals, and businesses in Bali",
     "searchPlaceholder": "Search furniture, vehicles, real estate...", "categories": "Browse Categories",
     "latest": "Latest Listings", "howItWorks": "How It Works",
     "step1Title": "List your item", "step1Desc": "Take a photo, set your price, and publish in minutes",
