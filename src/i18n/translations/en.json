@@ -193,7 +193,7 @@
     "tip5Title": "Verify seller identity", "tip5Desc": "Check the seller's profile, join date, and other listings before transacting."
   },
   "rules": {
-    "title": "Marketplace Rules", "rule1": "Be honest in your listings. Describe items accurately.",
+    "title": "Platform Rules", "rule1": "Be honest in your listings. Describe items accurately.",
     "rule2": "No illegal, counterfeit, or prohibited items.", "rule3": "No spam or duplicate listings.",
     "rule4": "Respect other users. No harassment or discrimination.", "rule5": "Maximum 5 active listings per user (MVP).",
     "rule6": "Listings must include at least one photo.", "rule7": "Prices must be fair and accurate. Bait pricing is not allowed.",
