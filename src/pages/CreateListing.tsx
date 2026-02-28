@@ -45,6 +45,15 @@ export default function CreateListing() {
   const [photos, setPhotos] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [locating, setLocating] = useState(false);
+  const [moderationWarnings, setModerationWarnings] = useState<string[]>([]);
+
+  // Compute SHA-256 hash of a file for duplicate detection
+  const computeImageHash = async (file: File | Blob): Promise<string> => {
+    const buffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  };
 
   const { data: activeCount } = useQuery({
     queryKey: ['active-listing-count', user?.id],
