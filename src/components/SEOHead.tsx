@@ -7,7 +7,7 @@ interface SEOHeadProps {
   url?: string;
   type?: string;
   noindex?: boolean;
-  jsonLd?: Record<string, any>;
+  jsonLd?: Record<string, any> | Record<string, any>[];
 }
 
 const SITE_NAME = 'Re-Bali';
