@@ -165,6 +165,26 @@ ${tmpl.reply}: ${convLink}`;
     const fonnteResult = await fonnteRes.json();
     console.log("Fonnte response:", JSON.stringify(fonnteResult));
 
+    // Send push notification
+    try {
+      await fetch(`${supabaseUrl}/functions/v1/send-push`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${serviceKey}`,
+        },
+        body: JSON.stringify({
+          user_id: recipientId,
+          title: `📩 ${senderName}`,
+          body: message_preview ? message_preview.substring(0, 100) : listingTitle,
+          url: `/messages?conv=${conversation_id}`,
+          tag: `msg-${conversation_id}`,
+        }),
+      });
+    } catch (pushErr) {
+      console.error("Push notification error:", pushErr);
+    }
+
     return new Response(JSON.stringify({ ok: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

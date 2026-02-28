@@ -20,6 +20,7 @@ import { User, Camera, Shield, Star, BarChart3, Eye, ShoppingBag, Package, Mail,
 import UserBadges from '@/components/UserBadges';
 import TrustIndicator from '@/components/TrustIndicator';
 import SavedSearches from '@/components/SavedSearches';
+import PushNotificationToggle from '@/components/PushNotificationToggle';
 
 const profileSchema = z.object({
   display_name: z.string().trim().min(2, 'Min 2 characters').max(50, 'Max 50 characters'),
@@ -583,6 +584,16 @@ export default function Profile() {
 
       {/* WhatsApp Verification */}
       <WhatsAppVerification user={user} profile={profile} refreshProfile={refreshProfile} />
+
+      {/* Push Notifications */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{t('notifications.title')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PushNotificationToggle />
+        </CardContent>
+      </Card>
 
       {/* Saved Search Alerts (VIP) */}
       <SavedSearches />

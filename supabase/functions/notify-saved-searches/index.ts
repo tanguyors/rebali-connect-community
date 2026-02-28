@@ -82,6 +82,26 @@ Deno.serve(async (req) => {
 
       matchedCount++;
 
+      // Send push notification
+      try {
+        await fetch(`${supabaseUrl}/functions/v1/send-push`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${serviceKey}`,
+          },
+          body: JSON.stringify({
+            user_id: search.user_id,
+            title: `🔔 "${search.keyword}"`,
+            body: `${title} — ${new Intl.NumberFormat("id-ID").format(price)} IDR`,
+            url: `/listing/${listing_id}`,
+            tag: `search-${search.id}`,
+          }),
+        });
+      } catch (pushErr) {
+        console.error("Push notification error:", pushErr);
+      }
+
       // Send WhatsApp notification if user has verified WhatsApp
       if (fonnte) {
         const { data: profile } = await supabase
