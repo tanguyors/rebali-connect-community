@@ -89,46 +89,69 @@ function useRecommendedListings(userId: string | undefined) {
         favCategories = [...new Set((favListings || []).map(l => l.category))];
       }
 
-      // 3. Get categories from recently viewed (search logs as proxy)
+      // 3. Get search terms from recent search logs
       const { data: searchLogs } = await supabase
         .from('search_logs')
         .select('term')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
-        .limit(10);
-
-      const searchTerms = (searchLogs || []).map(s => s.term.toLowerCase());
-
-      // 4. Fetch listings from preferred categories, excluding already favorited
-      if (favCategories.length === 0 && searchTerms.length === 0) return [];
-
-      let query = supabase
-        .from('listings')
-        .select('*, listing_images(storage_path, sort_order), listing_translations(lang, title), profiles:seller_id(user_type, is_verified_seller)')
-        .eq('status', 'active')
-        .neq('seller_id', userId)
-        .order('created_at', { ascending: false })
         .limit(20);
 
+      const searchTerms = [...new Set((searchLogs || []).map(s => s.term.toLowerCase().trim()).filter(t => t.length >= 2))];
+
+      if (favCategories.length === 0 && searchTerms.length === 0) return [];
+
+      const favIdSet = new Set(favIds);
+
+      // 4. Fetch from favorite categories (batch 1)
+      let catResults: any[] = [];
       if (favCategories.length > 0) {
-        query = query.in('category', favCategories);
+        const { data } = await supabase
+          .from('listings')
+          .select('*, listing_images(storage_path, sort_order), listing_translations(lang, title), profiles:seller_id(user_type, is_verified_seller)')
+          .eq('status', 'active')
+          .neq('seller_id', userId)
+          .in('category', favCategories)
+          .order('created_at', { ascending: false })
+          .limit(30);
+        catResults = (data || []).filter((l: any) => !favIdSet.has(l.id));
       }
 
-      const { data } = await query;
+      // 5. Search-term based: fetch broader pool and score by keyword match
+      let searchResults: any[] = [];
+      if (searchTerms.length > 0) {
+        const { data } = await supabase
+          .from('listings')
+          .select('*, listing_images(storage_path, sort_order), listing_translations(lang, title), profiles:seller_id(user_type, is_verified_seller)')
+          .eq('status', 'active')
+          .neq('seller_id', userId)
+          .order('created_at', { ascending: false })
+          .limit(60);
+        searchResults = (data || []).filter((l: any) => !favIdSet.has(l.id));
+      }
 
-      // Filter out already-favorited listings
-      const favIdSet = new Set(favIds);
-      const filtered = (data || []).filter((l: any) => !favIdSet.has(l.id));
+      // 6. Merge and deduplicate
+      const seenIds = new Set<string>();
+      const merged: any[] = [];
+      for (const l of [...catResults, ...searchResults]) {
+        if (!seenIds.has(l.id)) {
+          seenIds.add(l.id);
+          merged.push(l);
+        }
+      }
 
-      // Boost listings that match search terms
-      const scored = filtered.map((l: any) => {
-        const text = `${l.title_original} ${l.description_original} ${l.category}`.toLowerCase();
+      // 7. Score by search term matches
+      const scored = merged.map((l: any) => {
+        const text = `${l.title_original} ${l.description_original} ${l.category} ${l.subcategory || ''}`.toLowerCase();
         const matchCount = searchTerms.filter(t => text.includes(t)).length;
-        return { ...l, _score: matchCount };
+        const isFavCat = favCategories.includes(l.category) ? 1 : 0;
+        return { ...l, _score: matchCount * 2 + isFavCat };
       });
 
-      scored.sort((a: any, b: any) => b._score - a._score);
-      return scored.slice(0, 20);
+      // Only keep items with some relevance signal
+      const relevant = scored.filter((l: any) => l._score > 0);
+      relevant.sort((a: any, b: any) => b._score - a._score);
+      return relevant.slice(0, 20);
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000,
