@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SEOHeadProps {
   title?: string;
@@ -12,8 +13,9 @@ interface SEOHeadProps {
 
 const SITE_NAME = 'Re-Bali';
 const SITE_URL = 'https://re-bali.com';
-const DEFAULT_IMAGE = `${SITE_URL}/pwa-512x512.png`;
-const DEFAULT_DESCRIPTION = "Bali's trusted marketplace for expats, locals, and businesses. Buy and sell furniture, vehicles, real estate & more — 100% free.";
+const DEFAULT_IMAGE = `${SITE_URL}/og-image.png`;
+const DEFAULT_DESCRIPTION = "Bali's trusted connection platform for expats, locals, and businesses. Buy and sell furniture, vehicles, real estate & more — 100% free.";
+const SUPPORTED_LANGS = ['en', 'fr', 'es', 'de', 'nl', 'id', 'ja', 'zh', 'ru', 'ar', 'hi', 'tr'];
 
 export default function SEOHead({
   title,
