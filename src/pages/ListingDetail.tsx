@@ -284,6 +284,38 @@ export default function ListingDetail() {
 
   return (
     <div className="bg-background min-h-screen">
+      <SEOHead
+        title={title}
+        description={description?.slice(0, 160)}
+        image={images.length > 0
+          ? supabase.storage.from('listings').getPublicUrl(images[0]?.storage_path).data.publicUrl
+          : undefined}
+        url={`/listing/${id}`}
+        type="product"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: title,
+          description: description?.slice(0, 300),
+          image: images.length > 0
+            ? supabase.storage.from('listings').getPublicUrl(images[0]?.storage_path).data.publicUrl
+            : "https://re-bali.com/pwa-512x512.png",
+          url: `https://re-bali.com/listing/${id}`,
+          offers: {
+            "@type": "Offer",
+            price: listing.price,
+            priceCurrency: listing.currency,
+            availability: "https://schema.org/InStock",
+            itemCondition: listing.condition === 'new' ? "https://schema.org/NewCondition" : "https://schema.org/UsedCondition",
+          },
+          ...(seller && {
+            seller: {
+              "@type": seller.user_type === 'business' ? "Organization" : "Person",
+              name: seller.display_name || "Seller",
+            },
+          }),
+        }}
+      />
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 py-3">
         <nav className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap">
