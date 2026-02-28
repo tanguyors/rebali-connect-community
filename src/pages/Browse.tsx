@@ -202,6 +202,7 @@ export default function Browse() {
 
   return (
     <div className="container mx-auto px-4 py-6">
+      <SEOHead title={t('nav.browse')} description={t('home.heroSub')} url="/browse" />
       <h1 className="text-3xl font-bold mb-6">{t('nav.browse')}</h1>
 
       {/* Search bar with autocomplete */}

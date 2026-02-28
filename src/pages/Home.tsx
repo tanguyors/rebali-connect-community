@@ -127,6 +127,21 @@ export default function Home() {
 
   return (
     <div>
+      <SEOHead
+        url="/"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Re-Bali",
+          url: "https://re-bali.com",
+          description: "Bali's trusted marketplace for expats, locals, and businesses.",
+          potentialAction: {
+            "@type": "SearchAction",
+            target: "https://re-bali.com/browse?q={search_term_string}",
+            "query-input": "required name=search_term_string",
+          },
+        }}
+      />
       <CategoryMarquee />
 
       {/* Hero */}
