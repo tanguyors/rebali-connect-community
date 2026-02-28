@@ -32,9 +32,10 @@ Deno.serve(async (req) => {
     { loc: "/about", priority: "0.5", changefreq: "monthly" },
     { loc: "/safety", priority: "0.5", changefreq: "monthly" },
     { loc: "/rules", priority: "0.4", changefreq: "monthly" },
+    { loc: "/trust-badges", priority: "0.6", changefreq: "weekly" },
+    { loc: "/vip", priority: "0.6", changefreq: "monthly" },
     { loc: "/terms", priority: "0.3", changefreq: "yearly" },
     { loc: "/privacy", priority: "0.3", changefreq: "yearly" },
-    { loc: "/trust-badges", priority: "0.6", changefreq: "weekly" },
   ];
 
   const today = new Date().toISOString().split("T")[0];

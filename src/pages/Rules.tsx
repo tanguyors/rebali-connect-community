@@ -7,7 +7,14 @@ export default function Rules() {
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-3xl">
-      <SEOHead title={t('rules.title')} url="/rules" />
+      <SEOHead title={t('rules.title')} url="/rules" jsonLd={{
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: "https://re-bali.com/" },
+          { "@type": "ListItem", position: 2, name: t('rules.title') },
+        ],
+      }} />
       <h1 className="text-4xl font-bold mb-8">{t('rules.title')}</h1>
       <div className="space-y-3">
         {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (

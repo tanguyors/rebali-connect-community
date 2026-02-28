@@ -16,7 +16,14 @@ export default function Safety() {
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-3xl">
-      <SEOHead title={t('safety.title')} url="/safety" />
+      <SEOHead title={t('safety.title')} url="/safety" jsonLd={{
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: "https://re-bali.com/" },
+          { "@type": "ListItem", position: 2, name: t('safety.title') },
+        ],
+      }} />
       <h1 className="text-4xl font-bold mb-8">{t('safety.title')}</h1>
       <div className="space-y-4">
         {tips.map((tip, i) => (

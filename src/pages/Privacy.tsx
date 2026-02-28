@@ -6,7 +6,14 @@ export default function Privacy() {
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-3xl">
-      <SEOHead title={t('legal.privacyTitle')} url="/privacy" />
+      <SEOHead title={t('legal.privacyTitle')} url="/privacy" jsonLd={{
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: "https://re-bali.com/" },
+          { "@type": "ListItem", position: 2, name: t('legal.privacyTitle') },
+        ],
+      }} />
       <h1 className="text-3xl font-bold mb-8">{t('legal.privacyTitle')}</h1>
       <p className="text-sm text-muted-foreground mb-6">{t('legal.lastUpdated')}: 21/02/2026</p>
 
