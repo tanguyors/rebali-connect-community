@@ -194,7 +194,7 @@
     "locateMe": "Konumumu bul", "localized": "Konumlandı", "geoError": "Konumunuza erişilemiyor", "geoNotSupported": "Coğrafi konum desteklenmiyor"
   },
   "footer": {
-    "tagline": "Bali'nin güvenilir pazar yeri", "marketplace": "Pazar Yeri", "company": "Şirket", "legal": "Yasal",
+    "tagline": "Bali'nin güvenilir ilan platformu", "marketplace": "Keşfet", "company": "Şirket", "legal": "Yasal",
     "terms": "Kullanım Şartları", "privacy": "Gizlilik Politikası", "copyright": "Tüm hakları saklıdır.", "trustBadgesPoints": "Güven, Rozetler ve Puanlar"
   },
   "notFound": { "title": "Sayfa bulunamadı", "description": "Aradığınız sayfa mevcut değil.", "backHome": "Ana Sayfaya Dön" },

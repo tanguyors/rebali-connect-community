@@ -193,7 +193,7 @@
     "locateMe": "現在地を取得", "localized": "位置情報取得済み", "geoError": "位置情報にアクセスできません", "geoNotSupported": "位置情報はサポートされていません"
   },
   "footer": {
-    "tagline": "バリの信頼できるマーケットプレイス", "marketplace": "マーケットプレイス", "company": "会社情報", "legal": "法的情報",
+    "tagline": "バリの信頼できるプラットフォーム", "marketplace": "探す", "company": "会社情報", "legal": "法的情報",
     "terms": "利用規約", "privacy": "プライバシーポリシー", "copyright": "全著作権所有。", "trustBadgesPoints": "信頼、バッジ＆ポイント"
   },
   "notFound": { "title": "ページが見つかりません", "description": "お探しのページは存在しません。", "backHome": "ホームに戻る" },

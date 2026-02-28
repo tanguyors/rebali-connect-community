@@ -194,7 +194,7 @@
     "locateMe": "मेरा स्थान खोजें", "localized": "स्थान मिला", "geoError": "आपके स्थान तक पहुंच नहीं हो सकी", "geoNotSupported": "जियोलोकेशन समर्थित नहीं है"
   },
   "footer": {
-    "tagline": "बाली का विश्वसनीय बाज़ार", "marketplace": "बाज़ार", "company": "कंपनी", "legal": "कानूनी",
+    "tagline": "बाली का विश्वसनीय प्लेटफ़ॉर्म", "marketplace": "खोजें", "company": "कंपनी", "legal": "कानूनी",
     "terms": "सेवा की शर्तें", "privacy": "गोपनीयता नीति", "copyright": "सर्वाधिकार सुरक्षित।", "trustBadgesPoints": "विश्वास, बैज और अंक"
   },
   "notFound": { "title": "पेज नहीं मिला", "description": "जो पेज आप ढूंढ रहे हैं वह मौजूद नहीं है।", "backHome": "होम पर वापस जाएं" },
