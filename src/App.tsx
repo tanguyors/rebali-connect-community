@@ -32,6 +32,7 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 const Messages = lazy(() => import("./pages/Messages"));
 const TrustBadges = lazy(() => import("./pages/TrustBadges"));
 const PointsShop = lazy(() => import("./pages/PointsShop"));
+const SellerDashboard = lazy(() => import("./pages/SellerDashboard"));
 
 const queryClient = new QueryClient({});
 
