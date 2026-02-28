@@ -1,3 +1,4 @@
+import SEOHead from '@/components/SEOHead';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Heart, Shield, Users } from 'lucide-react';
 
@@ -12,6 +13,7 @@ export default function About() {
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-3xl">
+      <SEOHead title={t('about.title')} description={t('about.description')} url="/about" />
       <h1 className="text-4xl font-bold mb-4">{t('about.title')}</h1>
       <p className="text-lg text-muted-foreground mb-8">{t('about.description')}</p>
 

@@ -35,3 +35,6 @@ verify_jwt = false
 
 [functions.notify-saved-searches]
 verify_jwt = false
+
+[functions.sitemap]
+verify_jwt = false

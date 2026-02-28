@@ -1,3 +1,4 @@
+import SEOHead from '@/components/SEOHead';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 
@@ -6,6 +7,7 @@ export default function NotFound() {
 
   return (
     <div className="flex items-center justify-center py-20">
+      <SEOHead title="404 — Page Not Found" noindex />
       <div className="text-center">
         <h1 className="mb-4 text-6xl font-bold text-primary">404</h1>
         <p className="mb-2 text-xl font-semibold">{t('notFound.title')}</p>
