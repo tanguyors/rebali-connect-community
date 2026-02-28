@@ -86,6 +86,68 @@ function VerificationCard({ verification, profileName, onApprove, onReject }: {
     </div>
   );
 }
+
+function VerifiedSellerCard({ verification, displayName }: { verification: any; displayName: string }) {
+  const { t } = useLanguage();
+  const [selfieUrl, setSelfieUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [showSelfie, setShowSelfie] = useState(false);
+
+  const loadSelfie = async () => {
+    if (!verification?.selfie_path) return;
+    setLoading(true);
+    try {
+      const { data } = await supabase.functions.invoke('decrypt-document', {
+        body: { storage_path: verification.selfie_path },
+      });
+      if (data instanceof Blob) {
+        setSelfieUrl(URL.createObjectURL(data));
+      }
+    } catch (err) {
+      console.error('Failed to load selfie:', err);
+    }
+    setLoading(false);
+    setShowSelfie(true);
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-3 p-3 rounded-md bg-green-500/10 border border-green-500/20">
+        <ShieldCheck className="h-5 w-5 text-green-600" />
+        <div className="flex-1">
+          <p className="text-sm font-medium text-green-700">{t('security.verifiedSeller')}</p>
+          <p className="text-xs text-muted-foreground">
+            {verification
+              ? `${verification.document_type?.toUpperCase()} — ${t('security.approve')} ${new Date(verification.reviewed_at || verification.created_at).toLocaleDateString()}`
+              : t('security.verifiedSellerDesc')
+            }
+          </p>
+        </div>
+        <Badge className="bg-green-500/10 text-green-600 border-green-500/20">
+          <ShieldCheck className="h-3 w-3 mr-1" /> {t('security.verifiedSeller')}
+        </Badge>
+      </div>
+      {verification && !verification.documents_purged_at && (
+        <>
+          {!showSelfie ? (
+            <Button size="sm" variant="outline" onClick={loadSelfie} disabled={loading}>
+              <Eye className="h-3 w-3 mr-1" /> {loading ? '...' : (t('admin.viewSelfie') || 'Voir le selfie vérifié')}
+            </Button>
+          ) : (
+            selfieUrl && (
+              <div className="rounded-md border overflow-hidden max-w-[200px]">
+                <img src={selfieUrl} alt={`Selfie - ${displayName}`} className="w-full h-auto object-contain" />
+              </div>
+            )
+          )}
+        </>
+      )}
+      {verification?.documents_purged_at && (
+        <p className="text-xs text-muted-foreground italic">{t('admin.documentsPurged') || 'Documents supprimés (rétention 30j)'}</p>
+      )}
+    </div>
+  );
+}
 function WARelayTab() {
   const { t } = useLanguage();
   const qc = useQueryClient();
