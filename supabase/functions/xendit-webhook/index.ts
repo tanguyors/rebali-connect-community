@@ -18,18 +18,36 @@ serve(async (req) => {
   }
 
   try {
-    // Xendit sends a callback token header for verification
     const callbackToken = req.headers.get("x-callback-token");
     const expectedToken = Deno.env.get("XENDIT_SECRET_KEY");
     
-    // Note: In production, you should configure a separate webhook verification token
-    // For now, we verify the callback comes from Xendit by checking the token
     if (!callbackToken || !expectedToken) {
       console.warn("Missing callback token or secret key");
     }
 
     const body = await req.json();
     console.log("Xendit webhook received:", JSON.stringify(body));
+
+    // --- Router: forward non-ReBali callbacks to Pass Bali ---
+    const externalId = body.external_id || "";
+    if (!externalId.startsWith("rebali_")) {
+      console.log(`Routing to Pass Bali (external_id: ${externalId})`);
+      const passBaliUrl = "https://vdlbezzgoxaoiumlsgpp.supabase.co/functions/v1/xendit-webhook";
+      const forwardHeaders: Record<string, string> = { "Content-Type": "application/json" };
+      if (callbackToken) forwardHeaders["x-callback-token"] = callbackToken;
+
+      const fwdRes = await fetch(passBaliUrl, {
+        method: "POST",
+        headers: forwardHeaders,
+        body: JSON.stringify(body),
+      });
+      const fwdBody = await fwdRes.text();
+      console.log(`Pass Bali responded: ${fwdRes.status} ${fwdBody}`);
+      return new Response(fwdBody, {
+        status: fwdRes.status,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const { id: xenditInvoiceId, status, paid_at } = body;
 
