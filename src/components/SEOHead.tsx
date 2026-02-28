@@ -53,6 +53,12 @@ export default function SEOHead({
       <meta name="twitter:description" content={description.slice(0, 160)} />
       <meta name="twitter:image" content={image} />
 
+      {/* Hreflang */}
+      {SUPPORTED_LANGS.map((lang) => (
+        <link key={lang} rel="alternate" hrefLang={lang} href={`${SITE_URL}${pathForHreflang}?lang=${lang}`} />
+      ))}
+      <link rel="alternate" hrefLang="x-default" href={`${SITE_URL}${pathForHreflang}`} />
+
       {/* JSON-LD */}
       {jsonLd && (Array.isArray(jsonLd) ? jsonLd : [jsonLd]).map((ld, i) => (
         <script key={i} type="application/ld+json">
