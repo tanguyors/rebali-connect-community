@@ -418,5 +418,28 @@
     "recentSearches": "Recherches récentes",
     "clearAll": "Tout effacer",
     "trending": "Tendances"
+  },
+  "dashboard": {
+    "title": "Tableau de bord vendeur",
+    "subtitle": "Suivez les performances de vos annonces",
+    "businessOnly": "Le tableau de bord est réservé aux comptes Business.",
+    "proRequired": "Abonnez-vous au Pro pour débloquer les statistiques détaillées.",
+    "subscribePro": "S'abonner au Pro",
+    "goToProfile": "Aller au profil",
+    "last7days": "7 derniers jours",
+    "last30days": "30 derniers jours",
+    "allTime": "Depuis toujours",
+    "totalViews": "Vues totales",
+    "totalFavorites": "Favoris",
+    "waClicks": "Clics WA",
+    "conversionRate": "Conversion",
+    "conversations": "Conversations",
+    "listingsPerformance": "Performance des annonces",
+    "active": "Active",
+    "sold": "Vendue",
+    "sortViews": "Trier par vues",
+    "sortFavorites": "Trier par favoris",
+    "sortWaClicks": "Trier par clics WA",
+    "noListings": "Aucune annonce"
   }
 }

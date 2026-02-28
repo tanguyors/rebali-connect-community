@@ -578,5 +578,28 @@
     "recentSearches": "Recent searches",
     "clearAll": "Clear all",
     "trending": "Trending"
+  },
+  "dashboard": {
+    "title": "Seller Dashboard",
+    "subtitle": "Track your listings performance",
+    "businessOnly": "The seller dashboard is available for Business accounts only.",
+    "proRequired": "Subscribe to Pro to unlock detailed statistics for your listings.",
+    "subscribePro": "Subscribe to Pro",
+    "goToProfile": "Go to Profile",
+    "last7days": "Last 7 days",
+    "last30days": "Last 30 days",
+    "allTime": "All time",
+    "totalViews": "Total Views",
+    "totalFavorites": "Favorites",
+    "waClicks": "WA Clicks",
+    "conversionRate": "Conversion",
+    "conversations": "Conversations",
+    "listingsPerformance": "Listings Performance",
+    "active": "Active",
+    "sold": "Sold",
+    "sortViews": "Sort by views",
+    "sortFavorites": "Sort by favorites",
+    "sortWaClicks": "Sort by WA clicks",
+    "noListings": "No listings yet"
   }
 }
