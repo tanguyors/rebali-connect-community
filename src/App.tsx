@@ -9,29 +9,37 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "next-themes";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
-import Browse from "./pages/Browse";
-import ListingDetail from "./pages/ListingDetail";
-import Auth from "./pages/Auth";
-import ResetPassword from "./pages/ResetPassword";
-import CreateListing from "./pages/CreateListing";
-import MyListings from "./pages/MyListings";
-import Profile from "./pages/Profile";
-import Admin from "./pages/Admin";
-import About from "./pages/About";
-import Safety from "./pages/Safety";
-import Rules from "./pages/Rules";
-import VIP from "./pages/VIP";
-import NotFound from "./pages/NotFound";
-import SellerProfile from "./pages/SellerProfile";
-import Favorites from "./pages/Favorites";
-import Terms from "./pages/Terms";
-import Privacy from "./pages/Privacy";
-import Messages from "./pages/Messages";
-import TrustBadges from "./pages/TrustBadges";
-import PointsShop from "./pages/PointsShop";
+import { lazy, Suspense } from "react";
 
+// Lazy-loaded pages for code splitting (better Core Web Vitals)
+const Browse = lazy(() => import("./pages/Browse"));
+const ListingDetail = lazy(() => import("./pages/ListingDetail"));
+const Auth = lazy(() => import("./pages/Auth"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const CreateListing = lazy(() => import("./pages/CreateListing"));
+const MyListings = lazy(() => import("./pages/MyListings"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Admin = lazy(() => import("./pages/Admin"));
+const About = lazy(() => import("./pages/About"));
+const Safety = lazy(() => import("./pages/Safety"));
+const Rules = lazy(() => import("./pages/Rules"));
+const VIP = lazy(() => import("./pages/VIP"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const SellerProfile = lazy(() => import("./pages/SellerProfile"));
+const Favorites = lazy(() => import("./pages/Favorites"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Messages = lazy(() => import("./pages/Messages"));
+const TrustBadges = lazy(() => import("./pages/TrustBadges"));
+const PointsShop = lazy(() => import("./pages/PointsShop"));
 
 const queryClient = new QueryClient({});
+
+const PageFallback = () => (
+  <div className="flex items-center justify-center min-h-[50vh]">
+    <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+  </div>
+);
 
 const App = () => (
   <HelmetProvider>
@@ -43,6 +51,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
+              <Suspense fallback={<PageFallback />}>
               <Routes>
                 <Route element={<Layout />}>
                   <Route path="/" element={<Home />} />
@@ -69,6 +78,7 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
                 </Route>
               </Routes>
+              </Suspense>
             </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>

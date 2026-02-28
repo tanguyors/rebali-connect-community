@@ -1,4 +1,5 @@
 import { useLanguage } from '@/contexts/LanguageContext';
+import SEOHead from '@/components/SEOHead';
 import { Card, CardContent } from '@/components/ui/card';
 
 export default function Rules() {
@@ -6,6 +7,7 @@ export default function Rules() {
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-3xl">
+      <SEOHead title={t('rules.title')} url="/rules" />
       <h1 className="text-4xl font-bold mb-8">{t('rules.title')}</h1>
       <div className="space-y-3">
         {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (

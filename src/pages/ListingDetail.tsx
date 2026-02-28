@@ -292,29 +292,40 @@ export default function ListingDetail() {
           : undefined}
         url={`/listing/${id}`}
         type="product"
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Product",
-          name: title,
-          description: description?.slice(0, 300),
-          image: images.length > 0
-            ? supabase.storage.from('listings').getPublicUrl(images[0]?.storage_path).data.publicUrl
-            : "https://re-bali.com/pwa-512x512.png",
-          url: `https://re-bali.com/listing/${id}`,
-          offers: {
-            "@type": "Offer",
-            price: listing.price,
-            priceCurrency: listing.currency,
-            availability: "https://schema.org/InStock",
-            itemCondition: listing.condition === 'new' ? "https://schema.org/NewCondition" : "https://schema.org/UsedCondition",
-          },
-          ...(seller && {
-            seller: {
-              "@type": seller.user_type === 'business' ? "Organization" : "Person",
-              name: seller.display_name || "Seller",
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: title,
+            description: description?.slice(0, 300),
+            image: images.length > 0
+              ? supabase.storage.from('listings').getPublicUrl(images[0]?.storage_path).data.publicUrl
+              : "https://re-bali.com/pwa-512x512.png",
+            url: `https://re-bali.com/listing/${id}`,
+            offers: {
+              "@type": "Offer",
+              price: listing.price,
+              priceCurrency: listing.currency,
+              availability: "https://schema.org/InStock",
+              itemCondition: listing.condition === 'new' ? "https://schema.org/NewCondition" : "https://schema.org/UsedCondition",
             },
-          }),
-        }}
+            ...(seller && {
+              seller: {
+                "@type": seller.user_type === 'business' ? "Organization" : "Person",
+                name: seller.display_name || "Seller",
+              },
+            }),
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://re-bali.com/" },
+              { "@type": "ListItem", position: 2, name: t(`categories.${listing.category}`), item: `https://re-bali.com/browse?category=${listing.category}` },
+              { "@type": "ListItem", position: 3, name: title },
+            ],
+          },
+        ]}
       />
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 py-3">

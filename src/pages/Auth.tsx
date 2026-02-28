@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import SEOHead from '@/components/SEOHead';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -109,6 +110,7 @@ export default function Auth() {
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-md">
+      <SEOHead title={t('common.login')} noindex />
       <Tabs defaultValue={defaultTab}>
         <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="login">{t('common.login')}</TabsTrigger>

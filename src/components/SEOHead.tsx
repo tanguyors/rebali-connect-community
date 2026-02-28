@@ -7,7 +7,7 @@ interface SEOHeadProps {
   url?: string;
   type?: string;
   noindex?: boolean;
-  jsonLd?: Record<string, any>;
+  jsonLd?: Record<string, any> | Record<string, any>[];
 }
 
 const SITE_NAME = 'Re-Bali';
@@ -49,11 +49,11 @@ export default function SEOHead({
       <meta name="twitter:image" content={image} />
 
       {/* JSON-LD */}
-      {jsonLd && (
-        <script type="application/ld+json">
-          {JSON.stringify(jsonLd)}
+      {jsonLd && (Array.isArray(jsonLd) ? jsonLd : [jsonLd]).map((ld, i) => (
+        <script key={i} type="application/ld+json">
+          {JSON.stringify(ld)}
         </script>
-      )}
+      ))}
     </Helmet>
   );
 }

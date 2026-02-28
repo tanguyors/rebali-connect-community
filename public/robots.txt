@@ -12,5 +12,14 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /auth
+Disallow: /reset-password
+Disallow: /profile
+Disallow: /my-listings
+Disallow: /create
+Disallow: /messages
+Disallow: /admin
+Disallow: /favorites
+Disallow: /points
 
 Sitemap: https://eddrshyqlrpxgvyxpjee.supabase.co/functions/v1/sitemap

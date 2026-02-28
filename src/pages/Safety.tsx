@@ -1,4 +1,5 @@
 import { useLanguage } from '@/contexts/LanguageContext';
+import SEOHead from '@/components/SEOHead';
 import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Eye, CreditCard, AlertTriangle, UserCheck } from 'lucide-react';
 
@@ -15,6 +16,7 @@ export default function Safety() {
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-3xl">
+      <SEOHead title={t('safety.title')} url="/safety" />
       <h1 className="text-4xl font-bold mb-8">{t('safety.title')}</h1>
       <div className="space-y-4">
         {tips.map((tip, i) => (
