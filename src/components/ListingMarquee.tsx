@@ -45,7 +45,7 @@ export default function ListingMarquee({ listings, isLoading, emptyMessage }: Li
       onMouseLeave={() => setPaused(false)}
     >
       <div
-        className={`listing-marquee flex gap-3 w-max ${paused ? 'paused' : ''}`}
+        className={`listing-marquee flex gap-3 w-max pl-1 ${paused ? 'paused' : ''}`}
       >
         {items.map((listing: any, i: number) => (
           <ListingCardSmall
