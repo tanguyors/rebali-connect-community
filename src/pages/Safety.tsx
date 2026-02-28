@@ -1,4 +1,5 @@
 import { useLanguage } from '@/contexts/LanguageContext';
+import SEOHead from '@/components/SEOHead';
 import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Eye, CreditCard, AlertTriangle, UserCheck } from 'lucide-react';
 
