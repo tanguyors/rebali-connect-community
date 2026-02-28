@@ -63,6 +63,78 @@ function useFeaturedListings() {
   });
 }
 
+function useRecommendedListings(userId: string | undefined) {
+  return useQuery({
+    queryKey: ['recommended-listings', userId],
+    queryFn: async () => {
+      if (!userId) return [];
+
+      // 1. Get user's favorite listing categories
+      const { data: favs } = await supabase
+        .from('favorites')
+        .select('listing_id')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      const favIds = (favs || []).map(f => f.listing_id);
+
+      // 2. Get categories from favorited listings
+      let favCategories: string[] = [];
+      if (favIds.length > 0) {
+        const { data: favListings } = await supabase
+          .from('listings')
+          .select('category')
+          .in('id', favIds);
+        favCategories = [...new Set((favListings || []).map(l => l.category))];
+      }
+
+      // 3. Get categories from recently viewed (search logs as proxy)
+      const { data: searchLogs } = await supabase
+        .from('search_logs')
+        .select('term')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      const searchTerms = (searchLogs || []).map(s => s.term.toLowerCase());
+
+      // 4. Fetch listings from preferred categories, excluding already favorited
+      if (favCategories.length === 0 && searchTerms.length === 0) return [];
+
+      let query = supabase
+        .from('listings')
+        .select('*, listing_images(storage_path, sort_order), listing_translations(lang, title), profiles:seller_id(user_type, is_verified_seller)')
+        .eq('status', 'active')
+        .neq('seller_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (favCategories.length > 0) {
+        query = query.in('category', favCategories);
+      }
+
+      const { data } = await query;
+
+      // Filter out already-favorited listings
+      const favIdSet = new Set(favIds);
+      const filtered = (data || []).filter((l: any) => !favIdSet.has(l.id));
+
+      // Boost listings that match search terms
+      const scored = filtered.map((l: any) => {
+        const text = `${l.title_original} ${l.description_original} ${l.category}`.toLowerCase();
+        const matchCount = searchTerms.filter(t => text.includes(t)).length;
+        return { ...l, _score: matchCount };
+      });
+
+      scored.sort((a: any, b: any) => b._score - a._score);
+      return scored.slice(0, 20);
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
 export default function Home() {
   const { t } = useLanguage();
   const navigate = useNavigate();
