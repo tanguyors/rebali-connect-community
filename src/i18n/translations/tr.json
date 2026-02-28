@@ -458,5 +458,12 @@
     "sortFavorites": "Favorilere göre sırala",
     "sortWaClicks": "WA tıklamalarına göre sırala",
     "noListings": "Henüz ilan yok"
+  },
+  "moderation": {
+    "duplicateImage": "Bu resim başka bir ilanın kopyası gibi görünüyor",
+    "duplicateOf": "Kopyası",
+    "similarTitle": "Uyarı: Çok benzer başlıklı bir ilan zaten mevcut",
+    "imageReused": "Bu resim birden fazla ilanda kullanılmış",
+    "suspiciousContent": "İlanınızda şüpheli içerik tespit edildi"
   }
 }

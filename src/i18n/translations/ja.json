@@ -456,5 +456,12 @@
     "sortFavorites": "お気に入りで並べ替え",
     "sortWaClicks": "WAクリックで並べ替え",
     "noListings": "リストがまだありません"
+  },
+  "moderation": {
+    "duplicateImage": "この画像は別の出品の複製のようです",
+    "duplicateOf": "の複製",
+    "similarTitle": "警告：非常に似たタイトルの出品がすでに存在します",
+    "imageReused": "この画像は複数の出品で使用されています",
+    "suspiciousContent": "出品に不審なコンテンツが検出されました"
   }
 }

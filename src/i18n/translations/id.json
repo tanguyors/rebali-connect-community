@@ -388,5 +388,12 @@
     "sortFavorites": "Urutkan favorit",
     "sortWaClicks": "Urutkan klik WA",
     "noListings": "Belum ada iklan"
+  },
+  "moderation": {
+    "duplicateImage": "Gambar ini tampaknya duplikat dari iklan lain",
+    "duplicateOf": "Duplikat dari",
+    "similarTitle": "Peringatan: Iklan dengan judul serupa sudah ada",
+    "imageReused": "Gambar ini telah digunakan di beberapa iklan",
+    "suspiciousContent": "Konten mencurigakan terdeteksi dalam iklan Anda"
   }
 }

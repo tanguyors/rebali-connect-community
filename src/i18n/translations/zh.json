@@ -299,5 +299,12 @@
     "sortFavorites": "按收藏排序",
     "sortWaClicks": "按WA点击排序",
     "noListings": "暂无列表"
+  },
+  "moderation": {
+    "duplicateImage": "此图片似乎是另一个列表的副本",
+    "duplicateOf": "重复自",
+    "similarTitle": "警告：已存在标题非常相似的列表",
+    "imageReused": "此图片已在多个列表中使用",
+    "suspiciousContent": "您的列表中检测到可疑内容"
   }
 }

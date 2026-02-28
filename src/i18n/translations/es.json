@@ -318,5 +318,12 @@
     "sortFavorites": "Ordenar por favoritos",
     "sortWaClicks": "Ordenar por clics WA",
     "noListings": "Aún no hay anuncios"
+  },
+  "moderation": {
+    "duplicateImage": "Esta imagen parece ser un duplicado de otro anuncio",
+    "duplicateOf": "Duplicado de",
+    "similarTitle": "Advertencia: Ya existe un anuncio con un título muy similar",
+    "imageReused": "Esta imagen se ha utilizado en varios anuncios",
+    "suspiciousContent": "Se detectó contenido sospechoso en su anuncio"
   }
 }

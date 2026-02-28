@@ -375,5 +375,12 @@
     "sortFavorites": "Nach Favoriten sortieren",
     "sortWaClicks": "Nach WA-Klicks sortieren",
     "noListings": "Noch keine Anzeigen"
+  },
+  "moderation": {
+    "duplicateImage": "Dieses Bild scheint ein Duplikat einer anderen Anzeige zu sein",
+    "duplicateOf": "Duplikat von",
+    "similarTitle": "Warnung: Eine Anzeige mit einem sehr ähnlichen Titel existiert bereits",
+    "imageReused": "Dieses Bild wurde in mehreren Anzeigen verwendet",
+    "suspiciousContent": "Verdächtiger Inhalt in Ihrer Anzeige erkannt"
   }
 }
