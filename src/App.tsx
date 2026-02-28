@@ -41,6 +41,17 @@ const PageFallback = () => (
   </div>
 );
 
+// Prefetch critical routes after initial load
+const usePrefetchRoutes = () => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      import("./pages/Browse");
+      import("./pages/ListingDetail");
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+};
+
 const App = () => (
   <HelmetProvider>
   <QueryClientProvider client={queryClient}>
