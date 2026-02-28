@@ -15,7 +15,7 @@ export default function Footer({ className }: { className?: string }) {
             <p className="text-sm text-muted-foreground">{t('footer.tagline')}</p>
           </div>
           <div>
-            <h4 className="font-semibold mb-3">{t('footer.marketplace')}</h4>
+            <h4 className="font-semibold mb-3">{t('footer.explore')}</h4>
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
               <Link to="/browse" className="hover:text-foreground transition-colors">{t('nav.browse')}</Link>
               <Link to="/create" className="hover:text-foreground transition-colors">{t('nav.sell')}</Link>
