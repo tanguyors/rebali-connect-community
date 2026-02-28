@@ -162,10 +162,14 @@ export default function Home() {
 
   const { data: featuredListings, isLoading: featuredLoading } = useFeaturedListings();
 
+  // Personalized recommendations (only for logged-in users)
+  const { data: recommendedListings, isLoading: recoLoading } = useRecommendedListings(user?.id);
+
   // Batch fetch boosts & fav counts for all listings (eliminates N+1)
   const latestIds = (listings || []).map((l: any) => l.id);
   const featuredIds = (featuredListings || []).map((l: any) => l.id);
-  const allIds = [...new Set([...latestIds, ...featuredIds])];
+  const recoIds = (recommendedListings || []).map((l: any) => l.id);
+  const allIds = [...new Set([...latestIds, ...featuredIds, ...recoIds])];
   const { data: boostsMap } = useListingBoosts(allIds);
   const { data: favCountsMap } = useListingFavCounts(allIds);
 
