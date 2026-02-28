@@ -49,7 +49,6 @@ export default function VIP() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
   const [subscribing, setSubscribing] = useState(false);
   const isBusinessAccount = profile?.user_type === 'business';
-  const isBusinessAccount = profile?.user_type === 'business';
 
   const { data: activeSub } = useQuery({
     queryKey: ['pro-subscription', user?.id],
