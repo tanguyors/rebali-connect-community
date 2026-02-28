@@ -211,6 +211,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          image_hash: string | null
           listing_id: string
           sort_order: number
           storage_path: string
@@ -218,6 +219,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          image_hash?: string | null
           listing_id: string
           sort_order?: number
           storage_path: string
@@ -225,6 +227,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          image_hash?: string | null
           listing_id?: string
           sort_order?: number
           storage_path?: string
@@ -1072,6 +1075,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_duplicate_image: {
+        Args: { _hash: string; _seller_id: string }
+        Returns: {
+          listing_id: string
+          seller_id: string
+          title_original: string
+        }[]
+      }
       get_active_boosts: {
         Args: { _listing_ids: string[] }
         Returns: {

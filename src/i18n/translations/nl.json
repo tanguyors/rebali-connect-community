@@ -299,5 +299,12 @@
     "sortFavorites": "Sorteren op favorieten",
     "sortWaClicks": "Sorteren op WA-klikken",
     "noListings": "Nog geen advertenties"
+  },
+  "moderation": {
+    "duplicateImage": "Deze afbeelding lijkt een duplicaat van een andere advertentie",
+    "duplicateOf": "Duplicaat van",
+    "similarTitle": "Waarschuwing: Er bestaat al een advertentie met een zeer vergelijkbare titel",
+    "imageReused": "Deze afbeelding is in meerdere advertenties gebruikt",
+    "suspiciousContent": "Verdachte inhoud gedetecteerd in uw advertentie"
   }
 }

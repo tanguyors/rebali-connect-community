@@ -13,7 +13,8 @@ import { Badge } from '@/components/ui/badge';
 import { CATEGORIES, CATEGORY_TREE, LOCATIONS, CONDITIONS, CATEGORY_ICONS, MAX_ACTIVE_LISTINGS, formatPrice, CATEGORY_FIELDS, SUBCATEGORY_FIELDS, CATEGORIES_WITHOUT_CONDITION } from '@/lib/constants';
 import { SUPPORTED_LANGUAGES } from '@/i18n';
 import { toast } from '@/hooks/use-toast';
-import { Upload, X, ChevronLeft, ChevronRight, Check, MapPin, Loader2 } from 'lucide-react';
+import { Upload, X, ChevronLeft, ChevronRight, Check, MapPin, Loader2, AlertTriangle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { LOCATION_COORDS, getDistanceKm } from '@/lib/constants';
 import { useQuery } from '@tanstack/react-query';
 
@@ -44,6 +45,15 @@ export default function CreateListing() {
   const [photos, setPhotos] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [locating, setLocating] = useState(false);
+  const [moderationWarnings, setModerationWarnings] = useState<string[]>([]);
+
+  // Compute SHA-256 hash of a file for duplicate detection
+  const computeImageHash = async (file: File | Blob): Promise<string> => {
+    const buffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  };
 
   const { data: activeCount } = useQuery({
     queryKey: ['active-listing-count', user?.id],
@@ -217,6 +227,41 @@ export default function CreateListing() {
       return;
     }
 
+    // Run image moderation checks (hash duplicate detection)
+    setModerationWarnings([]);
+    if (photos.length > 0) {
+      try {
+        const firstHash = await computeImageHash(photos[0]);
+        const { data: modResult } = await supabase.functions.invoke('moderate-image', {
+          body: {
+            image_hash: firstHash,
+            title: form.title,
+            description: form.description,
+          },
+        });
+        if (modResult && !modResult.safe) {
+          const warnings = (modResult.warnings || []) as string[];
+          setModerationWarnings(warnings);
+          if (warnings.includes('duplicate_image')) {
+            const dupeTitle = modResult.duplicate_listings?.[0]?.title || '';
+            toast({
+              title: t('moderation.duplicateImage'),
+              description: dupeTitle ? `${t('moderation.duplicateOf')}: "${dupeTitle}"` : undefined,
+              variant: 'destructive',
+            });
+            setLoading(false);
+            return;
+          }
+          // Other warnings are shown but don't block
+          if (warnings.includes('similar_title')) {
+            toast({ title: t('moderation.similarTitle'), variant: 'destructive' });
+          }
+        }
+      } catch (e) {
+        console.warn('Moderation check failed, proceeding anyway', e);
+      }
+    }
+
     setLoading(true);
     try {
       if (isEditMode && editId) {
@@ -245,9 +290,10 @@ export default function CreateListing() {
           }
         }
 
-        // Upload new images
+        // Upload new images with hash
         const startIndex = existingImageUrls.length;
         for (let i = 0; i < photos.length; i++) {
+          const imageHash = await computeImageHash(photos[i]);
           const watermarked = await addWatermark(photos[i], username);
           const path = `${user.id}/${editId}/${startIndex + i}.jpg`;
           await supabase.storage.from('listings').upload(path, watermarked);
@@ -255,7 +301,8 @@ export default function CreateListing() {
             listing_id: editId,
             storage_path: path,
             sort_order: startIndex + i,
-          });
+            image_hash: imageHash,
+          } as any);
         }
 
         // Trigger translation in background
@@ -282,9 +329,10 @@ export default function CreateListing() {
 
         if (error) throw error;
 
-        // Upload images with watermark
+        // Upload images with watermark + hash
         const username = profile?.display_name || 'user';
         for (let i = 0; i < photos.length; i++) {
+          const imageHash = await computeImageHash(photos[i]);
           const watermarked = await addWatermark(photos[i], username);
           const ext = 'jpg';
           const path = `${user.id}/${listing.id}/${i}.${ext}`;
@@ -293,7 +341,8 @@ export default function CreateListing() {
             listing_id: listing.id,
             storage_path: path,
             sort_order: i,
-          });
+            image_hash: imageHash,
+          } as any);
         }
 
         // Create translation placeholders - set the user's language as the original text
@@ -573,6 +622,17 @@ export default function CreateListing() {
             )}
           </div>
           <p className="text-sm text-muted-foreground">{photos.length + existingImageUrls.length}/10 — {t('createListing.maxPhotos')}</p>
+          {moderationWarnings.length > 0 && (
+            <Alert variant="destructive" className="mt-3">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                {moderationWarnings.includes('duplicate_image') && <p>{t('moderation.duplicateImage')}</p>}
+                {moderationWarnings.includes('similar_title') && <p>{t('moderation.similarTitle')}</p>}
+                {moderationWarnings.includes('image_reused') && <p>{t('moderation.imageReused')}</p>}
+                {moderationWarnings.includes('suspicious_content') && <p>{t('moderation.suspiciousContent')}</p>}
+              </AlertDescription>
+            </Alert>
+          )}
         </div>
       )}
 

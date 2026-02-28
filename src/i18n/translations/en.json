@@ -602,5 +602,12 @@
     "sortFavorites": "Sort by favorites",
     "sortWaClicks": "Sort by WA clicks",
     "noListings": "No listings yet"
+  },
+  "moderation": {
+    "duplicateImage": "This image appears to be a duplicate of another listing",
+    "duplicateOf": "Duplicate of",
+    "similarTitle": "Warning: A listing with a very similar title already exists",
+    "imageReused": "This image has been used in multiple listings",
+    "suspiciousContent": "Suspicious content detected in your listing"
   }
 }
