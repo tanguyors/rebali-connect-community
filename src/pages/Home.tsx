@@ -180,9 +180,10 @@ export default function Home() {
           </form>
 
           {/* Advanced Filters Panel */}
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             {showFilters && (
               <motion.div
+                key="filters-panel"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
