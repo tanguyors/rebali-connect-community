@@ -154,8 +154,8 @@
   },
   "about": {
     "title": "Re-Bali Hakkında",
-    "description": "Re-Bali, Bali'de ikinci el eşya alıp satmak için güvenilir pazar yeridir.",
-    "mission": "Misyonumuz", "missionText": "Bali topluluğu için sürdürülebilir, güvenilir ve kapsayıcı bir pazar yeri oluşturmak.",
+    "description": "Re-Bali, Bali'de güvenilir ilan platformudur.",
+    "mission": "Misyonumuz", "missionText": "Bali topluluğu için sürdürülebilir, güvenilir ve kapsayıcı bir platform oluşturmak.",
     "values": "Değerlerimiz", "trust": "Güven & Güvenlik", "trustText": "Her işlem gerçek kişiler arasında yapılır.",
     "sustainability": "Sürdürülebilirlik", "sustainabilityText": "Eşyalara ikinci bir hayat vermek atıkları azaltır.",
     "community": "Topluluk", "communityText": "Çeşitli Bali topluluğu tarafından ve onlar için inşa edilmiştir."
@@ -168,7 +168,7 @@
     "tip5Title": "Satıcı kimliğini doğrulayın", "tip5Desc": "İşlem yapmadan önce satıcının profilini ve diğer ilanlarını kontrol edin."
   },
   "rules": {
-    "title": "Pazar Yeri Kuralları", "rule1": "İlanlarınızda dürüst olun. Ürünleri doğru tanımlayın.",
+    "title": "Platform Kuralları", "rule1": "İlanlarınızda dürüst olun. Ürünleri doğru tanımlayın.",
     "rule2": "Yasadışı, sahte veya yasaklı ürünler yasaktır.", "rule3": "Spam veya mükerrer ilan yasaktır.",
     "rule4": "Diğer kullanıcılara saygılı olun.", "rule5": "Kullanıcı başına en fazla 5 aktif ilan.",
     "rule6": "İlanlar en az bir fotoğraf içermelidir.", "rule7": "Fiyatlar adil ve doğru olmalıdır.",
@@ -194,7 +194,7 @@
     "locateMe": "Konumumu bul", "localized": "Konumlandı", "geoError": "Konumunuza erişilemiyor", "geoNotSupported": "Coğrafi konum desteklenmiyor"
   },
   "footer": {
-    "tagline": "Bali'nin güvenilir pazar yeri", "marketplace": "Pazar Yeri", "company": "Şirket", "legal": "Yasal",
+    "tagline": "Bali'nin güvenilir ilan platformu", "marketplace": "Keşfet", "company": "Şirket", "legal": "Yasal",
     "terms": "Kullanım Şartları", "privacy": "Gizlilik Politikası", "copyright": "Tüm hakları saklıdır.", "trustBadgesPoints": "Güven, Rozetler ve Puanlar"
   },
   "notFound": { "title": "Sayfa bulunamadı", "description": "Aradığınız sayfa mevcut değil.", "backHome": "Ana Sayfaya Dön" },

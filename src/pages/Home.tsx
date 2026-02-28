@@ -134,7 +134,7 @@ export default function Home() {
           "@type": "WebSite",
           name: "Re-Bali",
           url: "https://re-bali.com",
-          description: "Bali's trusted marketplace for expats, locals, and businesses.",
+          description: "Bali's trusted platform connecting expats, locals, and businesses.",
           potentialAction: {
             "@type": "SearchAction",
             target: "https://re-bali.com/browse?q={search_term_string}",
