@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { Shield, AlertTriangle, Users, FileText, CheckCircle, BarChart3, Search, Ban, Eye, Phone, MessageSquare, Globe, Calendar, User, MapPin, Tag, Package, DollarSign, BarChart2, Trash2, Archive, Pencil, Save, X, Fingerprint, Wifi, WifiOff, ShieldCheck, ShieldAlert, FileCheck, MessageCircle, Coins, TrendingUp } from 'lucide-react';
+import { Shield, AlertTriangle, Users, FileText, CheckCircle, BarChart3, Search, Ban, Eye, Phone, MessageSquare, Globe, Calendar, User, MapPin, Tag, Package, DollarSign, BarChart2, Trash2, Archive, Pencil, Save, X, Fingerprint, Wifi, WifiOff, ShieldCheck, ShieldAlert, FileCheck, MessageCircle, Coins, TrendingUp, Clock } from 'lucide-react';
 import { CATEGORY_TREE } from '@/lib/constants';
 import SearchAnalytics from '@/components/admin/SearchAnalytics';
 
