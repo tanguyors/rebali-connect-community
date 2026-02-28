@@ -108,7 +108,7 @@
   },
   "auth": {
     "loginTitle": "Welcome back", "loginSubtitle": "Sign in to your Re-Bali account",
-    "signupTitle": "Create an account", "signupSubtitle": "Join the Bali marketplace community",
+    "signupTitle": "Create an account", "signupSubtitle": "Join the Re-Bali community",
     "email": "Email", "password": "Password", "confirmPassword": "Confirm password", "displayName": "Display name",
     "accountType": "Account type", "privateAccount": "Private", "proAccount": "Professional",
     "privateDesc": "Buy & sell as an individual", "proDesc": "Sell as a business",
