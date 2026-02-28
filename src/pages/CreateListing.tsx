@@ -622,6 +622,17 @@ export default function CreateListing() {
             )}
           </div>
           <p className="text-sm text-muted-foreground">{photos.length + existingImageUrls.length}/10 — {t('createListing.maxPhotos')}</p>
+          {moderationWarnings.length > 0 && (
+            <Alert variant="destructive" className="mt-3">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                {moderationWarnings.includes('duplicate_image') && <p>{t('moderation.duplicateImage')}</p>}
+                {moderationWarnings.includes('similar_title') && <p>{t('moderation.similarTitle')}</p>}
+                {moderationWarnings.includes('image_reused') && <p>{t('moderation.imageReused')}</p>}
+                {moderationWarnings.includes('suspicious_content') && <p>{t('moderation.suspiciousContent')}</p>}
+              </AlertDescription>
+            </Alert>
+          )}
         </div>
       )}
 
