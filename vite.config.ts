@@ -24,9 +24,9 @@ export default defineConfig(({ mode }) => ({
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
       },
       manifest: {
-        name: "Re-Bali — Marketplace Bali",
+        name: "Re-Bali — Petites annonces Bali",
         short_name: "Re-Bali",
-        description: "Bali's trusted marketplace for expats, locals, and businesses. Buy and sell second-hand — 100% free.",
+        description: "Bali's trusted platform connecting expats, locals, and businesses. Buy and sell second-hand — 100% free.",
         theme_color: "#0f766e",
         background_color: "#ffffff",
         display: "standalone",
