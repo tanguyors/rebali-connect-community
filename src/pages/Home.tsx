@@ -145,7 +145,7 @@ export default function Home() {
       <CategoryMarquee />
 
       {/* Hero */}
-      <section className="relative bg-gradient-to-br from-primary/10 via-background to-accent/10">
+      <section className="relative z-20 bg-gradient-to-br from-primary/10 via-background to-accent/10">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-10 left-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
           <div className="absolute bottom-10 right-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl" />
