@@ -45,7 +45,10 @@ const PRO_HIGHLIGHTS = [
 export default function VIP() {
   const { t } = useLanguage();
   const { user, profile } = useAuth();
+  const navigate = useNavigate();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
+  const [subscribing, setSubscribing] = useState(false);
+  const isBusinessAccount = profile?.user_type === 'business';
   const isBusinessAccount = profile?.user_type === 'business';
 
   const { data: activeSub } = useQuery({
