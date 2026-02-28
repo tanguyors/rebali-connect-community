@@ -652,17 +652,12 @@ export default function Admin() {
               const latestVerification = userVerification.length > 0 ? userVerification[0] : null;
 
               if (selectedUser.is_verified_seller) {
+                const approvedVerification = userVerification.find((v: any) => v.status === 'approved');
                 return (
-                  <div className="flex items-center gap-3 p-3 rounded-md bg-green-500/10 border border-green-500/20">
-                    <ShieldCheck className="h-5 w-5 text-green-600" />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-green-700">{t('security.verifiedSeller')}</p>
-                      <p className="text-xs text-muted-foreground">{t('security.verifiedSellerDesc')}</p>
-                    </div>
-                    <Badge className="bg-green-500/10 text-green-600 border-green-500/20">
-                      <ShieldCheck className="h-3 w-3 mr-1" /> {t('security.verifiedSeller')}
-                    </Badge>
-                  </div>
+                  <VerifiedSellerCard
+                    verification={approvedVerification}
+                    displayName={selectedUser.display_name || selectedUser.id.slice(0, 8)}
+                  />
                 );
               }
 
