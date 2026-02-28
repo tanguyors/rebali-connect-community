@@ -15,7 +15,8 @@
     "step2Title": "Alıcılarla bağlantı kurun", "step2Desc": "Alıcılar sizi doğrudan WhatsApp veya telefon ile arar",
     "step3Title": "Anlaşmayı tamamlayın", "step3Desc": "Buluşun, kontrol edin ve işlemi tamamlayın",
     "freePlatform": "%100 Ücretsiz Platform", "freeDesc": "Ücret yok, komisyon yok. Re-Bali herkes için ücretsizdir.",
-    "featured": "Öne Çıkan İlanlar"
+    "featured": "Öne Çıkan İlanlar",
+    "recommended": "Sizin İçin Önerilen"
   },
   "categories": {
     "emploi": "İş İlanları", "vehicules": "Araçlar", "immobilier": "Emlak", "mode": "Moda",
