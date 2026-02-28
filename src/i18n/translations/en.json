@@ -219,7 +219,7 @@
     "locateMe": "Locate me", "localized": "Located", "geoError": "Unable to access your location", "geoNotSupported": "Geolocation is not supported"
   },
   "footer": {
-    "tagline": "Bali's trusted marketplace", "marketplace": "Marketplace", "company": "Company", "legal": "Legal",
+    "tagline": "Bali's trusted classifieds platform", "marketplace": "Explore", "company": "Company", "legal": "Legal",
     "terms": "Terms of Service", "privacy": "Privacy Policy", "copyright": "All rights reserved.",
     "trustBadgesPoints": "Trust, Badges & Points"
   },
