@@ -168,7 +168,7 @@
     "tip5Title": "Satıcı kimliğini doğrulayın", "tip5Desc": "İşlem yapmadan önce satıcının profilini ve diğer ilanlarını kontrol edin."
   },
   "rules": {
-    "title": "Pazar Yeri Kuralları", "rule1": "İlanlarınızda dürüst olun. Ürünleri doğru tanımlayın.",
+    "title": "Platform Kuralları", "rule1": "İlanlarınızda dürüst olun. Ürünleri doğru tanımlayın.",
     "rule2": "Yasadışı, sahte veya yasaklı ürünler yasaktır.", "rule3": "Spam veya mükerrer ilan yasaktır.",
     "rule4": "Diğer kullanıcılara saygılı olun.", "rule5": "Kullanıcı başına en fazla 5 aktif ilan.",
     "rule6": "İlanlar en az bir fotoğraf içermelidir.", "rule7": "Fiyatlar adil ve doğru olmalıdır.",
