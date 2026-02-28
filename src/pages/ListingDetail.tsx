@@ -353,6 +353,10 @@ export default function ListingDetail() {
                     : CATEGORY_PLACEHOLDERS[listing.category] || '/placeholder.svg'}
                   alt={title}
                   className="w-full h-full object-cover"
+                  width={800}
+                  height={600}
+                  fetchPriority={currentImage === 0 ? 'high' : undefined}
+                  decoding={currentImage === 0 ? 'sync' : 'async'}
                 />
                 <WatermarkOverlay />
               </div>

@@ -9,7 +9,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "next-themes";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 
 // Lazy-loaded pages for code splitting (better Core Web Vitals)
 const Browse = lazy(() => import("./pages/Browse"));

@@ -3,6 +3,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const LANGS = ['en', 'fr', 'es', 'de', 'nl', 'id', 'ja', 'zh', 'ru', 'ar', 'hi', 'tr'];
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -40,33 +42,44 @@ Deno.serve(async (req) => {
 
   const today = new Date().toISOString().split("T")[0];
 
+  function hreflangBlock(path: string): string {
+    let block = '';
+    for (const lang of LANGS) {
+      block += `    <xhtml:link rel="alternate" hreflang="${lang}" href="${siteUrl}${path}?lang=${lang}"/>\n`;
+    }
+    block += `    <xhtml:link rel="alternate" hreflang="x-default" href="${siteUrl}${path}"/>\n`;
+    return block;
+  }
+
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
 `;
 
-  // Static pages
+  // Static pages with hreflang
   for (const page of staticPages) {
     xml += `  <url>
     <loc>${siteUrl}${page.loc}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
-  </url>
+${hreflangBlock(page.loc)}  </url>
 `;
   }
 
-  // Listing pages
+  // Listing pages with hreflang
   if (Array.isArray(listings)) {
     for (const listing of listings) {
       const lastmod = listing.updated_at
         ? listing.updated_at.split("T")[0]
         : today;
+      const path = `/listing/${listing.id}`;
       xml += `  <url>
-    <loc>${siteUrl}/listing/${listing.id}</loc>
+    <loc>${siteUrl}${path}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-  </url>
+${hreflangBlock(path)}  </url>
 `;
     }
   }
