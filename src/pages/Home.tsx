@@ -145,7 +145,7 @@ export default function Home() {
       <CategoryMarquee />
 
       {/* Hero */}
-      <section className="relative z-20 bg-gradient-to-br from-primary/10 via-background to-accent/10">
+      <section className="relative z-30 bg-gradient-to-br from-primary/10 via-background to-accent/10">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-10 left-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
           <div className="absolute bottom-10 right-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl" />
@@ -285,7 +285,7 @@ export default function Home() {
       </section>
 
       {/* CTA Banner */}
-      <section className="container mx-auto px-4">
+      <section className="relative z-10 container mx-auto px-4">
         <div className="relative overflow-hidden rounded-2xl bg-primary px-8 py-10 md:py-12">
           <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary-foreground/10 rounded-full blur-2xl" />
           <div className="absolute -left-6 -bottom-8 w-32 h-32 bg-primary-foreground/10 rounded-full blur-2xl" />

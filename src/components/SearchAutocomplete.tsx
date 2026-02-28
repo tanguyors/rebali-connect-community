@@ -238,7 +238,7 @@ export default function SearchAutocomplete({
 
       {open && (
         <ul
-          className="absolute z-[60] mt-1 w-full rounded-lg border border-border bg-popover shadow-lg overflow-hidden max-h-80 overflow-y-auto"
+          className="absolute z-[60] mt-1 w-[calc(100%+5rem)] sm:w-full rounded-lg border border-border bg-popover shadow-lg overflow-hidden max-h-80 overflow-y-auto"
           role="listbox"
         >
           {/* Recent searches (shown when input is empty) */}
