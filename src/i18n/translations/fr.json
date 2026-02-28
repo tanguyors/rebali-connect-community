@@ -441,5 +441,12 @@
     "sortFavorites": "Trier par favoris",
     "sortWaClicks": "Trier par clics WA",
     "noListings": "Aucune annonce"
+  },
+  "moderation": {
+    "duplicateImage": "Cette image semble être un doublon d'une autre annonce",
+    "duplicateOf": "Doublon de",
+    "similarTitle": "Attention : une annonce avec un titre très similaire existe déjà",
+    "imageReused": "Cette image a été utilisée dans plusieurs annonces",
+    "suspiciousContent": "Contenu suspect détecté dans votre annonce"
   }
 }
