@@ -1,3 +1,4 @@
+import SEOHead from '@/components/SEOHead';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Heart, Shield, Users } from 'lucide-react';
 
