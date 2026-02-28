@@ -52,7 +52,9 @@ const usePrefetchRoutes = () => {
   }, []);
 };
 
-const App = () => (
+const App = () => {
+  usePrefetchRoutes();
+  return (
   <HelmetProvider>
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
