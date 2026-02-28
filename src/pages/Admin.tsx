@@ -1337,6 +1337,7 @@ export default function Admin() {
                         onApprove={async () => {
                           await supabase.from('id_verifications').update({ status: 'approved' as any, reviewed_by: user!.id, reviewed_at: new Date().toISOString() }).eq('id', v.id);
                           await supabase.from('profiles').update({ is_verified_seller: true }).eq('id', v.user_id);
+                          await supabase.functions.invoke('calculate-trust-score', { body: { user_id: v.user_id } });
                           refetchVerifications();
                           qc.invalidateQueries({ queryKey: ['admin-profiles'] });
                           toast({ title: t('security.approve') });
