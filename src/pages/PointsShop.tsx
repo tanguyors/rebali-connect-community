@@ -65,6 +65,26 @@ export default function PointsShop() {
   const [boostType, setBoostType] = useState<string>('boost');
   const [userListings, setUserListings] = useState<{ id: string; title_original: string }[]>([]);
   const [loadingListings, setLoadingListings] = useState(false);
+  const [buyingPack, setBuyingPack] = useState<string | null>(null);
+
+  const handleBuyPoints = async (packId: string) => {
+    if (!user) { navigate('/auth'); return; }
+    setBuyingPack(packId);
+    try {
+      const { data, error } = await supabase.functions.invoke('xendit-create-invoice', {
+        body: { type: 'points', pack_id: packId },
+      });
+      if (error || data?.error) {
+        toast({ title: data?.error || 'Payment error', variant: 'destructive' });
+      } else if (data?.invoice_url) {
+        window.open(data.invoice_url, '_blank');
+        toast({ title: t('points.redirectingPayment') });
+      }
+    } catch {
+      toast({ title: 'Payment error', variant: 'destructive' });
+    }
+    setBuyingPack(null);
+  };
 
   const fetchData = async () => {
     if (!user) return;
