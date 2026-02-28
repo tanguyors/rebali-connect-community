@@ -194,7 +194,7 @@
     "locateMe": "حدد موقعي", "localized": "تم تحديد الموقع", "geoError": "تعذر الوصول لموقعك", "geoNotSupported": "تحديد الموقع غير مدعوم"
   },
   "footer": {
-    "tagline": "منصة بالي الموثوقة", "marketplace": "استكشف", "company": "الشركة", "legal": "قانوني",
+    "tagline": "منصة بالي الموثوقة", "explore": "استكشف", "company": "الشركة", "legal": "قانوني",
     "terms": "شروط الاستخدام", "privacy": "سياسة الخصوصية", "copyright": "جميع الحقوق محفوظة.", "trustBadgesPoints": "الثقة والشارات والنقاط"
   },
   "notFound": { "title": "الصفحة غير موجودة", "description": "الصفحة التي تبحث عنها غير موجودة.", "backHome": "العودة للرئيسية" },
