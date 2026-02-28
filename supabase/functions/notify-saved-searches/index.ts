@@ -53,7 +53,7 @@ Deno.serve(async (req) => {
     const fonnte = Deno.env.get("FONNTE_TOKEN");
     const supabase = createClient(supabaseUrl, serviceKey);
 
-    const { listing_id, title, description, category, price, seller_id } = await req.json();
+    const { listing_id, title, description, category, price, seller_id, extra_fields } = await req.json();
 
     if (!listing_id || !title) {
       return new Response(JSON.stringify({ error: "Missing fields" }), {
@@ -61,6 +61,11 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // Extract model/brand from extra_fields
+    const extraText = extra_fields
+      ? Object.values(extra_fields).filter((v): v is string => typeof v === "string").join(" ")
+      : "";
 
     // Get all active saved searches
     const { data: savedSearches } = await supabase
@@ -74,7 +79,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const searchText = `${title} ${description} ${category}`.toLowerCase();
+    const searchText = `${title} ${description} ${category} ${extraText}`.toLowerCase();
     let matchedCount = 0;
 
     for (const search of savedSearches) {
