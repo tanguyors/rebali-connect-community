@@ -99,6 +99,7 @@ const App = () => {
     </ThemeProvider>
   </QueryClientProvider>
   </HelmetProvider>
-);
+  );
+};
 
 export default App;
