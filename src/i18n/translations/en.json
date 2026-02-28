@@ -176,7 +176,9 @@
     "buyer": "Buyer",
     "sellerLabel": "Seller",
     "msgCount": "Messages",
-    "relayStatus": "Status"
+    "relayStatus": "Status",
+    "noVerificationRequest": "No verification request submitted",
+    "viewDocuments": "View Documents"
   },
   "about": {
     "title": "About Re-Bali",
