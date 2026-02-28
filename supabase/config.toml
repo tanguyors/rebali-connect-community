@@ -41,3 +41,9 @@ verify_jwt = false
 
 [functions.prerender]
 verify_jwt = false
+
+[functions.xendit-create-invoice]
+verify_jwt = false
+
+[functions.xendit-webhook]
+verify_jwt = false

@@ -393,6 +393,57 @@ export type Database = {
           },
         ]
       }
+      payment_invoices: {
+        Row: {
+          amount_idr: number
+          created_at: string
+          id: string
+          invoice_type: string
+          pack_id: string | null
+          paid_at: string | null
+          plan_type: string | null
+          points_amount: number | null
+          status: string
+          updated_at: string
+          user_id: string
+          xendit_callback_data: Json | null
+          xendit_invoice_id: string
+          xendit_invoice_url: string
+        }
+        Insert: {
+          amount_idr: number
+          created_at?: string
+          id?: string
+          invoice_type: string
+          pack_id?: string | null
+          paid_at?: string | null
+          plan_type?: string | null
+          points_amount?: number | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          xendit_callback_data?: Json | null
+          xendit_invoice_id: string
+          xendit_invoice_url: string
+        }
+        Update: {
+          amount_idr?: number
+          created_at?: string
+          id?: string
+          invoice_type?: string
+          pack_id?: string | null
+          paid_at?: string | null
+          plan_type?: string | null
+          points_amount?: number | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          xendit_callback_data?: Json | null
+          xendit_invoice_id?: string
+          xendit_invoice_url?: string
+        }
+        Relationships: []
+      }
       phone_verifications: {
         Row: {
           attempts: number

@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 const FREE_FEATURES = [
   { key: 'listings5', included: true },
@@ -44,7 +45,9 @@ const PRO_HIGHLIGHTS = [
 export default function VIP() {
   const { t } = useLanguage();
   const { user, profile } = useAuth();
+  const navigate = useNavigate();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
+  const [subscribing, setSubscribing] = useState(false);
   const isBusinessAccount = profile?.user_type === 'business';
 
   const { data: activeSub } = useQuery({
@@ -71,6 +74,25 @@ export default function VIP() {
   const savingsPercent = Math.round((1 - annualMonthly / monthlyPrice) * 100);
 
   const currentPrice = billingCycle === 'monthly' ? monthlyPrice : annualPrice;
+
+  const handleSubscribe = async () => {
+    if (!user) { navigate('/auth'); return; }
+    setSubscribing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('xendit-create-invoice', {
+        body: { type: 'pro_subscription', plan_type: billingCycle },
+      });
+      if (error || data?.error) {
+        toast({ title: data?.error || 'Payment error', variant: 'destructive' });
+      } else if (data?.invoice_url) {
+        window.open(data.invoice_url, '_blank');
+        toast({ title: t('pro.redirectingPayment') });
+      }
+    } catch {
+      toast({ title: 'Payment error', variant: 'destructive' });
+    }
+    setSubscribing(false);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
@@ -189,9 +211,19 @@ export default function VIP() {
                   </div>
                 ))}
               </div>
-              <Button className="w-full gap-2" disabled>
-                <Lock className="h-4 w-4" />
-                {t('pro.comingSoon')}
+              <Button
+                className="w-full gap-2"
+                disabled={subscribing || !!activeSub}
+                onClick={handleSubscribe}
+              >
+                {subscribing ? (
+                  <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                ) : activeSub ? (
+                  <ShieldCheck className="h-4 w-4" />
+                ) : (
+                  <Crown className="h-4 w-4" />
+                )}
+                {subscribing ? '...' : activeSub ? t('pro.currentPlan') : t('pro.subscribe')}
               </Button>
               <p className="text-[10px] text-center text-muted-foreground">{t('pro.paymentMethods')}</p>
             </CardContent>

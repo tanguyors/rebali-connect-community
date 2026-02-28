@@ -65,6 +65,26 @@ export default function PointsShop() {
   const [boostType, setBoostType] = useState<string>('boost');
   const [userListings, setUserListings] = useState<{ id: string; title_original: string }[]>([]);
   const [loadingListings, setLoadingListings] = useState(false);
+  const [buyingPack, setBuyingPack] = useState<string | null>(null);
+
+  const handleBuyPoints = async (packId: string) => {
+    if (!user) { navigate('/auth'); return; }
+    setBuyingPack(packId);
+    try {
+      const { data, error } = await supabase.functions.invoke('xendit-create-invoice', {
+        body: { type: 'points', pack_id: packId },
+      });
+      if (error || data?.error) {
+        toast({ title: data?.error || 'Payment error', variant: 'destructive' });
+      } else if (data?.invoice_url) {
+        window.open(data.invoice_url, '_blank');
+        toast({ title: t('points.redirectingPayment') });
+      }
+    } catch {
+      toast({ title: 'Payment error', variant: 'destructive' });
+    }
+    setBuyingPack(null);
+  };
 
   const fetchData = async () => {
     if (!user) return;
@@ -275,9 +295,18 @@ export default function PointsShop() {
                     <p className="text-xs text-muted-foreground">{t(`points.pack.${pack.id}Desc`)}</p>
                     <p className="text-2xl font-bold text-primary">{pack.points}</p>
                     <p className="text-[10px] text-muted-foreground">{t('points.packPrice').replace('{price}', pack.price.toLocaleString())}</p>
-                    <Button size="sm" disabled className="w-full gap-1.5 mt-1">
-                      <Lock className="h-3.5 w-3.5" />
-                      {t('points.comingSoon')}
+                    <Button
+                      size="sm"
+                      className="w-full gap-1.5 mt-1"
+                      disabled={buyingPack === pack.id}
+                      onClick={() => handleBuyPoints(pack.id)}
+                    >
+                      {buyingPack === pack.id ? (
+                        <div className="h-3.5 w-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <CreditCard className="h-3.5 w-3.5" />
+                      )}
+                      {buyingPack === pack.id ? '...' : t('points.buyNow')}
                     </Button>
                   </div>
                 </div>
@@ -285,9 +314,7 @@ export default function PointsShop() {
             })}
           </div>
           <div className="p-3 rounded-lg bg-muted/50 border border-border text-center space-y-1">
-            <p className="text-sm font-medium">{t('points.buyPointsComingSoon')}</p>
-            <p className="text-xs text-muted-foreground">{t('points.buyPointsComingSoonDesc')}</p>
-            <p className="text-[10px] text-muted-foreground mt-2">{t('points.paymentMethods')}</p>
+            <p className="text-[10px] text-muted-foreground">{t('points.paymentMethods')}</p>
           </div>
         </CardContent>
       </Card>
