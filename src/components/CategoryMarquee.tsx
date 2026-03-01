@@ -2,9 +2,11 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { CATEGORIES, CATEGORY_ICONS, CATEGORY_TREE } from '@/lib/constants';
 import { useRef, useState } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function CategoryMarquee() {
   const { t } = useLanguage();
+  const isMobile = useIsMobile();
   const [paused, setPaused] = useState(false);
   const [hoveredCat, setHoveredCat] = useState<string | null>(null);
   const [popoverPos, setPopoverPos] = useState<{ left: number; top: number } | null>(null);
