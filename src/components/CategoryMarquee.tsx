@@ -2,9 +2,11 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { CATEGORIES, CATEGORY_ICONS, CATEGORY_TREE } from '@/lib/constants';
 import { useRef, useState } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function CategoryMarquee() {
   const { t } = useLanguage();
+  const isMobile = useIsMobile();
   const [paused, setPaused] = useState(false);
   const [hoveredCat, setHoveredCat] = useState<string | null>(null);
   const [popoverPos, setPopoverPos] = useState<{ left: number; top: number } | null>(null);
@@ -38,14 +40,15 @@ export default function CategoryMarquee() {
 
   const subcategories = hoveredCat ? CATEGORY_TREE[hoveredCat] : [];
 
+  const categoriesToRender = isMobile ? CATEGORIES : [...CATEGORIES, ...CATEGORIES];
+
   return (
     <section className="border-b border-border/50 bg-card overflow-visible relative">
-      <div className="overflow-hidden">
+      <div className={isMobile ? 'overflow-x-auto scrollbar-hide' : 'overflow-hidden'}>
         <div
-          className={`marquee-track flex w-max ${paused ? 'paused' : ''}`}
+          className={`flex w-max ${isMobile ? '' : `marquee-track ${paused ? 'paused' : ''}`}`}
         >
-          {/* Render categories twice for seamless loop */}
-          {[...CATEGORIES, ...CATEGORIES].map((cat, i) => (
+          {categoriesToRender.map((cat, i) => (
             <Link
               key={`${cat}-${i}`}
               to={`/browse?category=${cat}`}

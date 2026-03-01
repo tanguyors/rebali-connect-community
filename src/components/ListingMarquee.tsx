@@ -2,6 +2,7 @@ import { useState } from 'react';
 import ListingCardSmall from '@/components/ListingCardSmall';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useListingBoosts } from '@/hooks/useListingEnrichment';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ListingMarqueeProps {
   listings: any[];
@@ -11,6 +12,7 @@ interface ListingMarqueeProps {
 
 export default function ListingMarquee({ listings, isLoading, emptyMessage }: ListingMarqueeProps) {
   const [paused, setPaused] = useState(false);
+  const isMobile = useIsMobile();
 
   const listingIds = (listings || []).map((l: any) => l.id);
   const { data: boostsMap } = useListingBoosts(listingIds);
@@ -35,17 +37,16 @@ export default function ListingMarquee({ listings, isLoading, emptyMessage }: Li
     );
   }
 
-  // Duplicate listings for seamless loop
-  const items = [...listings, ...listings];
+  const items = isMobile ? listings : [...listings, ...listings];
 
   return (
     <div
-      className="overflow-hidden"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
+      className={isMobile ? 'overflow-x-auto scrollbar-hide' : 'overflow-hidden'}
+      onMouseEnter={() => !isMobile && setPaused(true)}
+      onMouseLeave={() => !isMobile && setPaused(false)}
     >
       <div
-        className={`listing-marquee flex gap-3 w-max pl-1 ${paused ? 'paused' : ''}`}
+        className={`flex gap-3 w-max pl-1 ${isMobile ? '' : `listing-marquee ${paused ? 'paused' : ''}`}`}
       >
         {items.map((listing: any, i: number) => (
           <ListingCardSmall
