@@ -23,6 +23,7 @@ export default function MyListings() {
   const [boostDialogOpen, setBoostDialogOpen] = useState(false);
   const [boostListingId, setBoostListingId] = useState<string | null>(null);
   const [purchasing, setPurchasing] = useState(false);
+  const [confirmBoostType, setConfirmBoostType] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [searchParams] = useSearchParams();
@@ -106,11 +107,15 @@ export default function MyListings() {
     setBoostDialogOpen(true);
   };
 
-  const purchaseBoost = async (type: string) => {
-    if (!boostListingId) return;
+  const selectBoostType = (type: string) => {
+    setConfirmBoostType(type);
+  };
+
+  const purchaseBoost = async () => {
+    if (!boostListingId || !confirmBoostType) return;
     setPurchasing(true);
     const { data, error } = await supabase.functions.invoke('manage-points', {
-      body: { action: 'purchase', addon_type: type, listing_id: boostListingId },
+      body: { action: 'purchase', addon_type: confirmBoostType, listing_id: boostListingId },
     });
     if (error || data?.error) {
       const msg = data?.error === 'insufficient_points'
@@ -120,8 +125,10 @@ export default function MyListings() {
     } else {
       toast({ title: t('points.purchaseSuccess') });
       qc.invalidateQueries({ queryKey: ['my-boosts'] });
+      qc.invalidateQueries({ queryKey: ['my-listings'] });
     }
     setPurchasing(false);
+    setConfirmBoostType(null);
     setBoostDialogOpen(false);
   };
 
@@ -224,44 +231,70 @@ export default function MyListings() {
       </Tabs>
 
       {/* Boost Dialog */}
-      <Dialog open={boostDialogOpen} onOpenChange={setBoostDialogOpen}>
+      <Dialog open={boostDialogOpen} onOpenChange={(open) => { if (!open) { setConfirmBoostType(null); } setBoostDialogOpen(open); }}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Rocket className="h-5 w-5 text-blue-500" /> Boost cette annonce
             </DialogTitle>
-            <DialogDescription>Choisis le type de boost à appliquer</DialogDescription>
+            <DialogDescription>
+              {confirmBoostType ? 'Confirme ton achat' : 'Choisis le type de boost à appliquer'}
+            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-3">
-            <button
-              onClick={() => purchaseBoost('boost')}
-              disabled={purchasing}
-              className="w-full p-4 rounded-xl border-2 border-blue-200 hover:border-blue-400 transition-colors flex items-center gap-3 text-left"
-            >
-              <div className="h-10 w-10 rounded-full bg-blue-500/10 flex items-center justify-center">
-                <Rocket className="h-5 w-5 text-blue-500" />
+
+          {!confirmBoostType ? (
+            <div className="space-y-3">
+              <button
+                onClick={() => selectBoostType('boost')}
+                className="w-full p-4 rounded-xl border-2 border-blue-200 hover:border-blue-400 transition-colors flex items-center gap-3 text-left"
+              >
+                <div className="h-10 w-10 rounded-full bg-blue-500/10 flex items-center justify-center">
+                  <Rocket className="h-5 w-5 text-blue-500" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-sm">Boost 48h</p>
+                  <p className="text-xs text-muted-foreground">Tête de liste dans ta catégorie</p>
+                </div>
+                <span className="font-bold text-primary">40 pts</span>
+              </button>
+              <button
+                onClick={() => selectBoostType('boost_premium')}
+                className="w-full p-4 rounded-xl border-2 border-amber-200 hover:border-amber-400 transition-colors flex items-center gap-3 text-left"
+              >
+                <div className="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center">
+                  <Star className="h-5 w-5 text-amber-500" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-sm">Boost Premium</p>
+                  <p className="text-xs text-muted-foreground">Mise en avant sur la page d'accueil</p>
+                </div>
+                <span className="font-bold text-primary">80 pts</span>
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="p-4 rounded-xl border-2 border-primary/20 bg-muted/50 flex items-center gap-3">
+                <div className={`h-10 w-10 rounded-full flex items-center justify-center ${confirmBoostType === 'boost_premium' ? 'bg-amber-500/10' : 'bg-blue-500/10'}`}>
+                  {confirmBoostType === 'boost_premium' ? <Star className="h-5 w-5 text-amber-500" /> : <Rocket className="h-5 w-5 text-blue-500" />}
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-sm">{confirmBoostType === 'boost_premium' ? 'Boost Premium' : 'Boost 48h'}</p>
+                  <p className="text-xs text-muted-foreground">{confirmBoostType === 'boost_premium' ? '80 pts' : '40 pts'}</p>
+                </div>
               </div>
-              <div className="flex-1">
-                <p className="font-semibold text-sm">Boost 48h</p>
-                <p className="text-xs text-muted-foreground">Tête de liste dans ta catégorie</p>
-              </div>
-              <span className="font-bold text-primary">40 pts</span>
-            </button>
-            <button
-              onClick={() => purchaseBoost('boost_premium')}
-              disabled={purchasing}
-              className="w-full p-4 rounded-xl border-2 border-amber-200 hover:border-amber-400 transition-colors flex items-center gap-3 text-left"
-            >
-              <div className="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center">
-                <Star className="h-5 w-5 text-amber-500" />
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold text-sm">Boost Premium</p>
-                <p className="text-xs text-muted-foreground">Mise en avant sur la page d'accueil</p>
-              </div>
-              <span className="font-bold text-primary">80 pts</span>
-            </button>
-          </div>
+              <p className="text-sm text-center text-muted-foreground">
+                Es-tu sûr de vouloir utiliser tes points pour ce boost ?
+              </p>
+              <DialogFooter className="flex gap-2 sm:gap-2">
+                <Button variant="outline" onClick={() => setConfirmBoostType(null)} disabled={purchasing}>
+                  Retour
+                </Button>
+                <Button onClick={purchaseBoost} disabled={purchasing}>
+                  {purchasing ? '...' : 'Confirmer'}
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
