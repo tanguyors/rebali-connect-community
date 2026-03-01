@@ -432,7 +432,7 @@ export default function CreateListing() {
           </div>
           {/* Subcategories */}
           {form.category && CATEGORY_TREE[form.category] && (
-            <div>
+            <div ref={subcategoryRef}>
               <Label className="mb-2 block">{t('createListing.selectSubcategory')}</Label>
               <div className="grid grid-cols-2 gap-2">
                 {CATEGORY_TREE[form.category].map(sub => (
