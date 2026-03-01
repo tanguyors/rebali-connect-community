@@ -75,7 +75,7 @@ export default function BottomNav() {
               )}
             >
               <div className="relative">
-                <Icon className="h-5 w-5" strokeWidth={isActive ? 2.5 : 1.5} />
+                <Icon className="h-4 w-4" strokeWidth={isActive ? 2.5 : 1.5} />
                 {item.path === '/messages' && totalUnread > 0 && (
                   <span className="absolute -top-1.5 -right-2.5 bg-destructive text-destructive-foreground text-[9px] font-bold rounded-full h-4 min-w-[16px] flex items-center justify-center px-1">
                     {totalUnread > 99 ? '99+' : totalUnread}
