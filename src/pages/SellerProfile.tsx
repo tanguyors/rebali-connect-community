@@ -19,7 +19,7 @@ export default function SellerProfile() {
     queryKey: ['seller', id],
     queryFn: async () => {
       const { data } = await supabase
-        .from('profiles')
+        .from('public_profiles')
         .select('*')
         .eq('id', id!)
         .single();
