@@ -41,7 +41,7 @@ export default function Header() {
   });
 
   return (
-    <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-lg border-b">
+    <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-lg border-b safe-area-top">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Mobile: language left, logo center, theme right */}
         <div className="flex sm:hidden items-center justify-between w-full">
