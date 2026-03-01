@@ -9,11 +9,44 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { formatPrice, CATEGORY_ICONS, MAX_ACTIVE_LISTINGS } from '@/lib/constants';
-import { Plus, Eye, ArchiveRestore, Pencil, Rocket, Star, Trash2 } from 'lucide-react';
+import { Plus, Eye, ArchiveRestore, Pencil, Rocket, Star, Trash2, Clock } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
+
+function formatCountdown(expiresAt: string) {
+  const diff = new Date(expiresAt).getTime() - Date.now();
+  if (diff <= 0) return null;
+  const h = Math.floor(diff / (1000 * 60 * 60));
+  const m = Math.floor((diff / (1000 * 60)) % 60);
+  if (h >= 24) {
+    const d = Math.floor(h / 24);
+    const remH = h % 24;
+    return `${d}j ${remH}h`;
+  }
+  return `${h}h ${m}m`;
+}
+
+function BoostCountdown({ expiresAt, type }: { expiresAt: string; type: string }) {
+  const [timeLeft, setTimeLeft] = useState(() => formatCountdown(expiresAt));
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(formatCountdown(expiresAt));
+    }, 30_000);
+    return () => clearInterval(timer);
+  }, [expiresAt]);
+
+  if (!timeLeft) return null;
+
+  const isFeatured = type === 'boost_premium';
+  return (
+    <Badge className={`text-[9px] gap-0.5 px-1.5 py-0 shrink-0 ${isFeatured ? 'bg-amber-500 text-white' : 'bg-blue-500 text-white'}`}>
+      <Clock className="h-2.5 w-2.5" /> {timeLeft}
+    </Badge>
+  );
+}
 
 export default function MyListings() {
   const { t } = useLanguage();
@@ -44,14 +77,14 @@ export default function MyListings() {
     enabled: !!user,
   });
 
-  // Fetch active boosts for user's listings
+  // Fetch active boosts WITH expires_at
   const { data: activeBoosts } = useQuery({
     queryKey: ['my-boosts', user?.id],
     queryFn: async () => {
       if (!user) return [];
       const { data } = await supabase
         .from('user_addons')
-        .select('listing_id, addon_type')
+        .select('listing_id, addon_type, expires_at')
         .eq('user_id', user.id)
         .eq('active', true)
         .in('addon_type', ['boost', 'boost_premium']);
@@ -80,7 +113,6 @@ export default function MyListings() {
 
   const deleteListing = async (id: string) => {
     setDeleting(true);
-    // Delete related data first, then the listing
     await supabase.from('listing_images').delete().eq('listing_id', id);
     await supabase.from('favorites').delete().eq('listing_id', id);
     await supabase.from('listing_translations').delete().eq('listing_id', id);
@@ -95,11 +127,12 @@ export default function MyListings() {
     setDeleteId(null);
   };
 
-  const getBoostStatus = (listingId: string) => {
+  const getBoostInfo = (listingId: string) => {
     const boost = activeBoosts?.find(b => b.listing_id === listingId);
-    if (boost?.addon_type === 'boost_premium') return 'featured';
-    if (boost?.addon_type === 'boost') return 'boosted';
-    return null;
+    if (!boost) return null;
+    // Check if expired
+    if (boost.expires_at && new Date(boost.expires_at).getTime() <= Date.now()) return null;
+    return { type: boost.addon_type, expiresAt: boost.expires_at };
   };
 
   const openBoostDialog = (listingId: string) => {
@@ -124,8 +157,8 @@ export default function MyListings() {
       toast({ title: msg, variant: 'destructive' });
     } else {
       toast({ title: t('points.purchaseSuccess') });
-      qc.invalidateQueries({ queryKey: ['my-boosts'] });
-      qc.invalidateQueries({ queryKey: ['my-listings'] });
+      await qc.invalidateQueries({ queryKey: ['my-boosts'] });
+      await qc.invalidateQueries({ queryKey: ['my-listings'] });
     }
     setPurchasing(false);
     setConfirmBoostType(null);
@@ -136,20 +169,23 @@ export default function MyListings() {
     const imgUrl = listing.listing_images?.[0]?.storage_path
       ? supabase.storage.from('listings').getPublicUrl(listing.listing_images[0].storage_path).data.publicUrl
       : '/placeholder.svg';
-    const boostStatus = getBoostStatus(listing.id);
+    const boostInfo = getBoostInfo(listing.id);
+    const isFeatured = boostInfo?.type === 'boost_premium';
+    const isBoosted = !!boostInfo;
+
     return (
-      <Card className={`overflow-hidden ${boostStatus === 'featured' ? 'ring-2 ring-amber-400 shadow-amber-200/50' : boostStatus === 'boosted' ? 'ring-2 ring-blue-400 shadow-blue-200/50' : ''}`}>
+      <Card className={`overflow-hidden ${isFeatured ? 'ring-2 ring-amber-400 shadow-amber-200/50' : isBoosted ? 'ring-2 ring-blue-400 shadow-blue-200/50' : ''}`}>
         <CardContent className="p-3 flex gap-3">
           <img src={imgUrl} alt="" className="w-20 h-20 rounded-lg object-cover flex-shrink-0" />
           <div className="flex-1 min-w-0">
-            <div className="flex items-start gap-1.5">
+            <div className="flex items-start gap-1.5 flex-wrap">
               <h3 className="font-medium text-sm truncate">{listing.title_original}</h3>
-              {boostStatus === 'featured' && (
+              {isFeatured && (
                 <Badge className="bg-amber-500 text-white text-[9px] gap-0.5 px-1.5 py-0 shrink-0">
                   <Star className="h-2.5 w-2.5" /> Featured
                 </Badge>
               )}
-              {boostStatus === 'boosted' && (
+              {isBoosted && !isFeatured && (
                 <Badge className="bg-blue-500 text-white text-[9px] gap-0.5 px-1.5 py-0 shrink-0">
                   <Rocket className="h-2.5 w-2.5" /> Boost
                 </Badge>
@@ -160,6 +196,9 @@ export default function MyListings() {
               <span>{CATEGORY_ICONS[listing.category]}</span>
               <span>{t(`locations.${listing.location_area}`)}</span>
               <span className="flex items-center gap-0.5"><Eye className="h-3 w-3" />{listing.views_count}</span>
+              {boostInfo?.expiresAt && (
+                <BoostCountdown expiresAt={boostInfo.expiresAt} type={boostInfo.type} />
+              )}
             </div>
             <div className="flex flex-wrap gap-1 mt-2">
               {listing.status === 'active' && (
@@ -167,7 +206,7 @@ export default function MyListings() {
                   <Button size="sm" variant="outline" onClick={() => navigate(`/create?edit=${listing.id}`)} className="gap-1 h-7 text-xs px-2">
                     <Pencil className="h-3 w-3" /> {t('listing.edit')}
                   </Button>
-                  {!boostStatus && (
+                  {!isBoosted && (
                     <Button size="sm" variant="outline" onClick={() => openBoostDialog(listing.id)} className="gap-1 h-7 text-xs px-2 text-blue-600 border-blue-300 hover:bg-blue-50">
                       <Rocket className="h-3 w-3" /> Boost
                     </Button>
