@@ -224,6 +224,22 @@ Deno.serve(async (req) => {
         }
       }
 
+      // Check for existing active boost on this listing
+      if ((addon_type === "boost" || addon_type === "boost_premium") && listing_id) {
+        const { data: existingBoost } = await supabase.from("user_addons")
+          .select("id")
+          .eq("listing_id", listing_id)
+          .eq("active", true)
+          .in("addon_type", ["boost", "boost_premium"])
+          .gt("expires_at", new Date().toISOString())
+          .limit(1);
+        if (existingBoost && existingBoost.length > 0) {
+          return new Response(JSON.stringify({ error: "already_boosted" }), {
+            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+
       await supabase.from("user_points").update({
         balance: points.balance - cost,
         total_spent: points.total_spent + cost,
@@ -237,11 +253,24 @@ Deno.serve(async (req) => {
 
       const expiresAt = new Date(Date.now() + ADDON_DURATIONS[addon_type]).toISOString();
       const extraSlots = addon_type === "extra_listings" ? 5 : 0;
-      await supabase.from("user_addons").insert({
+      const { error: insertError } = await supabase.from("user_addons").insert({
         user_id: user.id, addon_type,
         listing_id: (addon_type === "boost" || addon_type === "boost_premium") ? listing_id : null,
         expires_at: expiresAt, extra_slots: extraSlots, active: true,
       });
+
+      if (insertError) {
+        console.error("Failed to insert addon:", insertError);
+        // Refund the points
+        await supabase.from("user_points").update({
+          balance: points.balance,
+          total_spent: points.total_spent,
+          updated_at: new Date().toISOString(),
+        }).eq("user_id", user.id);
+        return new Response(JSON.stringify({ error: "addon_creation_failed", details: insertError.message }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
 
       const { data: updatedPoints } = await supabase.from("user_points").select("*").eq("user_id", user.id).single();
       return new Response(JSON.stringify({ success: true, points: updatedPoints }), {

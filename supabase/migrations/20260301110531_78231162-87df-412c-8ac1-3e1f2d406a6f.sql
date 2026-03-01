@@ -1,0 +1,2 @@
+ALTER TABLE public.user_addons DROP CONSTRAINT user_addons_addon_type_check;
+ALTER TABLE public.user_addons ADD CONSTRAINT user_addons_addon_type_check CHECK (addon_type = ANY (ARRAY['boost'::text, 'boost_premium'::text, 'vip'::text, 'extra_listings'::text, 'protection'::text]));
