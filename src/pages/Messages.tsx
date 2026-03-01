@@ -370,7 +370,7 @@ export default function Messages() {
   ) && !hasRated; // once you rated, no more messages
 
   return (
-    <div className={`container mx-auto px-4 ${isMobile ? 'h-[calc(100dvh-8rem)] flex flex-col overflow-hidden' : 'py-8'}`}>
+    <div className={`container mx-auto px-4 ${isMobile ? 'h-[calc(100dvh-10.5rem-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px))] flex flex-col overflow-hidden' : 'py-8'}`}>
       {!isMobile && <h1 className="text-2xl font-extrabold mb-4">{t('messages.title')}</h1>}
       <div className={`flex gap-4 ${isMobile ? 'flex-1 min-h-0' : 'h-[calc(100vh-12rem)]'}`}>
         {/* Conversation List */}
