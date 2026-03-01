@@ -419,7 +419,10 @@ export default function CreateListing() {
             {CATEGORIES.map(cat => (
               <Card key={cat}
                 className={`cursor-pointer transition-all hover:shadow-md ${form.category === cat ? 'ring-2 ring-primary' : ''}`}
-                onClick={() => setForm(f => ({ ...f, category: cat, subcategory: '' }))}>
+                onClick={() => {
+                  setForm(f => ({ ...f, category: cat, subcategory: '' }));
+                  setTimeout(() => subcategoryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+                }}>
                 <CardContent className="p-4 text-center">
                   <span className="text-3xl block mb-2">{CATEGORY_ICONS[cat]}</span>
                   <span className="font-medium text-sm">{t(`categories.${cat}`)}</span>
