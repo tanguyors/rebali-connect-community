@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -46,6 +46,7 @@ export default function CreateListing() {
   const [previews, setPreviews] = useState<string[]>([]);
   const [locating, setLocating] = useState(false);
   const [moderationWarnings, setModerationWarnings] = useState<string[]>([]);
+  const subcategoryRef = useRef<HTMLDivElement>(null);
 
   // Compute SHA-256 hash of a file for duplicate detection
   const computeImageHash = async (file: File | Blob): Promise<string> => {
@@ -418,7 +419,10 @@ export default function CreateListing() {
             {CATEGORIES.map(cat => (
               <Card key={cat}
                 className={`cursor-pointer transition-all hover:shadow-md ${form.category === cat ? 'ring-2 ring-primary' : ''}`}
-                onClick={() => setForm(f => ({ ...f, category: cat, subcategory: '' }))}>
+                onClick={() => {
+                  setForm(f => ({ ...f, category: cat, subcategory: '' }));
+                  setTimeout(() => subcategoryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+                }}>
                 <CardContent className="p-4 text-center">
                   <span className="text-3xl block mb-2">{CATEGORY_ICONS[cat]}</span>
                   <span className="font-medium text-sm">{t(`categories.${cat}`)}</span>
@@ -428,7 +432,7 @@ export default function CreateListing() {
           </div>
           {/* Subcategories */}
           {form.category && CATEGORY_TREE[form.category] && (
-            <div>
+            <div ref={subcategoryRef}>
               <Label className="mb-2 block">{t('createListing.selectSubcategory')}</Label>
               <div className="grid grid-cols-2 gap-2">
                 {CATEGORY_TREE[form.category].map(sub => (
