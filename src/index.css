@@ -116,9 +116,9 @@
   padding-top: env(safe-area-inset-top, 0px);
 }
 
-/* Safe area for bottom nav on iOS — compact padding */
+/* Safe area for bottom nav on iOS — halved to avoid oversized padding */
 .safe-area-bottom {
-  padding-bottom: max(4px, env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) * 0.4);
 }
 
 /* Category marquee animation */
