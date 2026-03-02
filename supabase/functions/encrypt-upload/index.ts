@@ -40,13 +40,11 @@ Deno.serve(async (req) => {
 
     // Parse form data
     const formData = await req.formData();
-    const docFile = formData.get("document") as File | null;
     const selfieFile = formData.get("selfie") as File | null;
-    const documentType = formData.get("document_type") as string | null;
 
-    if (!docFile || !selfieFile || !documentType) {
+    if (!selfieFile) {
       return new Response(
-        JSON.stringify({ error: "Missing document, selfie, or document_type" }),
+        JSON.stringify({ error: "Missing selfie" }),
         {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -56,7 +54,7 @@ Deno.serve(async (req) => {
 
     // Size check (5MB)
     const MAX_SIZE = 5 * 1024 * 1024;
-    if (docFile.size > MAX_SIZE || selfieFile.size > MAX_SIZE) {
+    if (selfieFile.size > MAX_SIZE) {
       return new Response(JSON.stringify({ error: "File too large (max 5MB)" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -95,10 +93,7 @@ Deno.serve(async (req) => {
       return result;
     }
 
-    const [encDoc, encSelfie] = await Promise.all([
-      encryptFile(docFile),
-      encryptFile(selfieFile),
-    ]);
+    const encSelfie = await encryptFile(selfieFile);
 
     // Upload with service role
     const supabaseAdmin = createClient(
@@ -106,37 +101,26 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const docExt = docFile.name.split(".").pop() || "bin";
     const selfieExt = selfieFile.name.split(".").pop() || "bin";
-    const docPath = `${userId}/document.${docExt}`;
     const selfiePath = `${userId}/selfie.${selfieExt}`;
 
-    const [docUpload, selfieUpload] = await Promise.all([
-      supabaseAdmin.storage
-        .from("id-verifications")
-        .upload(docPath, encDoc, {
-          upsert: true,
-          contentType: "application/octet-stream",
-        }),
-      supabaseAdmin.storage
-        .from("id-verifications")
-        .upload(selfiePath, encSelfie, {
-          upsert: true,
-          contentType: "application/octet-stream",
-        }),
-    ]);
+    const selfieUpload = await supabaseAdmin.storage
+      .from("id-verifications")
+      .upload(selfiePath, encSelfie, {
+        upsert: true,
+        contentType: "application/octet-stream",
+      });
 
-    if (docUpload.error) throw new Error(`Doc upload: ${docUpload.error.message}`);
     if (selfieUpload.error)
       throw new Error(`Selfie upload: ${selfieUpload.error.message}`);
 
-    // Insert verification record
+    // Insert verification record (selfie only, document_type = selfie, document_path = selfie_path)
     const { error: insertError } = await supabaseAdmin
       .from("id_verifications")
       .insert({
         user_id: userId,
-        document_type: documentType,
-        document_path: docPath,
+        document_type: "selfie",
+        document_path: selfiePath,
         selfie_path: selfiePath,
       });
 

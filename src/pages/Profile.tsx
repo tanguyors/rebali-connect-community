@@ -154,12 +154,12 @@ function WhatsAppVerification({ user, profile, refreshProfile }: { user: any; pr
 
 function IdVerification({ user, profile, refreshProfile }: { user: any; profile: any; refreshProfile: () => Promise<void> }) {
   const { t } = useLanguage();
-  const [docType, setDocType] = useState<string>('ktp');
-  const [docFile, setDocFile] = useState<File | null>(null);
   const [selfieFile, setSelfieFile] = useState<File | null>(null);
+  const [selfiePreview, setSelfiePreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
   const [loadingStatus, setLoadingStatus] = useState(true);
+  const selfieInputRef = React.useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchStatus = async () => {
@@ -217,24 +217,24 @@ function IdVerification({ user, profile, refreshProfile }: { user: any; profile:
     );
   }
 
-  const validateFile = (file: File) => {
-    if (!file.type.startsWith('image/')) return false;
-    if (file.size > 5 * 1024 * 1024) return false;
-    return true;
-  };
-
-  const handleSubmit = async () => {
-    if (!docFile || !selfieFile) return;
-    if (!validateFile(docFile) || !validateFile(selfieFile)) {
+  const handleSelfieCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return;
+    if (file.size > 5 * 1024 * 1024) {
       toast({ title: t('security.fileTooLarge'), variant: 'destructive' });
       return;
     }
+    setSelfieFile(file);
+    setSelfiePreview(URL.createObjectURL(file));
+  };
+
+  const handleSubmit = async () => {
+    if (!selfieFile) return;
     setSubmitting(true);
     try {
       const formData = new FormData();
-      formData.append('document', docFile);
       formData.append('selfie', selfieFile);
-      formData.append('document_type', docType);
 
       const { data, error } = await supabase.functions.invoke('encrypt-upload', {
         body: formData,
@@ -257,7 +257,7 @@ function IdVerification({ user, profile, refreshProfile }: { user: any; profile:
         <CardTitle className="flex items-center gap-2">
           <ShieldCheck className="h-5 w-5" /> {t('security.becomeVerified')}
         </CardTitle>
-        <CardDescription>{t('security.becomeVerifiedDesc')}</CardDescription>
+        <CardDescription>{t('security.selfieOnlyDesc')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {verificationStatus === 'rejected' && (
@@ -266,41 +266,45 @@ function IdVerification({ user, profile, refreshProfile }: { user: any; profile:
           </div>
         )}
         <div>
-          <Label>{t('security.documentType')}</Label>
-          <Select value={docType} onValueChange={setDocType}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ktp">KTP</SelectItem>
-              <SelectItem value="passport">{t('security.passport')}</SelectItem>
-            </SelectContent>
-          </Select>
+          <Label>{t('security.takeSelfie')}</Label>
+          <p className="text-xs text-muted-foreground mb-2">{t('security.selfieInstructions')}</p>
+          {selfiePreview ? (
+            <div className="relative">
+              <img src={selfiePreview} alt="Selfie preview" className="w-full max-w-xs rounded-lg border mx-auto" />
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-2 w-full max-w-xs mx-auto block"
+                onClick={() => {
+                  setSelfieFile(null);
+                  setSelfiePreview(null);
+                  if (selfieInputRef.current) selfieInputRef.current.value = '';
+                }}
+              >
+                {t('security.retakeSelfie')}
+              </Button>
+            </div>
+          ) : (
+            <Button
+              variant="outline"
+              className="w-full py-8 border-dashed flex flex-col items-center gap-2"
+              onClick={() => selfieInputRef.current?.click()}
+            >
+              <Camera className="h-8 w-8 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">{t('security.openCamera')}</span>
+            </Button>
+          )}
+          {/* capture="user" forces front camera, no file import allowed */}
+          <input
+            ref={selfieInputRef}
+            type="file"
+            accept="image/*"
+            capture="user"
+            className="hidden"
+            onChange={handleSelfieCapture}
+          />
         </div>
-        <div>
-          <Label>{t('security.uploadDocument')}</Label>
-          <div className="mt-1.5">
-            <label className="flex items-center gap-2 cursor-pointer border border-dashed rounded-md p-3 hover:bg-muted/50 transition-colors">
-              <Upload className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">
-                {docFile ? docFile.name : t('security.chooseFile')}
-              </span>
-              <input type="file" accept="image/*" className="hidden" onChange={e => setDocFile(e.target.files?.[0] || null)} />
-            </label>
-          </div>
-        </div>
-        <div>
-          <Label>{t('security.uploadSelfie')}</Label>
-          <div className="mt-1.5">
-            <label className="flex items-center gap-2 cursor-pointer border border-dashed rounded-md p-3 hover:bg-muted/50 transition-colors">
-              <Upload className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">
-                {selfieFile ? selfieFile.name : t('security.chooseFile')}
-              </span>
-              <input type="file" accept="image/*" className="hidden" onChange={e => setSelfieFile(e.target.files?.[0] || null)} />
-            </label>
-          </div>
-          <p className="text-xs text-muted-foreground mt-1">{t('security.selfieHint')}</p>
-        </div>
-        <Button onClick={handleSubmit} disabled={submitting || !docFile || !selfieFile} className="w-full">
+        <Button onClick={handleSubmit} disabled={submitting || !selfieFile} className="w-full">
           {submitting ? t('common.loading') : t('security.submitVerification')}
         </Button>
       </CardContent>
