@@ -509,7 +509,7 @@ export default function ListingDetail() {
                   <MapPin className="h-4 w-4 text-primary" />
                   <span className="font-semibold text-sm">{t(`locations.${listing.location_area}`)}, Bali</span>
                 </div>
-              </a>
+              </div>
             </div>
 
             <Separator className="my-6" />
