@@ -159,7 +159,7 @@ function IdVerification({ user, profile, refreshProfile }: { user: any; profile:
   const [submitting, setSubmitting] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
   const [loadingStatus, setLoadingStatus] = useState(true);
-  const selfieInputRef = React.useRef<HTMLInputElement>(null);
+  const selfieInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchStatus = async () => {
