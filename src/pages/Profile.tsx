@@ -328,6 +328,7 @@ export default function Profile() {
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [legalDialog, setLegalDialog] = useState<'terms' | 'privacy' | null>(null);
 
   // Stats
   const [stats, setStats] = useState({ active: 0, sold: 0, totalViews: 0, avgRating: 0, reviewCount: 0 });
