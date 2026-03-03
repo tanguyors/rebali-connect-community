@@ -13,8 +13,15 @@ window.addEventListener('unhandledrejection', (event) => {
   console.error('Unhandled rejection:', event.reason);
 });
 
-// Restore session from deep-link hash tokens (native → webapp auth handoff)
-(async () => {
+// Initialize native plugins when running on iOS/Android
+try {
+  initCapacitor();
+} catch (e) {
+  console.error('Capacitor init error:', e);
+}
+
+// Restore session from deep-link hash tokens BEFORE rendering
+async function restoreSessionAndRender() {
   try {
     const hash = window.location.hash;
     if (hash && hash.includes('access_token=') && hash.includes('refresh_token=')) {
@@ -30,18 +37,13 @@ window.addEventListener('unhandledrejection', (event) => {
   } catch (e) {
     console.error('Deep-link auth restore error:', e);
   }
-})();
 
-// Initialize native plugins when running on iOS/Android
-try {
-  initCapacitor();
-} catch (e) {
-  console.error('Capacitor init error:', e);
+  const root = document.getElementById("root");
+  if (root) {
+    createRoot(root).render(<App />);
+  } else {
+    console.error('Root element not found');
+  }
 }
 
-const root = document.getElementById("root");
-if (root) {
-  createRoot(root).render(<App />);
-} else {
-  console.error('Root element not found');
-}
+restoreSessionAndRender();

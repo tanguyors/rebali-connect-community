@@ -53,7 +53,7 @@ const POINT_PACKS = [
 
 export default function PointsShop() {
   const { t } = useLanguage();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [points, setPoints] = useState<PointsData | null>(null);
   const [addons, setAddons] = useState<Addon[]>([]);
@@ -156,6 +156,7 @@ export default function PointsShop() {
   };
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user) { navigate('/auth'); return; }
     if (isNativePlatform) {
       openExternalAuthenticated(`${window.location.origin}/points`);
@@ -163,7 +164,7 @@ export default function PointsShop() {
       return;
     }
     fetchData();
-  }, [user]);
+  }, [user, authLoading]);
 
   if (loading) {
     return (
