@@ -498,28 +498,24 @@ export default function CreateListing() {
                 variant="outline"
                 size="icon"
                 disabled={locating}
-                onClick={() => {
+                onClick={async () => {
                   setLocating(true);
-                  navigator.geolocation.getCurrentPosition(
-                    (pos) => {
-                      const { latitude, longitude } = pos.coords;
-                      let closest = 'other';
-                      let minDist = Infinity;
-                      for (const [loc, coords] of Object.entries(LOCATION_COORDS)) {
-                        if (loc === 'other') continue;
-                        const d = getDistanceKm(latitude, longitude, coords.lat, coords.lng);
-                        if (d < minDist) { minDist = d; closest = loc; }
-                      }
-                      setForm(f => ({ ...f, location: closest }));
-                      setLocating(false);
-                      toast({ title: t(`locations.${closest}`) });
-                    },
-                    () => {
-                      setLocating(false);
-                      toast({ title: t('common.error'), variant: 'destructive' });
-                    },
-                    { enableHighAccuracy: false, timeout: 10000 }
-                  );
+                  try {
+                    const { getCurrentPosition } = await import('@/lib/geolocation');
+                    const { latitude, longitude } = await getCurrentPosition();
+                    let closest = 'other';
+                    let minDist = Infinity;
+                    for (const [loc, coords] of Object.entries(LOCATION_COORDS)) {
+                      if (loc === 'other') continue;
+                      const d = getDistanceKm(latitude, longitude, coords.lat, coords.lng);
+                      if (d < minDist) { minDist = d; closest = loc; }
+                    }
+                    setForm(f => ({ ...f, location: closest }));
+                    toast({ title: t(`locations.${closest}`) });
+                  } catch {
+                    toast({ title: t('common.error'), variant: 'destructive' });
+                  }
+                  setLocating(false);
                 }}
               >
                 {locating ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}

@@ -60,25 +60,19 @@ export default function Browse() {
     setSearchParams(params, { replace: true });
   }, [debouncedSearch, category, subcategory, location, condition, sort, minPrice, maxPrice]);
 
-  const locateMe = () => {
-    if (!navigator.geolocation) {
-      setGeoError(t('filters.geoNotSupported'));
-      return;
-    }
+  const locateMe = async () => {
     setGeoLoading(true);
     setGeoError('');
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setUserCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        setLocation('all');
-        setGeoLoading(false);
-      },
-      () => {
-        setGeoError(t('filters.geoError'));
-        setGeoLoading(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
+    try {
+      const { getCurrentPosition } = await import('@/lib/geolocation');
+      const pos = await getCurrentPosition();
+      setUserCoords({ lat: pos.latitude, lng: pos.longitude });
+      setLocation('all');
+      setGeoLoading(false);
+    } catch {
+      setGeoError(t('filters.geoError'));
+      setGeoLoading(false);
+    }
   };
 
   const clearGeo = () => {

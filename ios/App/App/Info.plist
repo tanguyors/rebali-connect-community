@@ -53,5 +53,7 @@
 	<string>Re-Bali needs access to your photo library to select images for your listings.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Re-Bali needs permission to save photos to your library.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Re-Bali uses your location to find listings near you.</string>
 </dict>
 </plist>

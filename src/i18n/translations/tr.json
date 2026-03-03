@@ -186,7 +186,18 @@
     "canggu": "Canggu", "ubud": "Ubud", "seminyak": "Seminyak", "lovina": "Lovina", "uluwatu": "Uluwatu",
     "denpasar": "Denpasar", "sanur": "Sanur", "nusa_dua": "Nusa Dua", "nusa_penida": "Nusa Penida",
     "kuta": "Kuta", "jimbaran": "Jimbaran", "tabanan": "Tabanan", "karangasem": "Karangasem",
-    "singaraja": "Singaraja", "other": "Diğer"
+    "singaraja": "Singaraja", "amed": "Amed", "candidasa": "Candidasa", "padangbai": "Padang Bai",
+    "munduk": "Munduk", "sidemen": "Sidemen", "tegallalang": "Tegallalang", "gianyar": "Gianyar",
+    "klungkung": "Klungkung", "bangli": "Bangli", "negara": "Negara", "medewi": "Medewi",
+    "balian": "Balian", "pemuteran": "Pemuteran", "tulamben": "Tulamben",
+    "nusa_lembongan": "Nusa Lembongan", "nusa_ceningan": "Nusa Ceningan",
+    "mataram": "Mataram", "senggigi": "Senggigi", "kuta_lombok": "Kuta Lombok",
+    "gili_trawangan": "Gili Trawangan", "gili_air": "Gili Air", "gili_meno": "Gili Meno",
+    "tetebatu": "Tetebatu", "selong_belanak": "Selong Belanak", "bangsal": "Bangsal",
+    "praya": "Praya", "lembar": "Lembar", "sekotong": "Sekotong", "sumbawa": "Sumbawa",
+    "surabaya": "Surabaya", "jakarta": "Jakarta", "yogyakarta": "Yogyakarta",
+    "bandung": "Bandung", "semarang": "Semarang", "malang": "Malang", "solo": "Solo",
+    "banyuwangi": "Banyuwangi", "probolinggo": "Probolinggo", "other": "Diğer"
   },
   "filters": {
     "allCategories": "Tüm Kategoriler", "allSubcategories": "Tüm Alt Kategoriler", "allLocations": "Tüm Konumlar",

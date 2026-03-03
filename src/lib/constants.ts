@@ -89,27 +89,28 @@ export const CATEGORIES = Object.keys(CATEGORY_TREE);
 export const CONDITIONS = ["new", "like_new", "good", "fair", "for_parts"] as const;
 
 export const LOCATIONS = [
-  "canggu",
-  "ubud",
-  "seminyak",
-  "lovina",
-  "uluwatu",
-  "denpasar",
-  "sanur",
-  "nusa_dua",
-  "nusa_penida",
-  "kuta",
-  "jimbaran",
-  "tabanan",
-  "karangasem",
-  "singaraja",
+  // Bali
+  "canggu", "ubud", "seminyak", "lovina", "uluwatu", "denpasar", "sanur",
+  "nusa_dua", "nusa_penida", "kuta", "jimbaran", "tabanan", "karangasem",
+  "singaraja", "amed", "candidasa", "padangbai", "munduk", "sidemen",
+  "tegallalang", "gianyar", "klungkung", "bangli", "negara", "medewi",
+  "balian", "pemuteran", "tulamben", "nusa_lembongan", "nusa_ceningan",
+  // Lombok
+  "mataram", "senggigi", "kuta_lombok", "gili_trawangan", "gili_air",
+  "gili_meno", "tetebatu", "selong_belanak", "bangsal", "praya",
+  "lembar", "sekotong", "sumbawa",
+  // Java
+  "surabaya", "jakarta", "yogyakarta", "bandung", "semarang", "malang",
+  "solo", "banyuwangi", "probolinggo",
+  // Other
   "other",
 ] as const;
 
 export const CURRENCIES = ["IDR", "USD", "EUR"] as const;
 
-// Approximate GPS coordinates for each Bali location area
+// Approximate GPS coordinates for each location area
 export const LOCATION_COORDS: Record<string, { lat: number; lng: number }> = {
+  // Bali
   canggu: { lat: -8.6478, lng: 115.1385 },
   ubud: { lat: -8.5069, lng: 115.2625 },
   seminyak: { lat: -8.6913, lng: 115.1683 },
@@ -124,6 +125,47 @@ export const LOCATION_COORDS: Record<string, { lat: number; lng: number }> = {
   tabanan: { lat: -8.541, lng: 115.125 },
   karangasem: { lat: -8.4483, lng: 115.6127 },
   singaraja: { lat: -8.112, lng: 115.0882 },
+  amed: { lat: -8.3490, lng: 115.6468 },
+  candidasa: { lat: -8.5107, lng: 115.5698 },
+  padangbai: { lat: -8.5328, lng: 115.5094 },
+  munduk: { lat: -8.2728, lng: 115.0831 },
+  sidemen: { lat: -8.4667, lng: 115.4833 },
+  tegallalang: { lat: -8.4314, lng: 115.2797 },
+  gianyar: { lat: -8.5406, lng: 115.3253 },
+  klungkung: { lat: -8.5368, lng: 115.4053 },
+  bangli: { lat: -8.4543, lng: 115.3548 },
+  negara: { lat: -8.3575, lng: 114.6141 },
+  medewi: { lat: -8.3889, lng: 114.8297 },
+  balian: { lat: -8.4536, lng: 114.9758 },
+  pemuteran: { lat: -8.1372, lng: 114.6464 },
+  tulamben: { lat: -8.2731, lng: 115.5958 },
+  nusa_lembongan: { lat: -8.6805, lng: 115.4436 },
+  nusa_ceningan: { lat: -8.7003, lng: 115.4530 },
+  // Lombok
+  mataram: { lat: -8.5833, lng: 116.1167 },
+  senggigi: { lat: -8.4920, lng: 116.0475 },
+  kuta_lombok: { lat: -8.8976, lng: 116.2872 },
+  gili_trawangan: { lat: -8.3517, lng: 116.0342 },
+  gili_air: { lat: -8.3567, lng: 116.0814 },
+  gili_meno: { lat: -8.3500, lng: 116.0583 },
+  tetebatu: { lat: -8.5667, lng: 116.3500 },
+  selong_belanak: { lat: -8.9075, lng: 116.2258 },
+  bangsal: { lat: -8.3900, lng: 116.0800 },
+  praya: { lat: -8.7233, lng: 116.2900 },
+  lembar: { lat: -8.7300, lng: 116.0700 },
+  sekotong: { lat: -8.7419, lng: 115.9833 },
+  sumbawa: { lat: -8.4900, lng: 117.4200 },
+  // Java
+  surabaya: { lat: -7.2575, lng: 112.7521 },
+  jakarta: { lat: -6.2088, lng: 106.8456 },
+  yogyakarta: { lat: -7.7956, lng: 110.3695 },
+  bandung: { lat: -6.9175, lng: 107.6191 },
+  semarang: { lat: -6.9666, lng: 110.4196 },
+  malang: { lat: -7.9666, lng: 112.6326 },
+  solo: { lat: -7.5755, lng: 110.8243 },
+  banyuwangi: { lat: -8.2190, lng: 114.3691 },
+  probolinggo: { lat: -7.7543, lng: 113.2159 },
+  // Other
   other: { lat: -8.4095, lng: 115.1889 },
 };
 
