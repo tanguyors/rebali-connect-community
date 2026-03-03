@@ -156,6 +156,7 @@ export default function PointsShop() {
   };
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user) { navigate('/auth'); return; }
     if (isNativePlatform) {
       openExternalAuthenticated(`${window.location.origin}/points`);
@@ -163,7 +164,7 @@ export default function PointsShop() {
       return;
     }
     fetchData();
-  }, [user]);
+  }, [user, authLoading]);
 
   if (loading) {
     return (
