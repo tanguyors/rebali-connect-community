@@ -377,8 +377,8 @@
     "buyPointsDesc": "اشحن رصيدك فوراً بحزمة نقاط",
     "buyPointsComingSoon": "الدفع الإلكتروني قريباً!",
     "buyPointsComingSoonDesc": "الدفع عبر Xendit / DOKU سيكون متاحاً قريباً. حالياً، اكسب النقاط من خلال الشارات والنشاط.",
-    "buyViaWebapp": "لشراء النقاط، يرجى استخدام النسخة الويب من Re-Bali. سيتم مزامنة حسابك تلقائياً.",
-    "openWebapp": "فتح نسخة الويب",
+    "buyViaWebapp": "لإدارة نقاطك، تابع على موقع Re-Bali. حسابك يبقى متزامناً.",
+    "openWebapp": "المتابعة على الويب",
     "pack": { "starter": "تعزيز صغير", "starterDesc": "مثالية لتجربة أول تعزيز", "popular": "الأكثر شعبية", "popularDesc": "أفضل قيمة — الأكثر مبيعاً", "premium": "Pro", "premiumDesc": "للبائعين المحترفين", "mega": "Business", "megaDesc": "أقصى نقاط، أقصى توفير" },
     "packPoints": "{pts} نقطة", "packPrice": "Rp {price}", "bestValue": "أفضل قيمة", "comingSoon": "قريباً", "paymentMethods": "الدفع عبر Xendit / DOKU"
   },

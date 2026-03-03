@@ -217,8 +217,8 @@
     "buyPointsDesc": "通过积分包即时充值余额",
     "buyPointsComingSoon": "在线支付即将推出！",
     "buyPointsComingSoonDesc": "Xendit / DOKU 支付即将上线。目前可通过徽章和活动赚取积分。",
-    "buyViaWebapp": "要购买积分，请使用 Re-Bali 的网页版。您的账户将自动同步。",
-    "openWebapp": "打开网页版",
+    "buyViaWebapp": "要管理您的积分，请继续访问 Re-Bali 网站。您的账户保持同步。",
+    "openWebapp": "继续在网页上操作",
     "pack": { "starter": "小型加速", "starterDesc": "适合尝试第一次置顶", "popular": "最受欢迎", "popularDesc": "最佳性价比——最受欢迎", "premium": "Pro", "premiumDesc": "为资深卖家准备", "mega": "Business", "megaDesc": "最多积分，最多省" },
     "packPoints": "{pts} 积分", "packPrice": "Rp {price}", "bestValue": "最佳价值", "comingSoon": "即将推出", "paymentMethods": "通过 Xendit / DOKU 支付"
   },

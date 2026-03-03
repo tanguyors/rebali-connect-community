@@ -377,8 +377,8 @@
     "buyPointsDesc": "Bir puan paketiyle bakiyenizi anında doldurun",
     "buyPointsComingSoon": "Online ödeme yakında!",
     "buyPointsComingSoonDesc": "Xendit / DOKU ile ödeme yakında kullanılabilir olacak. Şimdilik rozetler ve aktivitelerle puan kazanın.",
-    "buyViaWebapp": "Puan satın almak için Re-Bali'nin web sürümünü kullanın. Hesabınız otomatik olarak senkronize edilecektir.",
-    "openWebapp": "Web sürümünü aç",
+    "buyViaWebapp": "Puanlarınızı yönetmek için Re-Bali web sitesinde devam edin. Hesabınız senkronize kalır.",
+    "openWebapp": "Web'de devam et",
     "pack": { "starter": "Küçük Boost", "starterDesc": "İlk boost'unuzu denemek için ideal", "popular": "En Popüler", "popularDesc": "En iyi değer — en çok satılan", "premium": "Pro", "premiumDesc": "Her şeyi isteyen satıcılar için", "mega": "Business", "megaDesc": "Maksimum puan, maksimum tasarruf" },
     "packPoints": "{pts} puan", "packPrice": "Rp {price}", "bestValue": "En İyi Değer", "comingSoon": "Yakında", "paymentMethods": "Xendit / DOKU ile ödeme"
   },
