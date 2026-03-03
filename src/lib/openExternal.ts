@@ -2,6 +2,9 @@ import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import { supabase } from '@/integrations/supabase/client';
 
+/** The public webapp URL used for deep links from the native app */
+export const WEBAPP_URL = 'https://rebali-connect-community.lovable.app';
+
 /**
  * Opens an external URL in the in-app browser on native platforms,
  * or in a new tab on the web.

@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { isNativePlatform } from '@/capacitor';
-import { openExternalAuthenticated } from '@/lib/openExternal';
+import { openExternalAuthenticated, WEBAPP_URL } from '@/lib/openExternal';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
@@ -161,7 +161,7 @@ export default function SellerDashboard() {
         </div>
         <h1 className="text-2xl font-bold">{t('dashboard.title')}</h1>
         <p className="text-muted-foreground">{t('dashboard.proRequired')}</p>
-        <Button onClick={() => isNativePlatform ? openExternalAuthenticated(`${window.location.origin}/points`) : navigate('/points')} className="gap-2">
+        <Button onClick={() => isNativePlatform ? openExternalAuthenticated(`${WEBAPP_URL}/points`) : navigate('/points')} className="gap-2">
           <Crown className="h-4 w-4" /> {t('dashboard.subscribePro')}
         </Button>
       </div>

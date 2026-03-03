@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { isNativePlatform } from '@/capacitor';
-import { openExternalAuthenticated } from '@/lib/openExternal';
+import { openExternalAuthenticated, WEBAPP_URL } from '@/lib/openExternal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -139,7 +139,7 @@ export default function MyListings() {
 
   const openBoostDialog = (listingId: string) => {
     if (isNativePlatform) {
-      openExternalAuthenticated(`${window.location.origin}/points`);
+      openExternalAuthenticated(`${WEBAPP_URL}/points`);
       return;
     }
     setBoostListingId(listingId);

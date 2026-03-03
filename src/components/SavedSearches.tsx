@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { isNativePlatform } from '@/capacitor';
-import { openExternalAuthenticated } from '@/lib/openExternal';
+import { openExternalAuthenticated, WEBAPP_URL } from '@/lib/openExternal';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -67,7 +67,7 @@ export default function SavedSearches() {
           <p className="text-sm text-muted-foreground">
             {t('savedSearches.promoDesc')}
           </p>
-          <Button variant="outline" className="gap-2" onClick={() => isNativePlatform ? openExternalAuthenticated(`${window.location.origin}/points`) : window.location.href = '/points'}>
+          <Button variant="outline" className="gap-2" onClick={() => isNativePlatform ? openExternalAuthenticated(`${WEBAPP_URL}/points`) : window.location.href = '/points'}>
             <Crown className="h-4 w-4" />
             {t('savedSearches.becomeVip')}
           </Button>
