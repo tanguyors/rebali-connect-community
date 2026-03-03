@@ -1,3 +1,4 @@
+/* rebuild-trigger-v2 */
 import { useState } from 'react';
 import SEOHead from '@/components/SEOHead';
 import { useNavigate, useSearchParams } from 'react-router-dom';
