@@ -363,7 +363,7 @@
   "points": {
     "yourBalance": "Puanlarınız", "earned": "Kazanılan", "spent": "Harcanan",
     "syncBadges": "Rozetlerimi senkronize et", "pointsEarned": "puan kazanıldı", "alreadySynced": "Puanlar zaten güncel!",
-    "shopTitle": "Puan Mağazası", "shopDesc": "İlanlarınızı ve profilinizi güçlendirmek için puanlarınızı harcayın",
+    "shopTitle": "Profilimi ve ilanlarımı öne çıkar", "shopDesc": "İlanlarınızı ve profilinizi güçlendirmek için puanlarınızı harcayın",
     "buy": "Satın Al", "activeUntil": "Aktif bitiş", "insufficientPoints": "Yeterli puan yok!",
     "purchaseError": "Satın alma başarısız", "purchaseSuccess": "Eklenti etkinleştirildi!",
     "maxExtraListings": "Maksimum 2 ekstra ilan paketi izni",

@@ -363,7 +363,7 @@
   "points": {
     "yourBalance": "نقاطك", "earned": "مكتسبة", "spent": "مُنفقة",
     "syncBadges": "مزامنة شاراتي", "pointsEarned": "نقاط مكتسبة", "alreadySynced": "النقاط محدثة بالفعل!",
-    "shopTitle": "متجر النقاط", "shopDesc": "أنفق نقاطك على إضافات لتعزيز إعلاناتك وملفك الشخصي",
+    "shopTitle": "عزّز ملفك وإعلاناتك", "shopDesc": "أنفق نقاطك على إضافات لتعزيز إعلاناتك وملفك الشخصي",
     "buy": "شراء", "activeUntil": "نشط حتى", "insufficientPoints": "نقاط غير كافية!",
     "purchaseError": "فشل الشراء", "purchaseSuccess": "تم تفعيل الإضافة!",
     "maxExtraListings": "الحد الأقصى حزمتان من الإعلانات الإضافية",

@@ -203,7 +203,7 @@
   "points": {
     "yourBalance": "您的积分", "earned": "已赚取", "spent": "已消费",
     "syncBadges": "同步我的徽章", "pointsEarned": "积分已赚取", "alreadySynced": "积分已是最新！",
-    "shopTitle": "积分商店", "shopDesc": "使用积分购买增值服务来提升您的广告和个人资料",
+    "shopTitle": "提升我的资料和广告", "shopDesc": "使用积分购买增值服务来提升您的广告和个人资料",
     "buy": "购买", "activeUntil": "有效期至", "insufficientPoints": "积分不足！",
     "purchaseError": "购买失败", "purchaseSuccess": "增值服务已激活！",
     "maxExtraListings": "最多允许2个额外列表包", "history": "交易记录",

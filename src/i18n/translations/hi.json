@@ -363,7 +363,7 @@
   "points": {
     "yourBalance": "आपके अंक", "earned": "अर्जित", "spent": "खर्च किए",
     "syncBadges": "मेरे बैज सिंक करें", "pointsEarned": "अंक अर्जित", "alreadySynced": "अंक पहले से अपडेट हैं!",
-    "shopTitle": "अंक दुकान", "shopDesc": "अपने विज्ञापनों को बढ़ावा देने के लिए ऐड-ऑन पर अंक खर्च करें",
+    "shopTitle": "प्रोफ़ाइल और विज्ञापन बूस्ट करें", "shopDesc": "अपने विज्ञापनों को बढ़ावा देने के लिए ऐड-ऑन पर अंक खर्च करें",
     "buy": "खरीदें", "activeUntil": "सक्रिय तक", "insufficientPoints": "पर्याप्त अंक नहीं!",
     "purchaseError": "खरीदारी विफल", "purchaseSuccess": "ऐड-ऑन सक्रिय!",
     "maxExtraListings": "अधिकतम 2 अतिरिक्त विज्ञापन पैक अनुमत",

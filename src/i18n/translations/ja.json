@@ -361,7 +361,7 @@
   "points": {
     "yourBalance": "あなたのポイント", "earned": "獲得済み", "spent": "使用済み",
     "syncBadges": "バッジを同期", "pointsEarned": "ポイント獲得", "alreadySynced": "ポイントは最新です！",
-    "shopTitle": "ポイントショップ", "shopDesc": "ポイントを使って出品やプロフィールを強化するアドオンを購入",
+    "shopTitle": "プロフィール＆出品をブースト", "shopDesc": "ポイントを使って出品やプロフィールを強化するアドオンを購入",
     "buy": "購入", "activeUntil": "有効期限", "insufficientPoints": "ポイントが不足しています！",
     "purchaseError": "購入に失敗しました", "purchaseSuccess": "アドオンが有効化されました！",
     "maxExtraListings": "追加出品パックは最大2つまで",
