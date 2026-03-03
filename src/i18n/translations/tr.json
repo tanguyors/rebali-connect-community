@@ -199,6 +199,7 @@
     "bandung": "Bandung", "semarang": "Semarang", "malang": "Malang", "solo": "Solo",
     "banyuwangi": "Banyuwangi", "probolinggo": "Probolinggo", "other": "Diğer"
   },
+  "islands": { "bali": "🏝️ Bali", "lombok": "🏝️ Lombok", "java": "🏝️ Java", "other": "📍 Diğer" },
   "filters": {
     "allCategories": "Tüm Kategoriler", "allSubcategories": "Tüm Alt Kategoriler", "allLocations": "Tüm Konumlar",
     "allConditions": "Tüm Durumlar", "priceRange": "Fiyat Aralığı", "minPrice": "Min fiyat", "maxPrice": "Maks fiyat",

@@ -197,6 +197,7 @@
     "bandung": "バンドン", "semarang": "スマラン", "malang": "マラン", "solo": "ソロ",
     "banyuwangi": "バニュワンギ", "probolinggo": "プロボリンゴ", "other": "その他"
   },
+  "islands": { "bali": "🏝️ バリ島", "lombok": "🏝️ ロンボク島", "java": "🏝️ ジャワ島", "other": "📍 その他" },
   "filters": {
     "allCategories": "全カテゴリー", "allSubcategories": "全サブカテゴリー", "allLocations": "全ての場所",
     "allConditions": "全ての状態", "priceRange": "価格帯", "minPrice": "最低価格", "maxPrice": "最高価格",

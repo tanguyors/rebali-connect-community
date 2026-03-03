@@ -199,6 +199,7 @@
     "bandung": "باندونغ", "semarang": "سيمارانغ", "malang": "مالانغ", "solo": "سولو",
     "banyuwangi": "بانيووانغي", "probolinggo": "بروبولينغو", "other": "أخرى"
   },
+  "islands": { "bali": "🏝️ بالي", "lombok": "🏝️ لومبوك", "java": "🏝️ جاوة", "other": "📍 أخرى" },
   "filters": {
     "allCategories": "جميع الفئات", "allSubcategories": "جميع الفئات الفرعية", "allLocations": "جميع المواقع",
     "allConditions": "جميع الحالات", "priceRange": "نطاق السعر", "minPrice": "أقل سعر", "maxPrice": "أعلى سعر",

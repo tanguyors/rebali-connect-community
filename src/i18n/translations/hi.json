@@ -199,6 +199,7 @@
     "bandung": "बांदुंग", "semarang": "सेमारांग", "malang": "मालांग", "solo": "सोलो",
     "banyuwangi": "बन्युवांगी", "probolinggo": "प्रोबोलिंगो", "other": "अन्य"
   },
+  "islands": { "bali": "🏝️ बाली", "lombok": "🏝️ लोम्बोक", "java": "🏝️ जावा", "other": "📍 अन्य" },
   "filters": {
     "allCategories": "सभी श्रेणियां", "allSubcategories": "सभी उप-श्रेणियां", "allLocations": "सभी स्थान",
     "allConditions": "सभी स्थितियां", "priceRange": "मूल्य सीमा", "minPrice": "न्यूनतम मूल्य", "maxPrice": "अधिकतम मूल्य",
