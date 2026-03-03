@@ -73,7 +73,6 @@ export default function Browse() {
       setGeoError(t('filters.geoError'));
       setGeoLoading(false);
     }
-    );
   };
 
   const clearGeo = () => {
