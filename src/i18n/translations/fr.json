@@ -451,5 +451,37 @@
     "similarTitle": "Attention : une annonce avec un titre très similaire existe déjà",
     "imageReused": "Cette image a été utilisée dans plusieurs annonces",
     "suspiciousContent": "Contenu suspect détecté dans votre annonce"
+  },
+  "contact": {
+    "title": "Contacter le support",
+    "subtitle": "Besoin d'aide ? Remplissez le formulaire ci-dessous et nous vous répondrons dès que possible.",
+    "category": "De quoi s'agit-il ?",
+    "cat_bug": "Bug technique",
+    "cat_payment": "Problème de paiement",
+    "cat_blocked": "Compte bloqué",
+    "cat_report": "Signaler un utilisateur",
+    "cat_suggestion": "Suggestion",
+    "cat_partnership": "Partenariat",
+    "cat_other": "Autre",
+    "email": "Votre email",
+    "subject": "Sujet",
+    "subjectPlaceholder": "Décrivez brièvement votre problème",
+    "message": "Message",
+    "messagePlaceholder": "Décrivez votre problème en détail...",
+    "send": "Envoyer le message",
+    "sent": "Votre message a été envoyé ! Nous vous répondrons rapidement.",
+    "error": "Échec de l'envoi. Veuillez réessayer.",
+    "fillAll": "Veuillez remplir tous les champs."
+  },
+  "footer": {
+    "tagline": "La marketplace de confiance pour acheter et vendre à Bali",
+    "explore": "Marketplace",
+    "company": "Entreprise",
+    "legal": "Légal",
+    "terms": "Conditions d'utilisation",
+    "privacy": "Politique de confidentialité",
+    "contact": "Contacter le support",
+    "copyright": "Tous droits réservés.",
+    "trustBadgesPoints": "Confiance, Badges & Points"
   }
 }
