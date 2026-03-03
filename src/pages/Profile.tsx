@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import { isNativePlatform } from '@/capacitor';
+import { openExternal } from '@/lib/openExternal';
 import { LegalDialog } from '@/components/LegalDialog';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -523,7 +525,13 @@ export default function Profile() {
             <div className="mt-4 space-y-3 border-t pt-4">
               <UserBadges userId={user.id} profile={profile} />
               <TrustIndicator score={profile.trust_score} riskLevel={profile.risk_level as 'low' | 'medium' | 'high'} />
-              <Button variant="outline" size="sm" className="gap-2" onClick={() => navigate('/points')}>
+              <Button variant="outline" size="sm" className="gap-2" onClick={() => {
+                if (isNativePlatform) {
+                  openExternal(`${window.location.origin}/points`);
+                } else {
+                  navigate('/points');
+                }
+              }}>
                 <Coins className="h-4 w-4" />
                 {t('points.shopTitle')}
               </Button>

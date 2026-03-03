@@ -10,7 +10,7 @@ import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { openExternal } from '@/lib/openExternal';
 import { isNativePlatform } from '@/capacitor';
-import { Coins, Rocket, Crown, Package, ArrowUp, ArrowDown, RefreshCw, History, Sparkles, Star, ShieldPlus, TrendingUp, CreditCard, Zap, Lock, ExternalLink } from 'lucide-react';
+import { Coins, Rocket, Crown, Package, ArrowUp, ArrowDown, RefreshCw, History, Sparkles, Star, ShieldPlus, TrendingUp, CreditCard, Zap, Lock } from 'lucide-react';
 
 interface PointsData {
   balance: number;
@@ -157,6 +157,11 @@ export default function PointsShop() {
 
   useEffect(() => {
     if (!user) { navigate('/auth'); return; }
+    if (isNativePlatform) {
+      openExternal(`${window.location.origin}/points`);
+      navigate(-1 as any);
+      return;
+    }
     fetchData();
   }, [user]);
 
@@ -264,9 +269,8 @@ export default function PointsShop() {
         </CardContent>
       </Card>
 
-      {/* Buy Points - hidden on native apps (App Store / Play Store policy) */}
-      {!isNativePlatform && (
-        <Card className="border-primary/20">
+      {/* Buy Points */}
+      <Card className="border-primary/20">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CreditCard className="h-5 w-5 text-primary" />
@@ -320,26 +324,7 @@ export default function PointsShop() {
               <p className="text-[10px] text-muted-foreground">{t('points.paymentMethods')}</p>
             </div>
           </CardContent>
-        </Card>
-      )}
-
-      {/* Native app: link to webapp for purchases */}
-      {isNativePlatform && (
-        <Card className="border-primary/20">
-          <CardContent className="p-6 text-center space-y-3">
-            <CreditCard className="h-8 w-8 text-primary mx-auto" />
-            <p className="font-semibold">{t('points.buyPoints')}</p>
-            <p className="text-sm text-muted-foreground">{t('points.buyViaWebapp')}</p>
-            <Button
-              className="gap-2"
-              onClick={() => openExternal(`${window.location.origin}/points`)}
-            >
-              <ExternalLink className="h-4 w-4" />
-              {t('points.openWebapp')}
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+      </Card>
 
       {/* Transaction History */}
       <Card>
