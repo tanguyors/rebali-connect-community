@@ -33,6 +33,7 @@ const Messages = lazy(() => import("./pages/Messages"));
 const TrustBadges = lazy(() => import("./pages/TrustBadges"));
 const PointsShop = lazy(() => import("./pages/PointsShop"));
 const SellerDashboard = lazy(() => import("./pages/SellerDashboard"));
+const Contact = lazy(() => import("./pages/Contact"));
 
 const queryClient = new QueryClient({});
 
@@ -88,6 +89,7 @@ const App = () => {
                   <Route path="/trust-badges" element={<TrustBadges />} />
                   <Route path="/points" element={<PointsShop />} />
                   <Route path="/dashboard" element={<SellerDashboard />} />
+                  <Route path="/contact" element={<Contact />} />
                   
                   <Route path="/seller/:id" element={<SellerProfile />} />
                   <Route path="*" element={<NotFound />} />

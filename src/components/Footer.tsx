@@ -36,6 +36,7 @@ export default function Footer({ className }: { className?: string }) {
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
               <Link to="/terms" className="hover:text-foreground transition-colors">{t('footer.terms')}</Link>
               <Link to="/privacy" className="hover:text-foreground transition-colors">{t('footer.privacy')}</Link>
+              <Link to="/contact" className="hover:text-foreground transition-colors">{t('footer.contact')}</Link>
             </div>
           </div>
         </div>

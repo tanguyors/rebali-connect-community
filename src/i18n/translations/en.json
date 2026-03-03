@@ -234,11 +234,6 @@
     "clearFilters": "Clear filters", "results": "results",
     "locateMe": "Locate me", "localized": "Located", "geoError": "Unable to access your location", "geoNotSupported": "Geolocation is not supported"
   },
-  "footer": {
-    "tagline": "Bali's trusted classifieds platform", "explore": "Explore", "company": "Company", "legal": "Legal",
-    "terms": "Terms of Service", "privacy": "Privacy Policy", "copyright": "All rights reserved.",
-    "trustBadgesPoints": "Trust, Badges & Points"
-  },
   "notFound": { "title": "Page not found", "description": "Oops! The page you're looking for doesn't exist.", "backHome": "Return to Home" },
   "notifications": { "newListing": "New listing!", "listingActive": "Listing reactivated", "listingSold": "Listing marked as sold", "listingArchived": "Listing archived", "vipNotify": "You'll be notified when VIP launches!", "alerts": "Alerts", "title": "Notifications", "markAllRead": "Mark all read", "empty": "No notifications", "alertLabel": "Alert", "listing": "Listing", "enablePush": "Enable notifications", "pushOn": "Notifications on", "pushEnabled": "Push notifications enabled!", "pushDisabled": "Push notifications disabled", "pushBlocked": "Notifications blocked", "pushNewMessage": "New message", "pushSearchAlert": "Search alert" },
   "savedSearches": { "title": "Search Alerts", "description": "Get an in-app and WhatsApp notification when a listing matches your keywords.", "add": "Add", "placeholder": "e.g. iPhone, scooter, villa...", "empty": "No alerts configured. Add a keyword above.", "added": "Alert added!", "deleted": "Alert deleted", "tooShort": "Keyword too short (min 2 characters)", "maxReached": "Maximum {{max}} alerts allowed", "duplicate": "This keyword already exists", "error": "Error", "promoTitle": "Search Alerts", "promoDesc": "Get notifications when a listing matches your keywords. VIP members only.", "becomeVip": "Become VIP" },
@@ -626,5 +621,37 @@
     "similarTitle": "Warning: A listing with a very similar title already exists",
     "imageReused": "This image has been used in multiple listings",
     "suspiciousContent": "Suspicious content detected in your listing"
+  },
+  "contact": {
+    "title": "Contact Support",
+    "subtitle": "Need help? Fill out the form below and we'll get back to you as soon as possible.",
+    "category": "What is this about?",
+    "cat_bug": "Technical bug",
+    "cat_payment": "Payment issue",
+    "cat_blocked": "Blocked account",
+    "cat_report": "Report a user",
+    "cat_suggestion": "Suggestion",
+    "cat_partnership": "Partnership",
+    "cat_other": "Other",
+    "email": "Your email",
+    "subject": "Subject",
+    "subjectPlaceholder": "Briefly describe your issue",
+    "message": "Message",
+    "messagePlaceholder": "Describe your issue in detail...",
+    "send": "Send message",
+    "sent": "Your message has been sent! We'll reply shortly.",
+    "error": "Failed to send. Please try again.",
+    "fillAll": "Please fill in all fields."
+  },
+  "footer": {
+    "tagline": "The trusted marketplace for buying and selling in Bali",
+    "explore": "Marketplace",
+    "company": "Company",
+    "legal": "Legal",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "contact": "Contact Support",
+    "copyright": "All rights reserved.",
+    "trustBadgesPoints": "Trust, Badges & Points"
   }
 }

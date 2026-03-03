@@ -209,7 +209,7 @@
   },
   "footer": {
     "tagline": "बाली का विश्वसनीय प्लेटफ़ॉर्म", "explore": "खोजें", "company": "कंपनी", "legal": "कानूनी",
-    "terms": "सेवा की शर्तें", "privacy": "गोपनीयता नीति", "copyright": "सर्वाधिकार सुरक्षित।", "trustBadgesPoints": "विश्वास, बैज और अंक"
+    "terms": "सेवा की शर्तें", "privacy": "गोपनीयता नीति", "contact": "सहायता से संपर्क करें", "copyright": "सर्वाधिकार सुरक्षित।", "trustBadgesPoints": "विश्वास, बैज और अंक"
   },
   "notFound": { "title": "पेज नहीं मिला", "description": "जो पेज आप ढूंढ रहे हैं वह मौजूद नहीं है।", "backHome": "होम पर वापस जाएं" },
   "notifications": { "newListing": "नया विज्ञापन!", "listingActive": "विज्ञापन पुनः सक्रिय", "listingSold": "विज्ञापन बिका हुआ चिह्नित", "listingArchived": "विज्ञापन संग्रहित", "vipNotify": "VIP लॉन्च होने पर आपको सूचित किया जाएगा!", "alerts": "अलर्ट", "title": "सूचनाएं", "markAllRead": "सभी पढ़ा हुआ चिह्नित करें", "empty": "कोई सूचना नहीं", "alertLabel": "अलर्ट", "listing": "विज्ञापन" },

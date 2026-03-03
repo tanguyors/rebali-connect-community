@@ -209,7 +209,7 @@
   },
   "footer": {
     "tagline": "منصة بالي الموثوقة", "explore": "استكشف", "company": "الشركة", "legal": "قانوني",
-    "terms": "شروط الاستخدام", "privacy": "سياسة الخصوصية", "copyright": "جميع الحقوق محفوظة.", "trustBadgesPoints": "الثقة والشارات والنقاط"
+    "terms": "شروط الاستخدام", "privacy": "سياسة الخصوصية", "contact": "اتصل بالدعم", "copyright": "جميع الحقوق محفوظة.", "trustBadgesPoints": "الثقة والشارات والنقاط"
   },
   "notFound": { "title": "الصفحة غير موجودة", "description": "الصفحة التي تبحث عنها غير موجودة.", "backHome": "العودة للرئيسية" },
   "notifications": { "newListing": "إعلان جديد!", "listingActive": "تم إعادة تفعيل الإعلان", "listingSold": "تم تحديد الإعلان كمباع", "listingArchived": "تم أرشفة الإعلان", "vipNotify": "سيتم إشعارك عند إطلاق VIP!", "alerts": "تنبيهات", "title": "الإشعارات", "markAllRead": "تحديد الكل كمقروء", "empty": "لا توجد إشعارات", "alertLabel": "تنبيه", "listing": "إعلان" },
