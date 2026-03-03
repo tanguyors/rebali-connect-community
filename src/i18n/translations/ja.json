@@ -207,7 +207,7 @@
   },
   "footer": {
     "tagline": "バリの信頼できるプラットフォーム", "explore": "探す", "company": "会社情報", "legal": "法的情報",
-    "terms": "利用規約", "privacy": "プライバシーポリシー", "copyright": "全著作権所有。", "trustBadgesPoints": "信頼、バッジ＆ポイント"
+    "terms": "利用規約", "privacy": "プライバシーポリシー", "contact": "サポートに連絡", "copyright": "全著作権所有。", "trustBadgesPoints": "信頼、バッジ＆ポイント"
   },
   "notFound": { "title": "ページが見つかりません", "description": "お探しのページは存在しません。", "backHome": "ホームに戻る" },
   "notifications": { "newListing": "新しい出品！", "listingActive": "出品が再有効化されました", "listingSold": "出品が売却済みになりました", "listingArchived": "出品がアーカイブされました", "vipNotify": "VIP開始時にお知らせします！", "alerts": "通知", "title": "お知らせ", "markAllRead": "すべて既読にする", "empty": "通知はありません", "alertLabel": "アラート", "listing": "出品" },
