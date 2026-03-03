@@ -157,6 +157,11 @@ export default function PointsShop() {
 
   useEffect(() => {
     if (!user) { navigate('/auth'); return; }
+    if (isNativePlatform) {
+      openExternal(`${window.location.origin}/points`);
+      navigate(-1 as any);
+      return;
+    }
     fetchData();
   }, [user]);
 
