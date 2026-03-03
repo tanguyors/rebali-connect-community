@@ -8,9 +8,9 @@ import ListingCard from '@/components/ListingCard';
 import SearchAutocomplete from '@/components/SearchAutocomplete';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { CATEGORIES, LOCATIONS, CONDITIONS, CATEGORY_TREE, LOCATION_COORDS, getDistanceKm } from '@/lib/constants';
+import { CATEGORIES, LOCATIONS, LOCATION_GROUPS, CONDITIONS, CATEGORY_TREE, LOCATION_COORDS, getDistanceKm } from '@/lib/constants';
 import { SlidersHorizontal, X, MapPin, Loader2 } from 'lucide-react';
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 
@@ -240,8 +240,13 @@ export default function Browse() {
           <SelectTrigger><SelectValue placeholder={t('filters.allLocations')} /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t('filters.allLocations')}</SelectItem>
-            {LOCATIONS.map(l => (
-              <SelectItem key={l} value={l}>{t(`locations.${l}`)}</SelectItem>
+            {Object.entries(LOCATION_GROUPS).map(([island, locs]) => (
+              <SelectGroup key={island}>
+                <SelectLabel className="font-bold text-primary">{t(`islands.${island}`)}</SelectLabel>
+                {locs.map(l => (
+                  <SelectItem key={l} value={l}>{t(`locations.${l}`)}</SelectItem>
+                ))}
+              </SelectGroup>
             ))}
           </SelectContent>
         </Select>

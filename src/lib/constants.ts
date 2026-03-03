@@ -88,22 +88,31 @@ export const CATEGORIES = Object.keys(CATEGORY_TREE);
 
 export const CONDITIONS = ["new", "like_new", "good", "fair", "for_parts"] as const;
 
+export const LOCATION_GROUPS = {
+  bali: [
+    "canggu", "ubud", "seminyak", "lovina", "uluwatu", "denpasar", "sanur",
+    "nusa_dua", "nusa_penida", "kuta", "jimbaran", "tabanan", "karangasem",
+    "singaraja", "amed", "candidasa", "padangbai", "munduk", "sidemen",
+    "tegallalang", "gianyar", "klungkung", "bangli", "negara", "medewi",
+    "balian", "pemuteran", "tulamben", "nusa_lembongan", "nusa_ceningan",
+  ],
+  lombok: [
+    "mataram", "senggigi", "kuta_lombok", "gili_trawangan", "gili_air",
+    "gili_meno", "tetebatu", "selong_belanak", "bangsal", "praya",
+    "lembar", "sekotong", "sumbawa",
+  ],
+  java: [
+    "surabaya", "jakarta", "yogyakarta", "bandung", "semarang", "malang",
+    "solo", "banyuwangi", "probolinggo",
+  ],
+  other: ["other"],
+} as const;
+
 export const LOCATIONS = [
-  // Bali
-  "canggu", "ubud", "seminyak", "lovina", "uluwatu", "denpasar", "sanur",
-  "nusa_dua", "nusa_penida", "kuta", "jimbaran", "tabanan", "karangasem",
-  "singaraja", "amed", "candidasa", "padangbai", "munduk", "sidemen",
-  "tegallalang", "gianyar", "klungkung", "bangli", "negara", "medewi",
-  "balian", "pemuteran", "tulamben", "nusa_lembongan", "nusa_ceningan",
-  // Lombok
-  "mataram", "senggigi", "kuta_lombok", "gili_trawangan", "gili_air",
-  "gili_meno", "tetebatu", "selong_belanak", "bangsal", "praya",
-  "lembar", "sekotong", "sumbawa",
-  // Java
-  "surabaya", "jakarta", "yogyakarta", "bandung", "semarang", "malang",
-  "solo", "banyuwangi", "probolinggo",
-  // Other
-  "other",
+  ...LOCATION_GROUPS.bali,
+  ...LOCATION_GROUPS.lombok,
+  ...LOCATION_GROUPS.java,
+  ...LOCATION_GROUPS.other,
 ] as const;
 
 export const CURRENCIES = ["IDR", "USD", "EUR"] as const;
