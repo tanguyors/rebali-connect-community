@@ -12,6 +12,8 @@ import { toast } from '@/hooks/use-toast';
 import { User, Briefcase } from 'lucide-react';
 import { PasswordInput } from '@/components/PasswordInput';
 import { PasswordStrength } from '@/components/PasswordStrength';
+import { Checkbox } from '@/components/ui/checkbox';
+import { LegalDialog } from '@/components/LegalDialog';
 
 export default function Auth() {
   const { t } = useLanguage();
@@ -25,6 +27,8 @@ export default function Auth() {
   const [displayName, setDisplayName] = useState('');
   const [userType, setUserType] = useState<'private' | 'business'>('private');
   const [loading, setLoading] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [legalDialog, setLegalDialog] = useState<'terms' | 'privacy' | null>(null);
 
   // Device fingerprinting
   const getDeviceHash = async (): Promise<string> => {
@@ -69,6 +73,10 @@ export default function Auth() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!acceptedTerms) {
+      toast({ title: 'Error', description: t('auth.acceptTermsRequired'), variant: 'destructive' });
+      return;
+    }
     if (password !== confirmPassword) {
       toast({ title: 'Error', description: t('auth.passwordMismatch'), variant: 'destructive' });
       return;
@@ -200,12 +208,45 @@ export default function Auth() {
                   <Label>{t('auth.confirmPassword')}</Label>
                   <PasswordInput value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>{t('common.signup')}</Button>
+                {/* Terms acceptance checkbox */}
+                <div className="flex items-start gap-2">
+                  <Checkbox
+                    id="accept-terms"
+                    checked={acceptedTerms}
+                    onCheckedChange={(checked) => setAcceptedTerms(checked === true)}
+                    className="mt-0.5"
+                  />
+                  <label htmlFor="accept-terms" className="text-sm text-muted-foreground leading-tight">
+                    {t('auth.acceptTerms')}{' '}
+                    <button
+                      type="button"
+                      onClick={() => setLegalDialog('terms')}
+                      className="text-primary hover:underline font-medium"
+                    >
+                      {t('legal.termsTitle')}
+                    </button>
+                    {' '}{t('common.and')}{' '}
+                    <button
+                      type="button"
+                      onClick={() => setLegalDialog('privacy')}
+                      className="text-primary hover:underline font-medium"
+                    >
+                      {t('legal.privacyTitle')}
+                    </button>
+                  </label>
+                </div>
+                <Button type="submit" className="w-full" disabled={loading || !acceptedTerms}>{t('common.signup')}</Button>
               </form>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
+
+      <LegalDialog
+        open={legalDialog !== null}
+        onOpenChange={(open) => !open && setLegalDialog(null)}
+        type={legalDialog || 'terms'}
+      />
     </div>
   );
 }
