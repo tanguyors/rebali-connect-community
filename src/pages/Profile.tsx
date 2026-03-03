@@ -699,21 +699,21 @@ export default function Profile() {
 
       {/* Legal Links (for mobile/app where footer is hidden) */}
       <Card>
-        <CardContent className="p-4 flex gap-3">
+        <CardContent className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
           <Button
             variant="ghost"
-            className="flex-1 gap-2 text-sm"
+            className="gap-2 text-sm justify-start"
             onClick={() => setLegalDialog('terms')}
           >
-            <FileText className="h-4 w-4" />
+            <FileText className="h-4 w-4 shrink-0" />
             {t('legal.termsTitle')}
           </Button>
           <Button
             variant="ghost"
-            className="flex-1 gap-2 text-sm"
+            className="gap-2 text-sm justify-start"
             onClick={() => setLegalDialog('privacy')}
           >
-            <ShieldAlert className="h-4 w-4" />
+            <ShieldAlert className="h-4 w-4 shrink-0" />
             {t('legal.privacyTitle')}
           </Button>
         </CardContent>
