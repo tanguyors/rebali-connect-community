@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { isNativePlatform } from '@/capacitor';
-import { openExternal } from '@/lib/openExternal';
+import { openExternalAuthenticated } from '@/lib/openExternal';
 import { LegalDialog } from '@/components/LegalDialog';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -527,7 +527,7 @@ export default function Profile() {
               <TrustIndicator score={profile.trust_score} riskLevel={profile.risk_level as 'low' | 'medium' | 'high'} />
               <Button variant="outline" size="sm" className="gap-2" onClick={() => {
                 if (isNativePlatform) {
-                  openExternal(`${window.location.origin}/points`);
+                  openExternalAuthenticated(`${window.location.origin}/points`);
                 } else {
                   navigate('/points');
                 }
