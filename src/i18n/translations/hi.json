@@ -186,7 +186,18 @@
     "canggu": "चांगू", "ubud": "उबुद", "seminyak": "सेमिन्याक", "lovina": "लोविना", "uluwatu": "उलुवातू",
     "denpasar": "डेनपासर", "sanur": "सानूर", "nusa_dua": "नुसा दुआ", "nusa_penida": "नुसा पेनिडा",
     "kuta": "कुटा", "jimbaran": "जिम्बारन", "tabanan": "ताबानान", "karangasem": "करंगासेम",
-    "singaraja": "सिंगाराजा", "other": "अन्य"
+    "singaraja": "सिंगाराजा", "amed": "अमेड", "candidasa": "कैंडिडासा", "padangbai": "पडंग बाई",
+    "munduk": "मुंडुक", "sidemen": "सिडमेन", "tegallalang": "तेगलालंग", "gianyar": "गियान्यार",
+    "klungkung": "क्लुंगकुंग", "bangli": "बांगली", "negara": "नेगारा", "medewi": "मेदेवी",
+    "balian": "बालियान", "pemuteran": "पेमुतेरन", "tulamben": "तुलाम्बेन",
+    "nusa_lembongan": "नुसा लेम्बोंगन", "nusa_ceningan": "नुसा चेनिंगन",
+    "mataram": "मातारम", "senggigi": "सेंगिगी", "kuta_lombok": "कुटा लोम्बोक",
+    "gili_trawangan": "गिली ट्रावांगन", "gili_air": "गिली एयर", "gili_meno": "गिली मेनो",
+    "tetebatu": "तेतेबातू", "selong_belanak": "सेलोंग बेलानक", "bangsal": "बांगसाल",
+    "praya": "प्राया", "lembar": "लेम्बार", "sekotong": "सेकोतोंग", "sumbawa": "सुम्बावा",
+    "surabaya": "सुराबाया", "jakarta": "जकार्ता", "yogyakarta": "योग्याकार्ता",
+    "bandung": "बांदुंग", "semarang": "सेमारांग", "malang": "मालांग", "solo": "सोलो",
+    "banyuwangi": "बन्युवांगी", "probolinggo": "प्रोबोलिंगो", "other": "अन्य"
   },
   "filters": {
     "allCategories": "सभी श्रेणियां", "allSubcategories": "सभी उप-श्रेणियां", "allLocations": "सभी स्थान",

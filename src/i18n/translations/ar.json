@@ -186,7 +186,18 @@
     "canggu": "تشانغو", "ubud": "أوبود", "seminyak": "سيمينياك", "lovina": "لوفينا", "uluwatu": "أولواتو",
     "denpasar": "دينباسار", "sanur": "سانور", "nusa_dua": "نوسا دوا", "nusa_penida": "نوسا بينيدا",
     "kuta": "كوتا", "jimbaran": "جيمباران", "tabanan": "تابانان", "karangasem": "كارانغاسيم",
-    "singaraja": "سينغاراجا", "other": "أخرى"
+    "singaraja": "سينغاراجا", "amed": "أميد", "candidasa": "كانديداسا", "padangbai": "بادانغ باي",
+    "munduk": "موندوك", "sidemen": "سيديمين", "tegallalang": "تيغالالانغ", "gianyar": "غيانيار",
+    "klungkung": "كلونغكونغ", "bangli": "بانغلي", "negara": "نيغارا", "medewi": "ميديوي",
+    "balian": "باليان", "pemuteran": "بيموتيران", "tulamben": "تولامبين",
+    "nusa_lembongan": "نوسا ليمبونغان", "nusa_ceningan": "نوسا تشينينغان",
+    "mataram": "ماتارام", "senggigi": "سينغيغي", "kuta_lombok": "كوتا لومبوك",
+    "gili_trawangan": "غيلي تراوانغان", "gili_air": "غيلي آير", "gili_meno": "غيلي مينو",
+    "tetebatu": "تيتيباتو", "selong_belanak": "سيلونغ بيلاناك", "bangsal": "بانغسال",
+    "praya": "برايا", "lembar": "ليمبار", "sekotong": "سيكوتونغ", "sumbawa": "سومباوا",
+    "surabaya": "سورابايا", "jakarta": "جاكرتا", "yogyakarta": "يوغياكارتا",
+    "bandung": "باندونغ", "semarang": "سيمارانغ", "malang": "مالانغ", "solo": "سولو",
+    "banyuwangi": "بانيووانغي", "probolinggo": "بروبولينغو", "other": "أخرى"
   },
   "filters": {
     "allCategories": "جميع الفئات", "allSubcategories": "جميع الفئات الفرعية", "allLocations": "جميع المواقع",

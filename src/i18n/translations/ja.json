@@ -184,7 +184,18 @@
     "canggu": "チャングー", "ubud": "ウブド", "seminyak": "スミニャック", "lovina": "ロビナ", "uluwatu": "ウルワツ",
     "denpasar": "デンパサール", "sanur": "サヌール", "nusa_dua": "ヌサドゥア", "nusa_penida": "ヌサペニダ",
     "kuta": "クタ", "jimbaran": "ジンバラン", "tabanan": "タバナン", "karangasem": "カランガセム",
-    "singaraja": "シンガラジャ", "other": "その他"
+    "singaraja": "シンガラジャ", "amed": "アメッド", "candidasa": "チャンディダサ", "padangbai": "パダンバイ",
+    "munduk": "ムンドゥック", "sidemen": "シデメン", "tegallalang": "テガラランg", "gianyar": "ギアニャール",
+    "klungkung": "クルンクン", "bangli": "バンリ", "negara": "ネガラ", "medewi": "メデウィ",
+    "balian": "バリアン", "pemuteran": "ペムテラン", "tulamben": "トゥランベン",
+    "nusa_lembongan": "ヌサレンボンガン", "nusa_ceningan": "ヌサチュニンガン",
+    "mataram": "マタラム", "senggigi": "センギギ", "kuta_lombok": "クタ・ロンボク",
+    "gili_trawangan": "ギリ・トラワンガン", "gili_air": "ギリ・アイル", "gili_meno": "ギリ・メノ",
+    "tetebatu": "テテバトゥ", "selong_belanak": "セロン・ベラナック", "bangsal": "バンサル",
+    "praya": "プラヤ", "lembar": "レンバル", "sekotong": "セコトン", "sumbawa": "スンバワ",
+    "surabaya": "スラバヤ", "jakarta": "ジャカルタ", "yogyakarta": "ジョグジャカルタ",
+    "bandung": "バンドン", "semarang": "スマラン", "malang": "マラン", "solo": "ソロ",
+    "banyuwangi": "バニュワンギ", "probolinggo": "プロボリンゴ", "other": "その他"
   },
   "filters": {
     "allCategories": "全カテゴリー", "allSubcategories": "全サブカテゴリー", "allLocations": "全ての場所",
