@@ -217,6 +217,8 @@
     "buyPointsDesc": "Laad je saldo direct op met een puntenpakket",
     "buyPointsComingSoon": "Online betaling komt binnenkort!",
     "buyPointsComingSoonDesc": "Betaling via Xendit / DOKU wordt binnenkort beschikbaar. Verdien ondertussen punten via badges en activiteit.",
+    "buyViaWebapp": "Om punten te kopen, gebruik de webversie van Re-Bali. Je account wordt automatisch gesynchroniseerd.",
+    "openWebapp": "Open webversie",
     "pack": { "starter": "Kleine Boost", "starterDesc": "Perfect voor je eerste boost", "popular": "Meest Populair", "popularDesc": "Beste waarde — meest gekocht", "premium": "Pro", "premiumDesc": "Voor powerverkopers", "mega": "Business", "megaDesc": "Maximaal punten, maximaal besparen" },
     "packPoints": "{pts} punten", "packPrice": "Rp {price}", "bestValue": "Beste waarde", "comingSoon": "Binnenkort", "paymentMethods": "Betaling via Xendit / DOKU"
   },

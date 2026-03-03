@@ -293,6 +293,8 @@
     "buyPointsDesc": "Laden Sie Ihr Guthaben sofort mit einem Punktepaket auf",
     "buyPointsComingSoon": "Online-Zahlung kommt bald!",
     "buyPointsComingSoonDesc": "Zahlung über Xendit / DOKU wird in Kürze verfügbar sein. Verdienen Sie in der Zwischenzeit Punkte durch Abzeichen und Aktivität.",
+    "buyViaWebapp": "Um Punkte zu kaufen, verwenden Sie bitte die Webversion von Re-Bali. Ihr Konto wird automatisch synchronisiert.",
+    "openWebapp": "Webversion öffnen",
     "pack": { "starter": "Kleiner Boost", "starterDesc": "Perfekt für den ersten Boost", "popular": "Am beliebtesten", "popularDesc": "Bester Wert — am meisten gekauft", "premium": "Pro", "premiumDesc": "Für Power-Verkäufer", "mega": "Business", "megaDesc": "Maximale Punkte, maximale Ersparnis" },
     "packPoints": "{pts} Punkte", "packPrice": "Rp {price}", "bestValue": "Bester Wert", "comingSoon": "Demnächst", "paymentMethods": "Zahlung über Xendit / DOKU"
   },

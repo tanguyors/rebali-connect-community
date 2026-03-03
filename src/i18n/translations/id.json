@@ -293,6 +293,8 @@
     "buyPointsDesc": "Isi ulang saldo Anda secara instan dengan paket poin",
     "buyPointsComingSoon": "Pembayaran online segera hadir!",
     "buyPointsComingSoonDesc": "Pembayaran melalui Xendit / DOKU akan segera tersedia. Untuk saat ini, dapatkan poin melalui lencana dan aktivitas.",
+    "buyViaWebapp": "Untuk membeli poin, silakan gunakan versi web Re-Bali. Akun Anda akan disinkronkan secara otomatis.",
+    "openWebapp": "Buka Versi Web",
     "pack": {
       "starter": "Boost Kecil",
       "starterDesc": "Sempurna untuk mencoba boost pertama",

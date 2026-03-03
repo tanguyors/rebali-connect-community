@@ -346,6 +346,8 @@
     "buyPointsDesc": "Rechargez votre solde instantanément avec un pack de points",
     "buyPointsComingSoon": "Paiement en ligne bientôt disponible !",
     "buyPointsComingSoonDesc": "Le paiement via Xendit / DOKU sera disponible sous peu. En attendant, gagnez des points via vos badges et votre activité.",
+    "buyViaWebapp": "Pour acheter des points, veuillez utiliser la version web de Re-Bali. Votre compte sera synchronisé automatiquement.",
+    "openWebapp": "Ouvrir la version web",
     "pack": {
       "starter": "Petit Boost",
       "starterDesc": "Idéal pour tester un premier boost",
