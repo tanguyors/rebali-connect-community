@@ -681,6 +681,18 @@ export default function Admin() {
                     <p className="font-medium">{allUserPoints?.find((p: any) => p.user_id === selectedUser.id)?.balance || 0} pts</p>
                   </div>
                 </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Package className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-muted-foreground">{t('admin.maxListings') || 'Max Listings'}</p>
+                    <p className="font-medium">
+                      {getUserListings(selectedUser.id).filter((l: any) => l.status === 'active').length} / {getMaxListings(selectedUser.id)}
+                      {selectedUser.listing_limit_override != null && (
+                        <span className="text-xs text-muted-foreground ml-1">(custom)</span>
+                      )}
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
           </div>
