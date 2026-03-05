@@ -69,7 +69,7 @@ export default function SavedSearches() {
           </p>
           <Button variant="outline" className="gap-2" onClick={() => isNativePlatform ? openExternalAuthenticated(`${WEBAPP_URL}/points`) : window.location.href = '/points'}>
             <Crown className="h-4 w-4" />
-            {t('savedSearches.becomeVip')}
+            {isNativePlatform ? t('points.openWebapp') : t('savedSearches.becomeVip')}
           </Button>
         </CardContent>
       </Card>
