@@ -218,7 +218,7 @@ export default function MyListings() {
                   </Button>
                   {!isBoosted && (
                     <Button size="sm" variant="outline" onClick={() => openBoostDialog(listing.id)} className="gap-1 h-7 text-xs px-2 text-blue-600 border-blue-300 hover:bg-blue-50">
-                      <Rocket className="h-3 w-3" /> Boost
+                      <Rocket className="h-3 w-3" /> {isNativePlatform ? t('points.openWebapp') : 'Boost'}
                     </Button>
                   )}
                   <Button size="sm" variant="outline" onClick={() => updateStatus(listing.id, 'sold')} className="h-7 text-xs px-2">
