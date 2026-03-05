@@ -290,6 +290,8 @@ export default function Admin() {
   const [editUserWhatsapp, setEditUserWhatsapp] = useState('');
   const [editUserDisplayName, setEditUserDisplayName] = useState('');
   const [editUserPoints, setEditUserPoints] = useState('');
+  const [editUserListingLimit, setEditUserListingLimit] = useState('');
+  const [userTypeFilter, setUserTypeFilter] = useState<string>('all');
 
   // Reports query
   const { data: reports } = useQuery({
