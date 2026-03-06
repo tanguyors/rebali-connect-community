@@ -385,5 +385,14 @@
     "similarTitle": "Warnung: Eine Anzeige mit einem sehr ähnlichen Titel existiert bereits",
     "imageReused": "Dieses Bild wurde in mehreren Anzeigen verwendet",
     "suspiciousContent": "Verdächtiger Inhalt in Ihrer Anzeige erkannt"
+  },
+  "block": {
+    "blockUser": "Benutzer blockieren",
+    "unblock": "Benutzer freigeben",
+    "confirmTitle": "Benutzer blockieren?",
+    "confirmDesc": "Du wirst keine Anzeigen oder Nachrichten von {{name}} mehr sehen. Du kannst die Blockierung später aufheben.",
+    "blocked": "Benutzer blockiert",
+    "blockedDesc": "Deren Inhalte wurden aus deinem Feed ausgeblendet.",
+    "unblocked": "Benutzer freigegeben"
   }
 }

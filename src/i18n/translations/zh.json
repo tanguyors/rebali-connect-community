@@ -309,5 +309,14 @@
     "similarTitle": "警告：已存在标题非常相似的列表",
     "imageReused": "此图片已在多个列表中使用",
     "suspiciousContent": "您的列表中检测到可疑内容"
+  },
+  "block": {
+    "blockUser": "屏蔽此用户",
+    "unblock": "取消屏蔽",
+    "confirmTitle": "屏蔽用户？",
+    "confirmDesc": "您将不再看到{{name}}的列表和消息。您可以稍后取消屏蔽。",
+    "blocked": "用户已屏蔽",
+    "blockedDesc": "其内容已从您的信息流中隐藏。",
+    "unblocked": "用户已取消屏蔽"
   }
 }
