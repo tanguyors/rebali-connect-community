@@ -27,7 +27,14 @@ export async function openExternal(url: string) {
  * in-app browser (opened via openExternalAuthenticated with ?source=native).
  */
 export function isInAppBrowser(): boolean {
-  return new URLSearchParams(window.location.search).get('source') === 'native';
+  // Check URL param first (initial landing), then persist in sessionStorage
+  // so SPA navigation doesn't lose the flag
+  const urlParam = new URLSearchParams(window.location.search).get('source') === 'native';
+  if (urlParam) {
+    try { sessionStorage.setItem('inAppBrowser', '1'); } catch {}
+    return true;
+  }
+  try { return sessionStorage.getItem('inAppBrowser') === '1'; } catch { return false; }
 }
 
 /**
