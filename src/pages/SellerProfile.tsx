@@ -127,7 +127,6 @@ export default function SellerProfile() {
                 targetDisplayName={seller.display_name || undefined}
               />
             </div>
-            </div>
           </div>
         </CardContent>
       </Card>
