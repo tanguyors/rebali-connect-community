@@ -309,5 +309,14 @@
     "similarTitle": "Waarschuwing: Er bestaat al een advertentie met een zeer vergelijkbare titel",
     "imageReused": "Deze afbeelding is in meerdere advertenties gebruikt",
     "suspiciousContent": "Verdachte inhoud gedetecteerd in uw advertentie"
+  },
+  "block": {
+    "blockUser": "Gebruiker blokkeren",
+    "unblock": "Gebruiker deblokkeren",
+    "confirmTitle": "Gebruiker blokkeren?",
+    "confirmDesc": "Je ziet geen advertenties of berichten meer van {{name}}. Je kunt later deblokkeren.",
+    "blocked": "Gebruiker geblokkeerd",
+    "blockedDesc": "Hun inhoud is verborgen uit je feed.",
+    "unblocked": "Gebruiker gedeblokkeerd"
   }
 }

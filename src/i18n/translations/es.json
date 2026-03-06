@@ -328,5 +328,14 @@
     "similarTitle": "Advertencia: Ya existe un anuncio con un título muy similar",
     "imageReused": "Esta imagen se ha utilizado en varios anuncios",
     "suspiciousContent": "Se detectó contenido sospechoso en su anuncio"
+  },
+  "block": {
+    "blockUser": "Bloquear este usuario",
+    "unblock": "Desbloquear usuario",
+    "confirmTitle": "¿Bloquear usuario?",
+    "confirmDesc": "Ya no verás anuncios ni mensajes de {{name}}. Puedes desbloquearlo más tarde.",
+    "blocked": "Usuario bloqueado",
+    "blockedDesc": "Su contenido se ha ocultado de tu feed.",
+    "unblocked": "Usuario desbloqueado"
   }
 }

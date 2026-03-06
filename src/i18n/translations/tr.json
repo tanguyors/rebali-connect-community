@@ -480,5 +480,14 @@
     "similarTitle": "Uyarı: Çok benzer başlıklı bir ilan zaten mevcut",
     "imageReused": "Bu resim birden fazla ilanda kullanılmış",
     "suspiciousContent": "İlanınızda şüpheli içerik tespit edildi"
+  },
+  "block": {
+    "blockUser": "Bu kullanıcıyı engelle",
+    "unblock": "Engeli kaldır",
+    "confirmTitle": "Kullanıcı engellensin mi?",
+    "confirmDesc": "{{name}} kullanıcısının ilanlarını ve mesajlarını artık görmeyeceksiniz. Daha sonra engeli kaldırabilirsiniz.",
+    "blocked": "Kullanıcı engellendi",
+    "blockedDesc": "İçerikleri akışınızdan gizlendi.",
+    "unblocked": "Kullanıcının engeli kaldırıldı"
   }
 }
