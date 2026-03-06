@@ -661,6 +661,8 @@
     "confirmDesc": "You will no longer see listings or messages from {{name}}. You can unblock them later from their profile.",
     "blocked": "User blocked",
     "blockedDesc": "Their content has been hidden from your feed.",
-    "unblocked": "User unblocked"
+    "unblocked": "User unblocked",
+    "blockedUsersTitle": "Blocked users",
+    "noBlockedUsers": "You haven't blocked anyone yet."
   }
 }
