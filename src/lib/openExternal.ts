@@ -42,8 +42,16 @@ export function isInAppBrowser(): boolean {
  * an in-app browser we navigate directly instead of trying to spawn a second one.
  */
 export async function openOrNavigate(url: string) {
-  if (isInAppBrowser()) {
-    window.location.href = url;
+  const inApp = isInAppBrowser();
+  console.log('[openOrNavigate] inApp:', inApp, 'url:', url);
+
+  if (inApp) {
+    // Try multiple methods as fallback for in-app browsers
+    try {
+      window.location.assign(url);
+    } catch {
+      window.location.href = url;
+    }
   } else {
     await openExternal(url);
   }
