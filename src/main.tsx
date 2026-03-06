@@ -4,6 +4,10 @@ import App from "./App.tsx";
 import "./index.css";
 import { initCapacitor } from "./capacitor";
 import { supabase } from "./integrations/supabase/client";
+import { isInAppBrowser } from "./lib/openExternal";
+
+// Capture in-app browser flag IMMEDIATELY before SPA navigation loses the query param
+isInAppBrowser();
 
 // Global error handlers to prevent white screens
 window.addEventListener('error', (event) => {
