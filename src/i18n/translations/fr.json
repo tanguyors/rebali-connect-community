@@ -491,6 +491,8 @@
     "confirmDesc": "Vous ne verrez plus les annonces ni les messages de {{name}}. Vous pourrez le débloquer depuis son profil.",
     "blocked": "Utilisateur bloqué",
     "blockedDesc": "Son contenu a été masqué de votre fil.",
-    "unblocked": "Utilisateur débloqué"
+    "unblocked": "Utilisateur débloqué",
+    "blockedUsersTitle": "Utilisateurs bloqués",
+    "noBlockedUsers": "Vous n'avez bloqué personne pour le moment."
   }
 }
