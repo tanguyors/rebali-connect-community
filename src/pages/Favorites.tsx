@@ -6,10 +6,12 @@ import { Navigate, Link } from 'react-router-dom';
 import ListingCard from '@/components/ListingCard';
 import { Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useBlockedUsers } from '@/hooks/useBlockedUsers';
 
 export default function Favorites() {
   const { t } = useLanguage();
   const { user, loading } = useAuth();
+  const blockedIds = useBlockedUsers();
 
   const { data: favorites, isLoading } = useQuery({
     queryKey: ['my-favorites', user?.id],
@@ -21,7 +23,7 @@ export default function Favorites() {
         .order('created_at', { ascending: false });
       return (data || [])
         .map((f: any) => f.listings)
-        .filter((l: any) => l && l.status === 'active');
+        .filter((l: any) => l && l.status === 'active' && !blockedIds.includes(l.seller_id));
     },
     enabled: !!user,
   });

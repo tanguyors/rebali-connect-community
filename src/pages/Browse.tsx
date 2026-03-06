@@ -13,6 +13,7 @@ import { Slider } from '@/components/ui/slider';
 import { CATEGORIES, LOCATIONS, LOCATION_GROUPS, CONDITIONS, CATEGORY_TREE, LOCATION_COORDS, getDistanceKm } from '@/lib/constants';
 import { SlidersHorizontal, X, MapPin, Loader2 } from 'lucide-react';
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useBlockedUsers } from '@/hooks/useBlockedUsers';
 
 const PAGE_SIZE = 20;
 
@@ -28,6 +29,7 @@ function useDebounce<T>(value: T, delay: number): T {
 export default function Browse() {
   const { t } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
+  const blockedIds = useBlockedUsers();
 
   // Initialize all filters from URL params
   const [search, setSearch] = useState(searchParams.get('q') || '');
@@ -128,7 +130,11 @@ export default function Browse() {
   });
 
   // Flatten all pages into a single array
-  const listings = useMemo(() => data?.pages.flat() || [], [data]);
+  const listings = useMemo(() => {
+    const all = data?.pages.flat() || [];
+    if (blockedIds.length === 0) return all;
+    return all.filter((l: any) => !blockedIds.includes(l.seller_id));
+  }, [data, blockedIds]);
 
   // Batch fetch boosts & fav counts
   const listingIds = listings.map((l: any) => l.id);
