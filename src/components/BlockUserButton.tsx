@@ -64,7 +64,7 @@ export default function BlockUserButton({ targetUserId, targetDisplayName, class
         <AlertDialogHeader>
           <AlertDialogTitle>{t('block.confirmTitle')}</AlertDialogTitle>
           <AlertDialogDescription>
-            {t('block.confirmDesc', { name: targetDisplayName || 'this user' })}
+            {(t('block.confirmDesc') as string).replace('{{name}}', targetDisplayName || 'this user')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
