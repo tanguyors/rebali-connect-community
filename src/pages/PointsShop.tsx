@@ -79,8 +79,14 @@ export default function PointsShop() {
       if (error || data?.error) {
         toast({ title: data?.error || 'Payment error', variant: 'destructive' });
       } else if (data?.invoice_url) {
-        // Always use direct navigation for payments — works in regular browsers AND in-app browsers
-        window.location.href = data.invoice_url;
+        // Use anchor click trick to force navigation in in-app browsers
+        const a = document.createElement('a');
+        a.href = data.invoice_url;
+        a.target = '_self';
+        a.rel = 'noopener';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
       }
     } catch {
       toast({ title: 'Payment error', variant: 'destructive' });
