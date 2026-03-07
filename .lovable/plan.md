@@ -1,211 +1,48 @@
 
 
-# Re-Bali Economy V2 -- Complete Overhaul
+## Analyse du probleme
 
-This plan restructures the trust score, badges, points economy, and shop to match the Indonesia-optimized strategy you described. It's a large but systematic update across 4 layers: database, edge functions, frontend components, and i18n.
+Actuellement, le systeme de parrainage fonctionne de deux facons :
+1. **Lien web** : `https://re-bali.com/auth?tab=signup&ref=CODE` -- fonctionne bien sur le web, le code est pre-rempli automatiquement
+2. **Code manuel** : champ "Code d'invitation" visible sur la page d'inscription
 
----
+**Le probleme** : quand quelqu'un telecharge l'app native depuis l'App Store / Play Store, il n'y a aucun moyen de transmettre le parametre `?ref=CODE` a l'app. Le lien partage ouvre le navigateur web, pas l'app native.
 
-## Summary of Changes
+## Solutions
 
-### 1. Trust Score -- New Formula
+Il y a deux aspects a traiter :
 
-**Current** formula uses arbitrary weights (1pt/day, 5pts/listing, etc.) with thresholds at 10/30.
+### 1. Le champ code est deja present
+Le champ de saisie du code de parrainage existe deja sur la page Auth.tsx (lignes 253-262). Les utilisateurs natifs **peuvent** deja entrer un code manuellement. Cependant, il est peu visible -- place en bas du formulaire sans mise en valeur.
 
-**New** formula:
+### 2. Ameliorations proposees
 
-| Factor | Gain | Max |
-|--------|------|-----|
-| Account age | 0.5 pt/day | +20 |
-| Active listings | 3 pts/listing | +15 |
-| Completed deals | 5 pts/deal | +20 |
-| Positive reviews (4+) | 3 pts each | +20 |
-| WhatsApp verified | +10 | +10 |
-| Identity verified | +15 | +15 |
+**A. Rendre le champ code plus visible et attractif**
+- Ajouter une icone Gift et un style colore au champ referral code sur le formulaire d'inscription
+- Ajouter un texte explicatif "Un ami vous a invite ? Entrez son code pour gagner des bonus"
+- Deplacer le champ juste apres le nom d'affichage (plus haut dans le formulaire)
 
-| Penalty | Points |
-|---------|--------|
-| Unresolved report | -10 |
-| Fake listing detected (3 scam reports) | -20 |
-| VPN/proxy abuse | -10 |
-| Multi-device abuse | -15 |
+**B. Deep linking pour les apps natives (Capacitor)**
+- Configurer les Universal Links (iOS) et App Links (Android) pour que `re-bali.com/auth?tab=signup&ref=CODE` ouvre directement l'app native si elle est installee
+- Cela necessite une configuration cote serveur (fichier `.well-known/apple-app-site-association` et `assetlinks.json`) et dans les fichiers natifs iOS/Android -- **ceci ne peut pas etre fait depuis Lovable**, il faut le configurer manuellement dans Xcode/Android Studio
 
-**New thresholds**: 70-100 = "Safe", 40-69 = "Standard", 0-39 = "Risky"
+**C. Alternative pragmatique : stockage du code en clipboard**
+- Le message de partage (deja genere dans `shareReferralLink`) contient le code en clair
+- L'utilisateur qui recoit le message peut simplement copier le code et le coller dans le champ a l'inscription
+- On peut ajouter un bouton "Coller" a cote du champ referral code pour faciliter la saisie
 
-Public-facing labels change from "low/medium/high risk" to "Safe / Standard / Risky" (more positive framing). The exact numeric score stays internal (not shown publicly), only the label is displayed.
+### Plan d'implementation
 
-### 2. Badges -- New Generation
+1. **Remonter et embellir le champ code de parrainage** dans le formulaire d'inscription (Auth.tsx) -- icone, bordure coloree, texte explicatif
+2. **Ajouter un bouton "Coller"** a cote du champ pour coller depuis le clipboard
+3. **Ameliorer le message de partage** pour insister sur le code en plus du lien (pour les utilisateurs natifs)
+4. **Ajouter les traductions** du nouveau texte explicatif dans les 12 langues
 
-**Keep existing**: newMember, activeMember, veteran, elder, whatsappVerified, identityVerified
+### Details techniques
 
-**Remove**: firstSeller, activeSeller, communicator, superCommunicator, wellRated, topSeller
+- **Auth.tsx** : Reorganiser le formulaire, deplacer le bloc referral code plus haut, ajouter `ClipboardPaste` button avec `navigator.clipboard.readText()`
+- **Traductions** : Ajouter `referral.invitedByFriend` ("Invited by a friend? Enter their code!") dans les 12 fichiers i18n
+- **PointsShop.tsx** : Le message de partage mentionne deja le code + le lien, aucun changement necessaire
 
-**Add new badges**:
-
-| Badge | Icon | Condition |
-|-------|------|-----------|
-| safeSeller | ShieldCheck | Trust score >= 70 |
-| trustedPro | Medal | Trust score >= 85 AND >= 10 completed deals |
-| firstDeal | Handshake | 1 completed deal |
-| fiveDeals | Target | 5 completed deals |
-| twentyDeals | Flame | 20 completed deals |
-| fiftyDeals | Trophy | 50 completed deals |
-
-This requires counting completed deals (conversations where `deal_closed = true AND buyer_confirmed = true`).
-
-### 3. Points -- New Economy
-
-**Badge point values (one-time sync)**:
-
-| Badge | Points |
-|-------|--------|
-| WhatsApp Verified | 20 |
-| Identity Verified | 40 |
-| First Listing (newMember equivalent, keep firstSeller internally for points only) | 10 |
-| First Deal | 20 |
-| 5 Deals | 30 |
-| 20 Deals | 50 |
-| Safe Seller | 25 |
-| Trusted Pro | 60 |
-
-**Dynamic earning** (new concept -- points earned automatically on events):
-
-| Action | Points |
-|--------|--------|
-| Completed deal (both confirmed) | 5 pts |
-| 5-star review received | 3 pts |
-| Validated report against scammer | 10 pts |
-
-Monthly cap: 150 pts from dynamic earnings (anti-farming).
-
-This requires a new tracking mechanism in the `manage-points` edge function and a `monthly_dynamic_earned` counter.
-
-### 4. Shop -- 5 Products
-
-| Product | Cost | Duration | Effect |
-|---------|------|----------|--------|
-| Boost 48h | 40 pts | 48h | Top of category results, "Boosted" badge on card |
-| Boost Premium (Homepage) | 80 pts | 48h | Featured on homepage section, larger card, "Featured" badge |
-| VIP 30j | 120 pts | 30 days | VIP badge, +10% search priority, 1 free Boost included |
-| Extra 5 Listings | 90 pts | 30 days | +5 listing slots (max 2 packs) |
-| Protection Boost | 150 pts | 30 days | "Priority Seller" badge, +20% organic visibility |
-
-### 5. Gamification UX
-
-- Show "You are X pts away from [next product]" nudge in the shop
-- "Complete 1 more deal to earn 5 pts" suggestion
-
----
-
-## Technical Implementation Plan
-
-### Step 1: Database Migration
-
-Add a `monthly_dynamic_earned` column to `user_points` to track the monthly cap:
-
-```sql
-ALTER TABLE public.user_points 
-  ADD COLUMN IF NOT EXISTS monthly_dynamic_earned integer NOT NULL DEFAULT 0,
-  ADD COLUMN IF NOT EXISTS month_reset text NOT NULL DEFAULT to_char(now(), 'YYYY-MM');
-```
-
-Update the `check_listing_limit` function to account for `extra_listings` addons (check `user_addons` for active `extra_listings` and add `extra_slots` to the max).
-
-### Step 2: Update `calculate-trust-score` Edge Function
-
-- Change formula weights to match new table above
-- Count completed deals via `conversations` where `deal_closed = true AND buyer_confirmed = true` and user is either buyer or seller
-- Change thresholds: `>= 70` = low risk (Safe), `>= 40` = medium, `< 40` = high (Risky)
-- Add "fake listing" penalty: count listings archived due to 3+ scam reports
-
-### Step 3: Update `manage-points` Edge Function
-
-Major rewrite:
-
-- **New badge list** with updated point values matching the new badges
-- **`sync_badges`**: Update badge detection logic to include deal-based badges (query `conversations` for completed deals count) and trust-score-based badges (safeSeller, trustedPro)
-- **`award_dynamic`** new action: Called after deal completion, 5-star review, or validated report. Checks monthly cap before awarding.
-- **New shop products**: Update `ADDON_COSTS` and `ADDON_DURATIONS` for 5 products: `boost` (40), `boost_premium` (80), `vip` (120), `extra_listings` (90), `protection` (150)
-- **Admin actions**: Keep `admin_get_all_points` and `admin_set_balance` as-is
-
-### Step 4: Update `UserBadges.tsx`
-
-- Replace badge definitions with new set (keep age/verification badges, add deal + trust badges)
-- Add `completedDeals` and `trustScore` to `BadgeContext`
-- Query completed deals count from `conversations`
-- Query user's trust score from `profiles`
-
-### Step 5: Update `TrustIndicator.tsx`
-
-- Change labels from "Low risk / Medium risk / High risk" to "Safe / Standard / Risky"
-- Adjust color thresholds: green >= 70, amber >= 40, red < 40
-
-### Step 6: Update `TrustBadges.tsx` (Explanation Page)
-
-- Update `TRUST_FACTORS` with new weights
-- Update `BADGE_LIST` with new badges
-- Update `POINTS_BADGES` with new values
-- Add new shop products (5 instead of 3)
-- Add "Dynamic Earning" section explaining deal/review/report rewards + monthly cap
-- Update penalty descriptions
-
-### Step 7: Update `PointsShop.tsx`
-
-- Add 2 new products (boost_premium, protection) to `ADDON_CONFIG`
-- Add gamification nudge: "You are X pts away from [cheapest affordable addon]"
-- Boost Premium needs a listing selector dialog too (like regular boost)
-- Show monthly dynamic points status (X/150 earned this month)
-
-### Step 8: Update `ListingCard.tsx`
-
-- Show "Boosted" badge on boosted listings (query `user_addons` for active boost on that listing_id)
-- Show "Featured" badge for premium boosted listings
-
-### Step 9: Update `Home.tsx`
-
-- Add "Featured Listings" section showing listings with active `boost_premium` addon
-
-### Step 10: Update `Browse.tsx`
-
-- Sort boosted listings higher in results (query active boosts and sort accordingly)
-
-### Step 11: Update `check_listing_limit` DB Function
-
-- Account for active `extra_listings` addons: query `user_addons` for active `extra_listings` and add `extra_slots` to `max_listings`
-
-### Step 12: i18n Updates (All 12 Languages)
-
-Update all translation files with:
-- New badge names and descriptions (safeSeller, trustedPro, firstDeal, fiveDeals, twentyDeals, fiftyDeals)
-- New trust level labels (Safe / Standard / Risky)
-- New shop product names and descriptions (boost_premium, protection)
-- Dynamic earning explanations
-- Gamification nudge texts
-- Remove old badge translations (communicator, superCommunicator, etc.) or keep for backward compat
-
----
-
-## Files to Create/Modify
-
-| File | Action |
-|------|--------|
-| `supabase/migrations/...` | New migration for `monthly_dynamic_earned` column + update `check_listing_limit` function |
-| `supabase/functions/calculate-trust-score/index.ts` | Rewrite with new formula |
-| `supabase/functions/manage-points/index.ts` | Major update: new badges, new shop items, dynamic earning |
-| `src/components/UserBadges.tsx` | New badge definitions + deal/trust queries |
-| `src/components/TrustIndicator.tsx` | New thresholds + labels |
-| `src/pages/TrustBadges.tsx` | Full content update for new system |
-| `src/pages/PointsShop.tsx` | 5 products + gamification nudge + dynamic earnings display |
-| `src/components/ListingCard.tsx` | Boosted/Featured badges |
-| `src/pages/Home.tsx` | Featured Listings section |
-| `src/pages/Browse.tsx` | Boost priority in sort |
-| All 12 `src/i18n/translations/*.json` | New keys for badges, shop, trust labels |
-
----
-
-## What is NOT Included (Future Phases)
-
-- **IAP / Point Pack Purchases with IDR**: Requires payment gateway integration (Midtrans, Xendit, etc.). This will be a separate project phase.
-- **Points-to-Cash Conversion**: Pro-only feature for later.
-- **PRO Seller SaaS Plan**: Direct IDR subscription -- separate monetization layer.
+Pas de changement de base de donnees ni d'edge function requis.
 
