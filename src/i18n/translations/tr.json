@@ -406,6 +406,8 @@
     "limit": "Limit: {used}/{max} davet",
     "limitReached": "Maksimum davet sayısına ulaştınız",
     "referralCode": "Davet kodu (isteğe bağlı)",
+    "invitedByFriend": "Bir arkadaş mı davet etti? Kodunu girin!",
+    "paste": "Yapıştır",
     "referralCodePlaceholder": "Bir arkadaşın kodunu girin",
     "invalidCode": "Geçersiz davet kodu",
     "referralApplied": "Davet kodu uygulandı!",

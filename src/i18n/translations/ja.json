@@ -404,6 +404,8 @@
     "limit": "上限: {used}/{max} 招待",
     "limitReached": "招待の上限に達しました",
     "referralCode": "招待コード（任意）",
+    "invitedByFriend": "友達に招待された？コードを入力！",
+    "paste": "貼り付け",
     "referralCodePlaceholder": "友達のコードを入力",
     "invalidCode": "無効な招待コード",
     "referralApplied": "招待コードが適用されました！",

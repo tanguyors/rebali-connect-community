@@ -406,6 +406,8 @@
     "limit": "الحد: {used}/{max} دعوة",
     "limitReached": "لقد وصلت إلى الحد الأقصى من الدعوات",
     "referralCode": "رمز الدعوة (اختياري)",
+    "invitedByFriend": "مدعو من صديق؟ أدخل رمزه!",
+    "paste": "لصق",
     "referralCodePlaceholder": "أدخل رمز صديق",
     "invalidCode": "رمز دعوة غير صالح",
     "referralApplied": "تم تطبيق رمز الدعوة!",

@@ -379,6 +379,8 @@
     "limit": "Limite : {used}/{max} invitations",
     "limitReached": "Vous avez atteint le nombre maximum d'invitations",
     "referralCode": "Code d'invitation (optionnel)",
+    "invitedByFriend": "Invité par un ami ? Entrez son code !",
+    "paste": "Coller",
     "referralCodePlaceholder": "Entrez le code d'un ami",
     "invalidCode": "Code d'invitation invalide",
     "referralApplied": "Code d'invitation appliqué !",

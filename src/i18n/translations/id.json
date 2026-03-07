@@ -326,6 +326,8 @@
     "limit": "Batas: {used}/{max} undangan",
     "limitReached": "Anda telah mencapai batas maksimal undangan",
     "referralCode": "Kode undangan (opsional)",
+    "invitedByFriend": "Diundang teman? Masukkan kodenya!",
+    "paste": "Tempel",
     "referralCodePlaceholder": "Masukkan kode teman",
     "invalidCode": "Kode undangan tidak valid",
     "referralApplied": "Kode undangan diterapkan!",

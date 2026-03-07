@@ -235,6 +235,8 @@
     "limit": "Limiet: {used}/{max} uitnodigingen",
     "limitReached": "Je hebt het maximale aantal uitnodigingen bereikt",
     "referralCode": "Uitnodigingscode (optioneel)",
+    "invitedByFriend": "Uitgenodigd door een vriend? Voer de code in!",
+    "paste": "Plakken",
     "referralCodePlaceholder": "Voer de code van een vriend in",
     "invalidCode": "Ongeldige uitnodigingscode",
     "referralApplied": "Uitnodigingscode toegepast!",

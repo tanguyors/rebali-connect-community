@@ -235,6 +235,8 @@
     "limit": "限制：{used}/{max} 次邀请",
     "limitReached": "您已达到最大邀请次数",
     "referralCode": "邀请码（可选）",
+    "invitedByFriend": "朋友邀请的？输入他们的邀请码！",
+    "paste": "粘贴",
     "referralCodePlaceholder": "输入好友的邀请码",
     "invalidCode": "无效的邀请码",
     "referralApplied": "邀请码已应用！",

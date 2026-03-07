@@ -254,6 +254,8 @@
     "limit": "Límite: {used}/{max} invitaciones",
     "limitReached": "Has alcanzado el número máximo de invitaciones",
     "referralCode": "Código de invitación (opcional)",
+    "invitedByFriend": "¿Invitado por un amigo? ¡Ingresa su código!",
+    "paste": "Pegar",
     "referralCodePlaceholder": "Ingresa el código de un amigo",
     "invalidCode": "Código de invitación inválido",
     "referralApplied": "¡Código de invitación aplicado!",

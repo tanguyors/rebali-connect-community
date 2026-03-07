@@ -406,6 +406,8 @@
     "limit": "सीमा: {used}/{max} आमंत्रण",
     "limitReached": "आपने अधिकतम आमंत्रण संख्या तक पहुंच गए हैं",
     "referralCode": "आमंत्रण कोड (वैकल्पिक)",
+    "invitedByFriend": "किसी दोस्त ने आमंत्रित किया? उनका कोड दर्ज करें!",
+    "paste": "चिपकाएँ",
     "referralCodePlaceholder": "दोस्त का कोड दर्ज करें",
     "invalidCode": "अमान्य आमंत्रण कोड",
     "referralApplied": "आमंत्रण कोड लागू किया गया!",
