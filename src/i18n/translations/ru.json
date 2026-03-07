@@ -221,6 +221,7 @@
     "buyPointsComingSoonDesc": "Оплата через Xendit / DOKU будет доступна в ближайшее время. Пока зарабатывайте баллы через значки и активность.",
     "buyViaWebapp": "Для управления баллами перейдите на сайт Re-Bali. Ваш аккаунт остаётся синхронизированным.",
     "openWebapp": "Продолжить на сайте",
+    "boostAndRewards": "Бусты и Награды",
     "pack": { "starter": "Малый буст", "starterDesc": "Идеально для первого буста", "popular": "Самый популярный", "popularDesc": "Лучшая цена — самый популярный", "premium": "Pro", "premiumDesc": "Для активных продавцов", "mega": "Business", "megaDesc": "Максимум баллов, максимум экономии" },
     "packPoints": "{pts} баллов", "packPrice": "Rp {price}", "bestValue": "Лучшая цена", "comingSoon": "Скоро", "paymentMethods": "Оплата через Xendit / DOKU"
   },

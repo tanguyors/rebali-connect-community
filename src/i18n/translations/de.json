@@ -297,6 +297,7 @@
     "buyPointsComingSoonDesc": "Zahlung über Xendit / DOKU wird in Kürze verfügbar sein. Verdienen Sie in der Zwischenzeit Punkte durch Abzeichen und Aktivität.",
     "buyViaWebapp": "Um Ihre Punkte zu verwalten, fahren Sie auf der Re-Bali-Website fort. Ihr Konto bleibt synchronisiert.",
     "openWebapp": "Weiter im Web",
+    "boostAndRewards": "Boosts & Belohnungen",
     "pack": { "starter": "Kleiner Boost", "starterDesc": "Perfekt für den ersten Boost", "popular": "Am beliebtesten", "popularDesc": "Bester Wert — am meisten gekauft", "premium": "Pro", "premiumDesc": "Für Power-Verkäufer", "mega": "Business", "megaDesc": "Maximale Punkte, maximale Ersparnis" },
     "packPoints": "{pts} Punkte", "packPrice": "Rp {price}", "bestValue": "Bester Wert", "comingSoon": "Demnächst", "paymentMethods": "Zahlung über Xendit / DOKU"
   },
