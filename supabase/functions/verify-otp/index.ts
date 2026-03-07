@@ -78,6 +78,33 @@ Deno.serve(async (req) => {
       .update({ phone_verified: true, whatsapp: normalizedPhone })
       .eq("id", user_id);
 
+    // Validate referral if this user was referred
+    try {
+      const { data: referral } = await supabase.from("referrals")
+        .select("id")
+        .eq("referred_id", user_id)
+        .eq("status", "pending")
+        .limit(1);
+
+      if (referral && referral.length > 0) {
+        // Call manage-points to validate the referral
+        const authHeader = req.headers.get("authorization") || "";
+        await fetch(
+          `${Deno.env.get("SUPABASE_URL")}/functions/v1/manage-points`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": authHeader || `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+            },
+            body: JSON.stringify({ action: "validate_referral" }),
+          }
+        );
+      }
+    } catch (e) {
+      console.error("referral validation error (non-blocking):", e);
+    }
+
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

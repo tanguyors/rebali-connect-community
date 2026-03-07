@@ -602,6 +602,8 @@ export type Database = {
           phone: string | null
           phone_verified: boolean
           preferred_lang: string
+          referral_code: string | null
+          referred_by: string | null
           risk_level: Database["public"]["Enums"]["risk_level"]
           trust_score: number
           updated_at: string
@@ -619,6 +621,8 @@ export type Database = {
           phone?: string | null
           phone_verified?: boolean
           preferred_lang?: string
+          referral_code?: string | null
+          referred_by?: string | null
           risk_level?: Database["public"]["Enums"]["risk_level"]
           trust_score?: number
           updated_at?: string
@@ -636,13 +640,30 @@ export type Database = {
           phone?: string | null
           phone_verified?: boolean
           preferred_lang?: string
+          referral_code?: string | null
+          referred_by?: string | null
           risk_level?: Database["public"]["Enums"]["risk_level"]
           trust_score?: number
           updated_at?: string
           user_type?: Database["public"]["Enums"]["user_type"]
           whatsapp?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       push_subscriptions: {
         Row: {
@@ -670,6 +691,62 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          referred_id: string
+          referrer_id: string
+          status: string
+          validated_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referred_id: string
+          referrer_id: string
+          status?: string
+          validated_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referred_id?: string
+          referrer_id?: string
+          status?: string
+          validated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referred_id_fkey"
+            columns: ["referred_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referred_id_fkey"
+            columns: ["referred_id"]
+            isOneToOne: true
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reports: {
         Row: {

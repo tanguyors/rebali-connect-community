@@ -10,7 +10,7 @@ import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { openOrNavigate, openExternalAuthenticated } from '@/lib/openExternal';
 import { isNativePlatform } from '@/capacitor';
-import { Coins, Rocket, Crown, Package, ArrowUp, ArrowDown, RefreshCw, History, Sparkles, Star, ShieldPlus, TrendingUp, CreditCard, Zap, Lock } from 'lucide-react';
+import { Coins, Rocket, Crown, Package, ArrowUp, ArrowDown, RefreshCw, History, Sparkles, Star, ShieldPlus, TrendingUp, CreditCard, Zap, Lock, Users, Copy, Share2, Gift } from 'lucide-react';
 
 interface PointsData {
   balance: number;
@@ -68,6 +68,7 @@ export default function PointsShop() {
   const [userListings, setUserListings] = useState<{ id: string; title_original: string }[]>([]);
   const [loadingListings, setLoadingListings] = useState(false);
   const [buyingPack, setBuyingPack] = useState<string | null>(null);
+  const [referralStats, setReferralStats] = useState<any>(null);
 
   const handleBuyPoints = async (packId: string) => {
     if (!user) { navigate('/auth'); return; }
@@ -107,6 +108,36 @@ export default function PointsShop() {
       if (data.monthly_cap) setMonthlyCap(data.monthly_cap);
     }
     setLoading(false);
+  };
+
+  const fetchReferralStats = async () => {
+    if (!user) return;
+    const { data } = await supabase.functions.invoke('manage-points', {
+      body: { action: 'get_referral_stats' },
+    });
+    if (data) setReferralStats(data);
+  };
+
+  const copyReferralCode = () => {
+    if (referralStats?.referral_code) {
+      navigator.clipboard.writeText(referralStats.referral_code);
+      toast({ title: t('referral.copied') });
+    }
+  };
+
+  const shareReferralLink = () => {
+    const code = referralStats?.referral_code;
+    if (!code) return;
+    const link = `${window.location.origin}/auth?tab=signup&ref=${code}`;
+    const message = t('referral.shareMessage')
+      .replace('{code}', code)
+      .replace('{link}', link);
+    if (navigator.share) {
+      navigator.share({ text: message }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(message);
+      toast({ title: t('referral.copied') });
+    }
   };
 
   const syncBadges = async () => {
@@ -170,6 +201,7 @@ export default function PointsShop() {
       return;
     }
     fetchData();
+    fetchReferralStats();
   }, [user, authLoading]);
 
   if (loading) {
@@ -333,6 +365,78 @@ export default function PointsShop() {
           </CardContent>
       </Card>
 
+      {/* Referral Program */}
+      {referralStats && (
+        <Card className="border-emerald-500/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Gift className="h-5 w-5 text-emerald-500" />
+              {t('referral.title')}
+            </CardTitle>
+            <CardDescription>{t('referral.subtitle')}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Referral code display */}
+            <div className="flex items-center gap-2">
+              <div className="flex-1 p-3 rounded-lg bg-muted font-mono text-lg text-center font-bold tracking-widest">
+                {referralStats.referral_code}
+              </div>
+              <Button variant="outline" size="icon" onClick={copyReferralCode}>
+                <Copy className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="icon" onClick={shareReferralLink}>
+                <Share2 className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Progress */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">
+                  {t('referral.progress').replace('{count}', String(referralStats.validated_referrals % 3))}
+                </span>
+                <span className="font-medium text-emerald-600">
+                  {referralStats.next_reward_in > 0
+                    ? t('referral.nextReward').replace('{remaining}', String(referralStats.next_reward_in))
+                    : `🎉 +${50} pts!`}
+                </span>
+              </div>
+              <div className="h-2 rounded-full bg-muted overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-emerald-500 transition-all"
+                  style={{ width: `${((referralStats.validated_referrals % 3) / 3) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="p-2 rounded-lg bg-muted/50">
+                <p className="text-lg font-bold">{referralStats.validated_referrals}</p>
+                <p className="text-[10px] text-muted-foreground">{t('referral.validatedReferrals')}</p>
+              </div>
+              <div className="p-2 rounded-lg bg-muted/50">
+                <p className="text-lg font-bold">{referralStats.pending_referrals}</p>
+                <p className="text-[10px] text-muted-foreground">{t('referral.pendingReferrals')}</p>
+              </div>
+              <div className="p-2 rounded-lg bg-muted/50">
+                <p className="text-lg font-bold">{referralStats.rewards_earned}</p>
+                <p className="text-[10px] text-muted-foreground">{t('referral.pointsEarned')}</p>
+              </div>
+            </div>
+
+            {/* Limit indicator */}
+            <p className="text-xs text-muted-foreground text-center">
+              {referralStats.total_referrals >= referralStats.max_referrals
+                ? t('referral.limitReached')
+                : t('referral.limit')
+                    .replace('{used}', String(referralStats.total_referrals))
+                    .replace('{max}', String(referralStats.max_referrals))}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Transaction History */}
       <Card>
         <CardHeader>
@@ -362,8 +466,10 @@ export default function PointsShop() {
                           ? `🏅 ${t(`badges.${tx.reason.replace('badge:', '')}`)}`
                           : tx.reason.startsWith('addon:')
                           ? `🛒 ${t(`points.addon.${tx.reason.replace('addon:', '')}`)}`
-                          : tx.reason.startsWith('dynamic:')
+                           : tx.reason.startsWith('dynamic:')
                           ? `⚡ ${t(`points.dynamic.${tx.reason.replace('dynamic:', '')}`)}`
+                          : tx.reason.startsWith('referral:')
+                          ? `🤝 ${t('referral.title')}`
                           : tx.reason
                         }
                       </p>

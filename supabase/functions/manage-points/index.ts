@@ -64,7 +64,11 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { action, addon_type, listing_id, target_user_id, new_balance, event_type } = body;
+    const { action, addon_type, listing_id, target_user_id, new_balance, event_type, referral_code } = body;
+
+    const REFERRAL_REWARD = 50;
+    const REFERRAL_THRESHOLD = 3;
+    const REFERRAL_MAX = 12;
 
     const isAdmin = async () => {
       const { data } = await supabase.from("user_roles").select("role").eq("user_id", user!.id).eq("role", "admin");
@@ -298,6 +302,151 @@ Deno.serve(async (req) => {
         addon_costs: ADDON_COSTS,
         monthly_cap: DYNAMIC_MONTHLY_CAP,
       }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // --- Validate referral (called after WhatsApp verification) ---
+    if (action === "validate_referral") {
+      // Check if this user was referred
+      const { data: referral } = await supabase.from("referrals")
+        .select("*")
+        .eq("referred_id", user.id)
+        .eq("status", "pending")
+        .single();
+
+      if (!referral) {
+        return new Response(JSON.stringify({ success: false, message: "no_pending_referral" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Mark referral as validated
+      await supabase.from("referrals")
+        .update({ status: "validated", validated_at: new Date().toISOString() })
+        .eq("id", referral.id);
+
+      // Count validated referrals for the referrer
+      const { count: validatedCount } = await supabase.from("referrals")
+        .select("*", { count: "exact", head: true })
+        .eq("referrer_id", referral.referrer_id)
+        .eq("status", "validated");
+
+      const totalValidated = validatedCount || 0;
+
+      // Check if we crossed a threshold of 3
+      // Previously awarded = floor((totalValidated - 1) / 3), now = floor(totalValidated / 3)
+      const previousRewards = Math.floor((totalValidated - 1) / REFERRAL_THRESHOLD);
+      const currentRewards = Math.floor(totalValidated / REFERRAL_THRESHOLD);
+
+      if (currentRewards > previousRewards) {
+        // Award points to referrer
+        const { data: referrerPts } = await supabase.from("user_points")
+          .select("*").eq("user_id", referral.referrer_id).single();
+
+        if (referrerPts) {
+          await supabase.from("user_points").update({
+            balance: referrerPts.balance + REFERRAL_REWARD,
+            total_earned: referrerPts.total_earned + REFERRAL_REWARD,
+            updated_at: new Date().toISOString(),
+          }).eq("user_id", referral.referrer_id);
+
+          await supabase.from("point_transactions").insert({
+            user_id: referral.referrer_id,
+            amount: REFERRAL_REWARD,
+            type: "earned",
+            reason: `referral:${currentRewards * REFERRAL_THRESHOLD}_verified`,
+          });
+        }
+      }
+
+      return new Response(JSON.stringify({ success: true, validated: totalValidated }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // --- Get referral stats ---
+    if (action === "get_referral_stats") {
+      const { data: profile } = await supabase.from("profiles")
+        .select("referral_code").eq("id", user.id).single();
+
+      const { data: referrals } = await supabase.from("referrals")
+        .select("id, status, created_at, validated_at")
+        .eq("referrer_id", user.id)
+        .order("created_at", { ascending: false });
+
+      const validated = referrals?.filter(r => r.status === "validated").length || 0;
+      const pending = referrals?.filter(r => r.status === "pending").length || 0;
+      const total = referrals?.length || 0;
+      const rewardsEarned = Math.floor(validated / REFERRAL_THRESHOLD) * REFERRAL_REWARD;
+      const nextRewardIn = REFERRAL_THRESHOLD - (validated % REFERRAL_THRESHOLD);
+
+      return new Response(JSON.stringify({
+        referral_code: profile?.referral_code || "",
+        total_referrals: total,
+        validated_referrals: validated,
+        pending_referrals: pending,
+        rewards_earned: rewardsEarned,
+        next_reward_in: nextRewardIn === REFERRAL_THRESHOLD ? 0 : nextRewardIn,
+        max_referrals: REFERRAL_MAX,
+        can_refer: total < REFERRAL_MAX,
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // --- Register referral (called on signup with referral code) ---
+    if (action === "register_referral") {
+      if (!referral_code) {
+        return new Response(JSON.stringify({ error: "missing_code" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Find referrer by code
+      const { data: referrer } = await supabase.from("profiles")
+        .select("id").eq("referral_code", referral_code.toUpperCase()).single();
+
+      if (!referrer || referrer.id === user.id) {
+        return new Response(JSON.stringify({ error: "invalid_code" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Check referrer hasn't exceeded max
+      const { count: referrerTotal } = await supabase.from("referrals")
+        .select("*", { count: "exact", head: true })
+        .eq("referrer_id", referrer.id);
+
+      if ((referrerTotal || 0) >= REFERRAL_MAX) {
+        return new Response(JSON.stringify({ error: "referrer_limit_reached" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Check not already referred
+      const { data: existing } = await supabase.from("referrals")
+        .select("id").eq("referred_id", user.id).limit(1);
+
+      if (existing && existing.length > 0) {
+        return new Response(JSON.stringify({ error: "already_referred" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Create referral
+      await supabase.from("referrals").insert({
+        referrer_id: referrer.id,
+        referred_id: user.id,
+        status: "pending",
+      });
+
+      // Update referred_by on profile
+      await supabase.from("profiles")
+        .update({ referred_by: referrer.id })
+        .eq("id", user.id);
+
+      return new Response(JSON.stringify({ success: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

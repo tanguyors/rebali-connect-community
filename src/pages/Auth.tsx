@@ -30,6 +30,7 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [legalDialog, setLegalDialog] = useState<'terms' | 'privacy' | null>(null);
+  const [referralCode, setReferralCode] = useState(searchParams.get('ref') || '');
 
   // Device fingerprinting
   const getDeviceHash = async (): Promise<string> => {
@@ -83,7 +84,7 @@ export default function Auth() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data: signUpData, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -91,8 +92,21 @@ export default function Auth() {
         emailRedirectTo: window.location.origin,
       },
     });
-    if (error) toast({ title: 'Error', description: error.message, variant: 'destructive' });
-    else toast({ title: t('auth.magicLinkSent') });
+    if (error) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: t('auth.magicLinkSent') });
+      // Register referral code if provided
+      if (referralCode.trim() && signUpData?.user) {
+        try {
+          await supabase.functions.invoke('manage-points', {
+            body: { action: 'register_referral', referral_code: referralCode.trim() },
+          });
+        } catch {
+          // Silently fail - referral is best-effort
+        }
+      }
+    }
     setLoading(false);
   };
 
@@ -235,6 +249,16 @@ export default function Auth() {
                       {t('legal.privacyTitle')}
                     </button>
                   </label>
+                </div>
+                {/* Referral code */}
+                <div>
+                  <Label>{t('referral.referralCode')}</Label>
+                  <Input
+                    value={referralCode}
+                    onChange={e => setReferralCode(e.target.value.toUpperCase())}
+                    placeholder={t('referral.referralCodePlaceholder')}
+                    maxLength={8}
+                  />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading || !acceptedTerms}>{t('common.signup')}</Button>
               </form>
