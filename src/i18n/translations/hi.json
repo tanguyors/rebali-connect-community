@@ -392,6 +392,7 @@
     "buyPointsComingSoonDesc": "Xendit / DOKU से भुगतान जल्द ही उपलब्ध होगा। अभी बैज और गतिविधि से पॉइंट कमाएं।",
     "buyViaWebapp": "अपने पॉइंट प्रबंधित करने के लिए Re-Bali वेबसाइट पर जारी रखें। आपका खाता सिंक रहता है।",
     "openWebapp": "वेब पर जारी रखें",
+    "boostAndRewards": "बूस्ट और पुरस्कार",
     "pack": { "starter": "छोटा बूस्ट", "starterDesc": "पहला बूस्ट आज़माने के लिए उपयुक्त", "popular": "सबसे लोकप्रिय", "popularDesc": "सबसे अच्छा मूल्य — सबसे ज़्यादा खरीदा गया", "premium": "Pro", "premiumDesc": "पावर सेलर्स के लिए", "mega": "Business", "megaDesc": "अधिकतम पॉइंट, अधिकतम बचत" },
     "packPoints": "{pts} पॉइंट", "packPrice": "Rp {price}", "bestValue": "सर्वोत्तम मूल्य", "comingSoon": "जल्द आ रहा है", "paymentMethods": "Xendit / DOKU से भुगतान"
   },

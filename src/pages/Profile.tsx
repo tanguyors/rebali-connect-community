@@ -534,7 +534,7 @@ export default function Profile() {
                 }
               }}>
                 <Coins className="h-4 w-4" />
-                {t('points.shopTitle')}
+                {isNativePlatform ? t('points.boostAndRewards') : t('points.shopTitle')}
               </Button>
               {profile.user_type === 'business' && (
                 <Button variant="outline" size="sm" className="gap-2" onClick={() => navigate('/dashboard')}>
