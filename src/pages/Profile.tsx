@@ -610,6 +610,9 @@ export default function Profile() {
       {/* WhatsApp Verification */}
       <WhatsAppVerification user={user} profile={profile} refreshProfile={refreshProfile} />
 
+      {/* Referral Widget */}
+      <ReferralWidget />
+
       {/* Push Notifications */}
       <Card>
         <CardHeader>
