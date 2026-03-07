@@ -261,7 +261,15 @@
     "referralApplied": "¡Código de invitación aplicado!",
     "pendingReferrals": "Invitaciones pendientes",
     "validatedReferrals": "Invitaciones verificadas",
-    "nextReward": "{remaining} más para ganar 50 pts"
+    "nextReward": "{remaining} más para ganar 50 pts",
+    "totalInvited": "Invitados",
+    "validated": "Validados",
+    "remainingInvites": "invitaciones restantes",
+    "statusValidated": "Validado",
+    "statusPending": "Pendiente",
+    "noReferralsYet": "Sin referidos aún. ¡Comparte tu código!",
+    "codeCopied": "¡Código copiado!",
+    "history": "Historial de referidos"
   },
   "pro": {
     "badge": "VENDEDOR PRO",

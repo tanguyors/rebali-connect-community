@@ -413,7 +413,15 @@
     "referralApplied": "आमंत्रण कोड लागू किया गया!",
     "pendingReferrals": "लंबित आमंत्रण",
     "validatedReferrals": "सत्यापित आमंत्रण",
-    "nextReward": "50 अंक के लिए {remaining} और"
+    "nextReward": "50 अंक के लिए {remaining} और",
+    "totalInvited": "आमंत्रित",
+    "validated": "सत्यापित",
+    "remainingInvites": "शेष आमंत्रण",
+    "statusValidated": "सत्यापित",
+    "statusPending": "लंबित",
+    "noReferralsYet": "अभी कोई रेफरल नहीं। अपना कोड साझा करें!",
+    "codeCopied": "कोड कॉपी हो गया!",
+    "history": "रेफरल इतिहास"
   },
   "pro": {
     "badge": "प्रो विक्रेता",

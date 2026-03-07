@@ -411,7 +411,15 @@
     "referralApplied": "招待コードが適用されました！",
     "pendingReferrals": "保留中の招待",
     "validatedReferrals": "確認済みの招待",
-    "nextReward": "あと{remaining}人で50ポイント"
+    "nextReward": "あと{remaining}人で50ポイント",
+    "totalInvited": "招待済み",
+    "validated": "確認済み",
+    "remainingInvites": "残り招待数",
+    "statusValidated": "確認済み",
+    "statusPending": "保留中",
+    "noReferralsYet": "まだ紹介がありません。コードを共有しましょう！",
+    "codeCopied": "コードをコピーしました！",
+    "history": "紹介履歴"
   },
   "pro": {
     "badge": "プロセラー",

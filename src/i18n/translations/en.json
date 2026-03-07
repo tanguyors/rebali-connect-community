@@ -552,7 +552,15 @@
     "referralApplied": "Invitation code applied!",
     "pendingReferrals": "Pending invitations",
     "validatedReferrals": "Verified invitations",
-    "nextReward": "{remaining} more to earn 50 pts"
+    "nextReward": "{remaining} more to earn 50 pts",
+    "totalInvited": "Invited",
+    "validated": "Validated",
+    "remainingInvites": "invitations remaining",
+    "statusValidated": "Validated",
+    "statusPending": "Pending",
+    "noReferralsYet": "No referrals yet. Share your code!",
+    "codeCopied": "Code copied!",
+    "history": "Referral History"
   },
   "pro": {
     "badge": "PRO SELLER",

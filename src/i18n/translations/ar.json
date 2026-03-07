@@ -413,7 +413,15 @@
     "referralApplied": "تم تطبيق رمز الدعوة!",
     "pendingReferrals": "دعوات معلقة",
     "validatedReferrals": "دعوات متحققة",
-    "nextReward": "{remaining} أخرى للحصول على 50 نقطة"
+    "nextReward": "{remaining} أخرى للحصول على 50 نقطة",
+    "totalInvited": "تمت دعوتهم",
+    "validated": "تم التحقق",
+    "remainingInvites": "دعوات متبقية",
+    "statusValidated": "تم التحقق",
+    "statusPending": "قيد الانتظار",
+    "noReferralsYet": "لا إحالات بعد. شارك رمزك!",
+    "codeCopied": "تم نسخ الرمز!",
+    "history": "سجل الإحالات"
   },
   "pro": {
     "badge": "بائع محترف",

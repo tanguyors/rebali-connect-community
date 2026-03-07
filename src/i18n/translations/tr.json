@@ -413,7 +413,15 @@
     "referralApplied": "Davet kodu uygulandı!",
     "pendingReferrals": "Bekleyen davetler",
     "validatedReferrals": "Doğrulanmış davetler",
-    "nextReward": "50 puan için {remaining} kişi daha"
+    "nextReward": "50 puan için {remaining} kişi daha",
+    "totalInvited": "Davet edilen",
+    "validated": "Doğrulanmış",
+    "remainingInvites": "kalan davet",
+    "statusValidated": "Doğrulandı",
+    "statusPending": "Beklemede",
+    "noReferralsYet": "Henüz referans yok. Kodunuzu paylaşın!",
+    "codeCopied": "Kod kopyalandı!",
+    "history": "Referans Geçmişi"
   },
   "pro": {
     "badge": "PRO SATICI",

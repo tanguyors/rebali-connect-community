@@ -24,6 +24,7 @@ import UserBadges from '@/components/UserBadges';
 import TrustIndicator from '@/components/TrustIndicator';
 import SavedSearches from '@/components/SavedSearches';
 import PushNotificationToggle from '@/components/PushNotificationToggle';
+import ReferralWidget from '@/components/ReferralWidget';
 
 const profileSchema = z.object({
   display_name: z.string().trim().min(2, 'Min 2 characters').max(50, 'Max 50 characters'),
@@ -608,6 +609,9 @@ export default function Profile() {
 
       {/* WhatsApp Verification */}
       <WhatsAppVerification user={user} profile={profile} refreshProfile={refreshProfile} />
+
+      {/* Referral Widget */}
+      <ReferralWidget />
 
       {/* Push Notifications */}
       <Card>
