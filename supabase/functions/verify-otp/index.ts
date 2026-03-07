@@ -87,7 +87,7 @@ Deno.serve(async (req) => {
 
     const userLang = profile?.preferred_lang || "en";
     const refCode = profile?.referral_code || "";
-    const refLink = `https://rebali-connect-community.lovable.app/auth?tab=signup&ref=${refCode}`;
+    const refLink = `https://re-bali.com/auth?tab=signup&ref=${refCode}`;
 
     // Validate referral if this user was referred
     try {
