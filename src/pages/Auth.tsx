@@ -250,6 +250,16 @@ export default function Auth() {
                     </button>
                   </label>
                 </div>
+                {/* Referral code */}
+                <div>
+                  <Label>{t('referral.referralCode')}</Label>
+                  <Input
+                    value={referralCode}
+                    onChange={e => setReferralCode(e.target.value.toUpperCase())}
+                    placeholder={t('referral.referralCodePlaceholder')}
+                    maxLength={8}
+                  />
+                </div>
                 <Button type="submit" className="w-full" disabled={loading || !acceptedTerms}>{t('common.signup')}</Button>
               </form>
             </CardContent>
