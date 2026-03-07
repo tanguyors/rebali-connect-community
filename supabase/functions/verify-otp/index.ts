@@ -119,19 +119,35 @@ Deno.serve(async (req) => {
     try {
       const FONNTE_TOKEN = Deno.env.get("FONNTE_TOKEN");
       if (FONNTE_TOKEN && refCode) {
+        const noReply: Record<string, string> = {
+          en: "⚙️ _Automated message – please do not reply._",
+          id: "⚙️ _Pesan otomatis – mohon jangan dibalas._",
+          fr: "⚙️ _Message automatique – merci de ne pas répondre._",
+          es: "⚙️ _Mensaje automático – por favor no responda._",
+          de: "⚙️ _Automatische Nachricht – bitte nicht antworten._",
+          nl: "⚙️ _Automatisch bericht – gelieve niet te antwoorden._",
+          ru: "⚙️ _Автоматическое сообщение – пожалуйста, не отвечайте._",
+          zh: "⚙️ _自动消息 – 请勿回复。_",
+          ar: "⚙️ _رسالة تلقائية – يرجى عدم الرد._",
+          hi: "⚙️ _स्वचालित संदेश – कृपया उत्तर न दें।_",
+          ja: "⚙️ _自動メッセージ – 返信不要です。_",
+          tr: "⚙️ _Otomatik mesaj – lütfen yanıtlamayın._",
+        };
+        const footer = noReply[userLang] || noReply.en;
+
         const promoMessages: Record<string, (code: string, link: string) => string> = {
-          en: (c, l) => `🎉 *EARN POINTS ON RE-BALI!*\n\nYour WhatsApp is now verified! ✅\n\nInvite up to *12 friends* and earn *50 points for every 3 friends* who verify their WhatsApp! That's up to *200 points*! 🎯\n\n🎁 Your invitation code: *${c}*\n\n📲 Share this link:\n${l}\n\nStart earning points and unlock exclusive rewards! 🚀`,
-          id: (c, l) => `🎉 *DAPATKAN POIN DI RE-BALI!*\n\nWhatsApp Anda sudah terverifikasi! ✅\n\nUndang hingga *12 teman* dan dapatkan *50 poin untuk setiap 3 teman* yang memverifikasi WhatsApp mereka! Hingga *200 poin*! 🎯\n\n🎁 Kode undangan Anda: *${c}*\n\n📲 Bagikan link ini:\n${l}\n\nMulai kumpulkan poin dan dapatkan hadiah eksklusif! 🚀`,
-          fr: (c, l) => `🎉 *GAGNEZ DES POINTS SUR RE-BALI !*\n\nVotre WhatsApp est maintenant vérifié ! ✅\n\nInvitez jusqu'à *12 amis* et gagnez *50 points pour chaque 3 amis* qui vérifient leur WhatsApp ! Soit jusqu'à *200 points* ! 🎯\n\n🎁 Votre code d'invitation : *${c}*\n\n📲 Partagez ce lien :\n${l}\n\nCommencez à gagner des points et débloquez des récompenses exclusives ! 🚀`,
-          es: (c, l) => `🎉 *¡GANA PUNTOS EN RE-BALI!*\n\n¡Tu WhatsApp ya está verificado! ✅\n\nInvita hasta *12 amigos* y gana *50 puntos por cada 3 amigos* que verifiquen su WhatsApp. ¡Hasta *200 puntos*! 🎯\n\n🎁 Tu código de invitación: *${c}*\n\n📲 Comparte este enlace:\n${l}\n\n¡Empieza a ganar puntos y desbloquea recompensas exclusivas! 🚀`,
-          de: (c, l) => `🎉 *PUNKTE VERDIENEN AUF RE-BALI!*\n\nIhr WhatsApp ist jetzt verifiziert! ✅\n\nLaden Sie bis zu *12 Freunde* ein und verdienen Sie *50 Punkte für je 3 Freunde*, die ihr WhatsApp verifizieren! Bis zu *200 Punkte*! 🎯\n\n🎁 Ihr Einladungscode: *${c}*\n\n📲 Teilen Sie diesen Link:\n${l}\n\nSammeln Sie Punkte und schalten Sie exklusive Belohnungen frei! 🚀`,
-          nl: (c, l) => `🎉 *VERDIEN PUNTEN OP RE-BALI!*\n\nJe WhatsApp is nu geverifieerd! ✅\n\nNodig tot *12 vrienden* uit en verdien *50 punten voor elke 3 vrienden* die hun WhatsApp verifiëren! Tot *200 punten*! 🎯\n\n🎁 Jouw uitnodigingscode: *${c}*\n\n📲 Deel deze link:\n${l}\n\nBegin punten te verdienen en ontgrendel exclusieve beloningen! 🚀`,
-          ru: (c, l) => `🎉 *ЗАРАБАТЫВАЙТЕ БАЛЛЫ НА RE-BALI!*\n\nВаш WhatsApp подтверждён! ✅\n\nПриглашайте до *12 друзей* и получайте *50 баллов за каждых 3 друзей*, которые подтвердят свой WhatsApp! До *200 баллов*! 🎯\n\n🎁 Ваш код приглашения: *${c}*\n\n📲 Поделитесь ссылкой:\n${l}\n\nНачните зарабатывать баллы и открывайте эксклюзивные награды! 🚀`,
-          zh: (c, l) => `🎉 *在 RE-BALI 赚取积分！*\n\n您的 WhatsApp 已验证！✅\n\n邀请最多 *12 位朋友*，每 *3 位朋友* 验证 WhatsApp 即可获得 *50 积分*！最多 *200 积分*！🎯\n\n🎁 您的邀请码：*${c}*\n\n📲 分享链接：\n${l}\n\n开始赚取积分，解锁专属奖励！🚀`,
-          ar: (c, l) => `🎉 *اكسب نقاطاً على RE-BALI!*\n\nتم التحقق من WhatsApp الخاص بك! ✅\n\nادعُ حتى *12 صديقاً* واكسب *50 نقطة لكل 3 أصدقاء* يتحققون من WhatsApp! حتى *200 نقطة*! 🎯\n\n🎁 رمز الدعوة الخاص بك: *${c}*\n\n📲 شارك هذا الرابط:\n${l}\n\nابدأ بكسب النقاط واحصل على مكافآت حصرية! 🚀`,
-          hi: (c, l) => `🎉 *RE-BALI पर पॉइंट्स कमाएं!*\n\nआपका WhatsApp सत्यापित हो गया है! ✅\n\n*12 दोस्तों* तक को आमंत्रित करें और हर *3 दोस्तों* के WhatsApp सत्यापित करने पर *50 पॉइंट्स* कमाएं! *200 पॉइंट्स* तक! 🎯\n\n🎁 आपका आमंत्रण कोड: *${c}*\n\n📲 यह लिंक शेयर करें:\n${l}\n\nपॉइंट्स कमाना शुरू करें और विशेष पुरस्कार अनलॉक करें! 🚀`,
-          ja: (c, l) => `🎉 *RE-BALIでポイントを獲得！*\n\nWhatsAppが認証されました！✅\n\n最大*12人の友達*を招待して、*3人が認証するごとに50ポイント*獲得！最大*200ポイント*！🎯\n\n🎁 あなたの招待コード：*${c}*\n\n📲 このリンクを共有：\n${l}\n\nポイントを貯めて限定特典をゲット！🚀`,
-          tr: (c, l) => `🎉 *RE-BALI'DE PUAN KAZANIN!*\n\nWhatsApp'ınız doğrulandı! ✅\n\n*12 arkadaşınıza* kadar davet edin ve WhatsApp'ını doğrulayan her *3 arkadaş* için *50 puan* kazanın! *200 puana* kadar! 🎯\n\n🎁 Davet kodunuz: *${c}*\n\n📲 Bu linki paylaşın:\n${l}\n\nPuan kazanmaya başlayın ve özel ödüllerin kilidini açın! 🚀`,
+          en: (c, l) => `🎉 *EARN POINTS ON RE-BALI!*\n\nYour WhatsApp is now verified! ✅\n\nInvite up to *12 friends* and earn *50 points for every 3 friends* who verify their WhatsApp! That's up to *200 points*! 🎯\n\n🎁 Your invitation code: *${c}*\n\n📲 Share this link:\n${l}\n\nStart earning points and unlock exclusive rewards! 🚀\n\n${footer}`,
+          id: (c, l) => `🎉 *DAPATKAN POIN DI RE-BALI!*\n\nWhatsApp Anda sudah terverifikasi! ✅\n\nUndang hingga *12 teman* dan dapatkan *50 poin untuk setiap 3 teman* yang memverifikasi WhatsApp mereka! Hingga *200 poin*! 🎯\n\n🎁 Kode undangan Anda: *${c}*\n\n📲 Bagikan link ini:\n${l}\n\nMulai kumpulkan poin dan dapatkan hadiah eksklusif! 🚀\n\n${footer}`,
+          fr: (c, l) => `🎉 *GAGNEZ DES POINTS SUR RE-BALI !*\n\nVotre WhatsApp est maintenant vérifié ! ✅\n\nInvitez jusqu'à *12 amis* et gagnez *50 points pour chaque 3 amis* qui vérifient leur WhatsApp ! Soit jusqu'à *200 points* ! 🎯\n\n🎁 Votre code d'invitation : *${c}*\n\n📲 Partagez ce lien :\n${l}\n\nCommencez à gagner des points et débloquez des récompenses exclusives ! 🚀\n\n${footer}`,
+          es: (c, l) => `🎉 *¡GANA PUNTOS EN RE-BALI!*\n\n¡Tu WhatsApp ya está verificado! ✅\n\nInvita hasta *12 amigos* y gana *50 puntos por cada 3 amigos* que verifiquen su WhatsApp. ¡Hasta *200 puntos*! 🎯\n\n🎁 Tu código de invitación: *${c}*\n\n📲 Comparte este enlace:\n${l}\n\n¡Empieza a ganar puntos y desbloquea recompensas exclusivas! 🚀\n\n${footer}`,
+          de: (c, l) => `🎉 *PUNKTE VERDIENEN AUF RE-BALI!*\n\nIhr WhatsApp ist jetzt verifiziert! ✅\n\nLaden Sie bis zu *12 Freunde* ein und verdienen Sie *50 Punkte für je 3 Freunde*, die ihr WhatsApp verifizieren! Bis zu *200 Punkte*! 🎯\n\n🎁 Ihr Einladungscode: *${c}*\n\n📲 Teilen Sie diesen Link:\n${l}\n\nSammeln Sie Punkte und schalten Sie exklusive Belohnungen frei! 🚀\n\n${footer}`,
+          nl: (c, l) => `🎉 *VERDIEN PUNTEN OP RE-BALI!*\n\nJe WhatsApp is nu geverifieerd! ✅\n\nNodig tot *12 vrienden* uit en verdien *50 punten voor elke 3 vrienden* die hun WhatsApp verifiëren! Tot *200 punten*! 🎯\n\n🎁 Jouw uitnodigingscode: *${c}*\n\n📲 Deel deze link:\n${l}\n\nBegin punten te verdienen en ontgrendel exclusieve beloningen! 🚀\n\n${footer}`,
+          ru: (c, l) => `🎉 *ЗАРАБАТЫВАЙТЕ БАЛЛЫ НА RE-BALI!*\n\nВаш WhatsApp подтверждён! ✅\n\nПриглашайте до *12 друзей* и получайте *50 баллов за каждых 3 друзей*, которые подтвердят свой WhatsApp! До *200 баллов*! 🎯\n\n🎁 Ваш код приглашения: *${c}*\n\n📲 Поделитесь ссылкой:\n${l}\n\nНачните зарабатывать баллы и открывайте эксклюзивные награды! 🚀\n\n${footer}`,
+          zh: (c, l) => `🎉 *在 RE-BALI 赚取积分！*\n\n您的 WhatsApp 已验证！✅\n\n邀请最多 *12 位朋友*，每 *3 位朋友* 验证 WhatsApp 即可获得 *50 积分*！最多 *200 积分*！🎯\n\n🎁 您的邀请码：*${c}*\n\n📲 分享链接：\n${l}\n\n开始赚取积分，解锁专属奖励！🚀\n\n${footer}`,
+          ar: (c, l) => `🎉 *اكسب نقاطاً على RE-BALI!*\n\nتم التحقق من WhatsApp الخاص بك! ✅\n\nادعُ حتى *12 صديقاً* واكسب *50 نقطة لكل 3 أصدقاء* يتحققون من WhatsApp! حتى *200 نقطة*! 🎯\n\n🎁 رمز الدعوة الخاص بك: *${c}*\n\n📲 شارك هذا الرابط:\n${l}\n\nابدأ بكسب النقاط واحصل على مكافآت حصرية! 🚀\n\n${footer}`,
+          hi: (c, l) => `🎉 *RE-BALI पर पॉइंट्स कमाएं!*\n\nआपका WhatsApp सत्यापित हो गया है! ✅\n\n*12 दोस्तों* तक को आमंत्रित करें और हर *3 दोस्तों* के WhatsApp सत्यापित करने पर *50 पॉइंट्स* कमाएं! *200 पॉइंट्स* तक! 🎯\n\n🎁 आपका आमंत्रण कोड: *${c}*\n\n📲 यह लिंक शेयर करें:\n${l}\n\nपॉइंट्स कमाना शुरू करें और विशेष पुरस्कार अनलॉक करें! 🚀\n\n${footer}`,
+          ja: (c, l) => `🎉 *RE-BALIでポイントを獲得！*\n\nWhatsAppが認証されました！✅\n\n最大*12人の友達*を招待して、*3人が認証するごとに50ポイント*獲得！最大*200ポイント*！🎯\n\n🎁 あなたの招待コード：*${c}*\n\n📲 このリンクを共有：\n${l}\n\nポイントを貯めて限定特典をゲット！🚀\n\n${footer}`,
+          tr: (c, l) => `🎉 *RE-BALI'DE PUAN KAZANIN!*\n\nWhatsApp'ınız doğrulandı! ✅\n\n*12 arkadaşınıza* kadar davet edin ve WhatsApp'ını doğrulayan her *3 arkadaş* için *50 puan* kazanın! *200 puana* kadar! 🎯\n\n🎁 Davet kodunuz: *${c}*\n\n📲 Bu linki paylaşın:\n${l}\n\nPuan kazanmaya başlayın ve özel ödüllerin kilidini açın! 🚀\n\n${footer}`,
         };
 
         const msgFn = promoMessages[userLang] || promoMessages.en;
