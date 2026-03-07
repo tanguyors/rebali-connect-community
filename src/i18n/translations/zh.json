@@ -242,7 +242,15 @@
     "referralApplied": "邀请码已应用！",
     "pendingReferrals": "待验证邀请",
     "validatedReferrals": "已验证邀请",
-    "nextReward": "再{remaining}位即可获得50积分"
+    "nextReward": "再{remaining}位即可获得50积分",
+    "totalInvited": "已邀请",
+    "validated": "已验证",
+    "remainingInvites": "剩余邀请",
+    "statusValidated": "已验证",
+    "statusPending": "待验证",
+    "noReferralsYet": "还没有推荐。分享您的代码！",
+    "codeCopied": "代码已复制！",
+    "history": "推荐历史"
   },
   "pro": {
     "badge": "专业卖家",

@@ -386,7 +386,15 @@
     "referralApplied": "Code d'invitation appliqué !",
     "pendingReferrals": "Invitations en attente",
     "validatedReferrals": "Invitations vérifiées",
-    "nextReward": "Encore {remaining} pour gagner 50 pts"
+    "nextReward": "Encore {remaining} pour gagner 50 pts",
+    "totalInvited": "Invités",
+    "validated": "Validés",
+    "remainingInvites": "invitations restantes",
+    "statusValidated": "Validé",
+    "statusPending": "En attente",
+    "noReferralsYet": "Aucun parrainage. Partagez votre code !",
+    "codeCopied": "Code copié !",
+    "history": "Historique de parrainage"
   },
   "pro": {
     "badge": "VENDEUR PRO",

@@ -242,7 +242,15 @@
     "referralApplied": "Код приглашения применён!",
     "pendingReferrals": "Ожидающие приглашения",
     "validatedReferrals": "Подтверждённые приглашения",
-    "nextReward": "Ещё {remaining} для 50 б."
+    "nextReward": "Ещё {remaining} для 50 б.",
+    "totalInvited": "Приглашено",
+    "validated": "Подтверждено",
+    "remainingInvites": "приглашений осталось",
+    "statusValidated": "Подтверждено",
+    "statusPending": "Ожидание",
+    "noReferralsYet": "Пока нет рефералов. Поделитесь кодом!",
+    "codeCopied": "Код скопирован!",
+    "history": "История рефералов"
   },
   "pro": {
     "badge": "ПРО ПРОДАВЕЦ",

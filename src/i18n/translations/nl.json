@@ -242,7 +242,15 @@
     "referralApplied": "Uitnodigingscode toegepast!",
     "pendingReferrals": "Wachtende uitnodigingen",
     "validatedReferrals": "Geverifieerde uitnodigingen",
-    "nextReward": "Nog {remaining} voor 50 pt."
+    "nextReward": "Nog {remaining} voor 50 pt.",
+    "totalInvited": "Uitgenodigd",
+    "validated": "Gevalideerd",
+    "remainingInvites": "uitnodigingen over",
+    "statusValidated": "Gevalideerd",
+    "statusPending": "In afwachting",
+    "noReferralsYet": "Nog geen verwijzingen. Deel je code!",
+    "codeCopied": "Code gekopieerd!",
+    "history": "Verwijzingsgeschiedenis"
   },
   "pro": {
     "badge": "PRO VERKOPER",

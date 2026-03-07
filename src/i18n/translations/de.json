@@ -318,7 +318,15 @@
     "referralApplied": "Einladungscode angewendet!",
     "pendingReferrals": "Ausstehende Einladungen",
     "validatedReferrals": "Verifizierte Einladungen",
-    "nextReward": "Noch {remaining} für 50 Pkt."
+    "nextReward": "Noch {remaining} für 50 Pkt.",
+    "totalInvited": "Eingeladen",
+    "validated": "Bestätigt",
+    "remainingInvites": "Einladungen übrig",
+    "statusValidated": "Bestätigt",
+    "statusPending": "Ausstehend",
+    "noReferralsYet": "Noch keine Empfehlungen. Teile deinen Code!",
+    "codeCopied": "Code kopiert!",
+    "history": "Empfehlungsverlauf"
   },
   "pro": {
     "badge": "PRO-VERKÄUFER",

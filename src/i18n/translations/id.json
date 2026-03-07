@@ -333,7 +333,15 @@
     "referralApplied": "Kode undangan diterapkan!",
     "pendingReferrals": "Undangan tertunda",
     "validatedReferrals": "Undangan terverifikasi",
-    "nextReward": "{remaining} lagi untuk mendapatkan 50 poin"
+    "nextReward": "{remaining} lagi untuk mendapatkan 50 poin",
+    "totalInvited": "Diundang",
+    "validated": "Tervalidasi",
+    "remainingInvites": "undangan tersisa",
+    "statusValidated": "Tervalidasi",
+    "statusPending": "Menunggu",
+    "noReferralsYet": "Belum ada referral. Bagikan kode Anda!",
+    "codeCopied": "Kode disalin!",
+    "history": "Riwayat Referral"
   },
   "pro": {
     "badge": "PENJUAL PRO",
