@@ -533,6 +533,25 @@
     "redirectingPayment": "Redirecting to payment...",
     "paymentMethods": "Payment via Xendit — VA, e-Wallet, QRIS"
   },
+  "referral": {
+    "title": "Invite Friends",
+    "subtitle": "Share your code and earn 50 points for every 3 friends who verify their WhatsApp!",
+    "yourCode": "Your invitation code",
+    "copied": "Code copied!",
+    "shareLink": "Share my link",
+    "shareMessage": "Join Re-Bali with my code {code} and start buying & selling in Bali! {link}",
+    "progress": "{count}/3 verified friends",
+    "pointsEarned": "Points earned from referrals",
+    "limit": "Limit: {used}/{max} invitations",
+    "limitReached": "You have reached the maximum number of invitations",
+    "referralCode": "Invitation code (optional)",
+    "referralCodePlaceholder": "Enter a friend's code",
+    "invalidCode": "Invalid invitation code",
+    "referralApplied": "Invitation code applied!",
+    "pendingReferrals": "Pending invitations",
+    "validatedReferrals": "Verified invitations",
+    "nextReward": "{remaining} more to earn 50 pts"
+  },
   "pro": {
     "badge": "PRO SELLER",
     "title": "Become a Pro Seller",
