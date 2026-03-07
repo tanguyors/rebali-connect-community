@@ -310,7 +310,28 @@
     "packPrice": "Rp {price}",
     "bestValue": "Terbaik",
     "comingSoon": "Segera Hadir",
-    "paymentMethods": "Pembayaran via Xendit / DOKU"
+    "paymentMethods": "Pembayaran via Xendit / DOKU",
+    "buyNow": "Beli Sekarang",
+    "redirectingPayment": "Mengarahkan ke pembayaran..."
+  },
+  "referral": {
+    "title": "Undang Teman",
+    "subtitle": "Bagikan kode Anda dan dapatkan 50 poin untuk setiap 3 teman yang memverifikasi WhatsApp mereka!",
+    "yourCode": "Kode undangan Anda",
+    "copied": "Kode disalin!",
+    "shareLink": "Bagikan tautan saya",
+    "shareMessage": "Bergabunglah dengan Re-Bali dengan kode saya {code} dan mulai beli & jual di Bali! {link}",
+    "progress": "{count}/3 teman terverifikasi",
+    "pointsEarned": "Poin dari referral",
+    "limit": "Batas: {used}/{max} undangan",
+    "limitReached": "Anda telah mencapai batas maksimal undangan",
+    "referralCode": "Kode undangan (opsional)",
+    "referralCodePlaceholder": "Masukkan kode teman",
+    "invalidCode": "Kode undangan tidak valid",
+    "referralApplied": "Kode undangan diterapkan!",
+    "pendingReferrals": "Undangan tertunda",
+    "validatedReferrals": "Undangan terverifikasi",
+    "nextReward": "{remaining} lagi untuk mendapatkan 50 poin"
   },
   "pro": {
     "badge": "PENJUAL PRO",

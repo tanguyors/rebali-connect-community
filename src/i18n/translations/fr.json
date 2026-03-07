@@ -363,7 +363,28 @@
     "packPrice": "Rp {price}",
     "bestValue": "Meilleur rapport",
     "comingSoon": "Bientôt",
-    "paymentMethods": "Paiement via Xendit / DOKU"
+    "paymentMethods": "Paiement via Xendit / DOKU",
+    "buyNow": "Acheter",
+    "redirectingPayment": "Redirection vers le paiement..."
+  },
+  "referral": {
+    "title": "Inviter des amis",
+    "subtitle": "Partagez votre code et gagnez 50 points pour chaque 3 amis qui vérifient leur WhatsApp !",
+    "yourCode": "Votre code d'invitation",
+    "copied": "Code copié !",
+    "shareLink": "Partager mon lien",
+    "shareMessage": "Rejoins Re-Bali avec mon code {code} et commence à acheter & vendre à Bali ! {link}",
+    "progress": "{count}/3 amis vérifiés",
+    "pointsEarned": "Points gagnés par parrainage",
+    "limit": "Limite : {used}/{max} invitations",
+    "limitReached": "Vous avez atteint le nombre maximum d'invitations",
+    "referralCode": "Code d'invitation (optionnel)",
+    "referralCodePlaceholder": "Entrez le code d'un ami",
+    "invalidCode": "Code d'invitation invalide",
+    "referralApplied": "Code d'invitation appliqué !",
+    "pendingReferrals": "Invitations en attente",
+    "validatedReferrals": "Invitations vérifiées",
+    "nextReward": "Encore {remaining} pour gagner 50 pts"
   },
   "pro": {
     "badge": "VENDEUR PRO",
