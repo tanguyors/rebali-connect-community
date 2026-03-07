@@ -271,6 +271,7 @@
     "disclaimer": "Re-Bali acts as a platform connecting buyers and sellers. Transactions are made directly between users. Re-Bali is not responsible for the quality, safety, or legality of items listed.",
     "maxAttemptsReached": "Maximum attempts reached. Request a new code.",
     "noValidOtp": "No valid code found. Please request a new one.",
+    "invalidPhoneFormat": "Invalid format. Use: +[country code][number]",
     "becomeVerified": "Become a Verified Seller",
     "becomeVerifiedDesc": "Submit your ID to get the Verified Seller badge and increase buyer trust",
     "verifiedSellerDesc": "Your identity has been verified. Buyers can trust your profile.",

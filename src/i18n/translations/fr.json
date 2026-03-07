@@ -105,6 +105,7 @@
     "disclaimer": "Re-Bali agit en tant que plateforme de mise en relation entre acheteurs et vendeurs. Les transactions sont effectuées directement entre utilisateurs. Re-Bali n'est pas responsable de la qualité, de la sécurité ou de la légalité des articles publiés.",
     "maxAttemptsReached": "Nombre maximum de tentatives atteint. Demandez un nouveau code.",
     "noValidOtp": "Aucun code valide trouvé. Veuillez en demander un nouveau.",
+    "invalidPhoneFormat": "Format invalide. Utilisez : +[indicatif pays][numéro]",
     "becomeVerified": "Devenir Vendeur Vérifié",
     "becomeVerifiedDesc": "Soumettez votre pièce d'identité pour obtenir le badge Vendeur Vérifié",
     "verifiedSellerDesc": "Votre identité a été vérifiée. Les acheteurs peuvent vous faire confiance.",

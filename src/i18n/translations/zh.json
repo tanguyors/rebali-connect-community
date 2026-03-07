@@ -58,6 +58,7 @@
     "disclaimer": "Re-Bali是一个连接买家和卖家的平台。交易直接在用户之间进行。",
     "maxAttemptsReached": "已达最大尝试次数。请重新获取验证码。",
     "noValidOtp": "未找到有效验证码。请重新获取。",
+    "invalidPhoneFormat": "格式无效。请使用：+[国家代码][号码]",
     "becomeVerified": "成为认证卖家",
     "becomeVerifiedDesc": "提交您的身份证件以获得认证卖家徽章",
     "verificationPending": "验证进行中",

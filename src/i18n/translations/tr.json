@@ -237,6 +237,7 @@
     "disclaimer": "Re-Bali alıcı ve satıcıları birbirine bağlayan bir platformdur. İşlemler doğrudan kullanıcılar arasında yapılır.",
     "maxAttemptsReached": "Maksimum deneme sayısına ulaşıldı. Yeni bir kod isteyin.",
     "noValidOtp": "Geçerli kod bulunamadı. Lütfen yeni bir tane isteyin.",
+    "invalidPhoneFormat": "Geçersiz format. Kullanın: +[ülke kodu][numara]",
     "becomeVerified": "Doğrulanmış Satıcı Olun",
     "becomeVerifiedDesc": "Doğrulanmış Satıcı rozeti almak için kimliğinizi gönderin",
     "verifiedSellerDesc": "Kimliğiniz doğrulanmıştır. Alıcılar profilinize güvenebilir.",

@@ -58,6 +58,7 @@
     "disclaimer": "Re-Bali adalah platform yang menghubungkan pembeli dan penjual. Transaksi dilakukan langsung antar pengguna.",
     "maxAttemptsReached": "Percobaan maksimum tercapai. Minta kode baru.",
     "noValidOtp": "Kode valid tidak ditemukan. Silakan minta yang baru.",
+    "invalidPhoneFormat": "Format tidak valid. Gunakan: +[kode negara][nomor]",
     "becomeVerified": "Menjadi Penjual Terverifikasi",
     "becomeVerifiedDesc": "Kirim dokumen identitas Anda untuk mendapatkan lencana Penjual Terverifikasi",
     "verificationPending": "Verifikasi sedang berlangsung",

@@ -58,6 +58,7 @@
     "disclaimer": "Re-Bali es una plataforma que conecta compradores y vendedores. Las transacciones se realizan directamente entre usuarios.",
     "maxAttemptsReached": "Máximo de intentos alcanzado. Solicita un nuevo código.",
     "noValidOtp": "No se encontró código válido. Solicita uno nuevo.",
+    "invalidPhoneFormat": "Formato inválido. Usa: +[código país][número]",
     "becomeVerified": "Convertirse en Vendedor Verificado",
     "becomeVerifiedDesc": "Envía tu documento de identidad para obtener la insignia de Vendedor Verificado",
     "verificationPending": "Verificación en curso",

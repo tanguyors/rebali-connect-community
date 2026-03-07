@@ -58,6 +58,7 @@
     "disclaimer": "Re-Bali is een platform dat kopers en verkopers verbindt. Transacties worden rechtstreeks tussen gebruikers uitgevoerd.",
     "maxAttemptsReached": "Maximum pogingen bereikt. Vraag een nieuwe code aan.",
     "noValidOtp": "Geen geldige code gevonden. Vraag een nieuwe aan.",
+    "invalidPhoneFormat": "Ongeldig formaat. Gebruik: +[landcode][nummer]",
     "becomeVerified": "Word Geverifieerde Verkoper",
     "becomeVerifiedDesc": "Dien je identiteitsbewijs in om het Geverifieerde Verkoper-badge te krijgen",
     "verificationPending": "Verificatie in behandeling",
