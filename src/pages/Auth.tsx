@@ -210,6 +210,41 @@ export default function Auth() {
                   <Label>{t('auth.displayName')}</Label>
                   <Input value={displayName} onChange={e => setDisplayName(e.target.value)} required />
                 </div>
+                {/* Referral code - prominent placement */}
+                <div className="rounded-lg border-2 border-dashed border-primary/30 bg-primary/5 p-3 space-y-1.5">
+                  <div className="flex items-center gap-2 text-sm font-medium text-primary">
+                    <Gift className="h-4 w-4" />
+                    <span>{t('referral.invitedByFriend')}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      value={referralCode}
+                      onChange={e => setReferralCode(e.target.value.toUpperCase())}
+                      placeholder={t('referral.referralCodePlaceholder')}
+                      maxLength={8}
+                      className="font-mono tracking-widest uppercase"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="shrink-0"
+                      onClick={async () => {
+                        try {
+                          const text = await navigator.clipboard.readText();
+                          if (text && text.trim().length <= 8) {
+                            setReferralCode(text.trim().toUpperCase());
+                          }
+                        } catch {
+                          // Clipboard access denied
+                        }
+                      }}
+                      title={t('referral.paste')}
+                    >
+                      <ClipboardPaste className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
                 <div>
                   <Label>{t('auth.email')}</Label>
                   <Input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
