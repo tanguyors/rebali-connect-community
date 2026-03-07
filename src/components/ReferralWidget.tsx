@@ -113,18 +113,36 @@ export default function ReferralWidget() {
         </div>
 
         {/* Progress to next reward */}
-        {remaining > 0 && (
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t('referral.nextReward')}</span>
-              <span className="font-medium">{progressToNext}/3</span>
-            </div>
-            <Progress value={(progressToNext / 3) * 100} className="h-2" />
-            <p className="text-xs text-muted-foreground">
-              {t('referral.remainingInvites') || `${remaining} invitations remaining`}
-            </p>
+        {/* Progress to next 50pts reward */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">{t('referral.nextReward')}</span>
+            <span className="font-medium">{progressToNext}/3 {t('referral.validated') || 'Validated'}</span>
           </div>
-        )}
+          <Progress value={(progressToNext / 3) * 100} className="h-2" />
+          <p className="text-xs text-muted-foreground">
+            {t('referral.rewardExplainer') || `Every 3 validated referrals = 50 points`}
+          </p>
+        </div>
+
+        {/* Overall invitation limit */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">{t('referral.invitationLimit') || 'Invitations used'}</span>
+            <span className="font-medium">{referrals.length}/{maxInvites}</span>
+          </div>
+          <Progress value={(referrals.length / maxInvites) * 100} className="h-2" />
+          {remaining > 0 && (
+            <p className="text-xs text-muted-foreground">
+              {remaining} {t('referral.remainingInvites') || 'invitations remaining'}
+            </p>
+          )}
+          {remaining === 0 && (
+            <p className="text-xs text-muted-foreground">
+              {t('referral.limitReached') || 'Maximum invitations reached'}
+            </p>
+          )}
+        </div>
 
         {/* Referral history */}
         {referrals.length > 0 && (
